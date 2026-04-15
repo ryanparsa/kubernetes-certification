@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: safari-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 2Gi
+  storageClassName: ""
+  hostPath:
+    path: /Volume/data
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: project-t230
+  name: safari-pvc
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: safari
+  namespace: project-t230
+  labels:
+    name: safari
+spec:
+  selector:
+    matchLabels:
+      name: safari
+  template:
+    metadata:
+      name: safari
+      labels:
+        name: safari
+    spec:
+      volumes:
+        - name: safari-pvc
+          persistentVolumeClaim:
+            claimName: safari-pvc
+      containers:
+        - name: httpd
+          image: httpd:2-alpine
+          volumeMounts:
+            - mountPath: /tmp/safari-data
+              name: safari-pvc
