@@ -1,5 +1,7 @@
 # Preview Question 3 | Change Service CIDR
 
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
+
 1.  Create a *Pod* named `check-ip` in *Namespace* `default` using image `httpd:2-alpine`
 2.  Expose it on port `80` as a ClusterIP *Service* named `check-ip-service`. Remember/output the IP of that *Service*
 3.  Change the Service CIDR to `11.96.0.0/12` for the cluster
@@ -12,16 +14,16 @@
 Let's create the *Pod* and expose it:
 
 ```bash
-k run check-ip --image=httpd:2-alpine
+kubectl run check-ip --image=httpd:2-alpine
 pod/check-ip created
 
-k expose pod check-ip --name check-ip-service --port 80
+kubectl expose pod check-ip --name check-ip-service --port 80
 ```
 
 And check the *Service* IP:
 
 ```bash
-k get svc
+kubectl get svc
 NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 check-ip-service   ClusterIP   10.97.6.41   <none>        80/TCP    3s
 kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
@@ -33,7 +35,6 @@ Now we change the *Service* CIDR in the kube-apiserver manifest.
 > `docker exec -it cka-lab-control-plane bash`
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
 vim /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
@@ -64,7 +65,6 @@ spec:
 We wait for the kube-apiserver to be restarted, which can take a minute:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
 watch crictl ps
 
 kubectl -n kube-system get pod | grep api
@@ -74,7 +74,6 @@ kube-apiserver-cka-lab-control-plane   1/1     Running   0             20s
 Now we do the same for the controller manager:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
 vim /etc/kubernetes/manifests/kube-controller-manager.yaml
 ```
 
@@ -116,7 +115,6 @@ spec:
 We wait for the kube-controller-manager to be restarted, which can take a minute:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
 watch crictl ps
 
 kubectl -n kube-system get pod | grep controller
@@ -126,11 +124,11 @@ kube-controller-manager-cka-lab-control-plane   1/1     Running   0             
 Finally we need to create an additional `ServiceCIDR` resource:
 
 ```bash
-k get servicecidr
+kubectl get servicecidr
 NAME         CIDRS          AGE
 kubernetes   10.96.0.0/12   32d
 
-cat <<'EOF' | k apply -f -
+cat <<'EOF' | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: ServiceCIDR
 metadata:
@@ -141,7 +139,7 @@ spec:
 EOF
 servicecidr.networking.k8s.io/svc-cidr-new created
 
-k get servicecidr
+kubectl get servicecidr
 NAME           CIDRS          AGE
 kubernetes     10.96.0.0/12   32d
 svc-cidr-new   11.96.0.0/12   4s
@@ -150,20 +148,18 @@ svc-cidr-new   11.96.0.0/12   4s
 We also need to delete the old `ServiceCIDR` resource:
 
 ```bash
-k delete servicecidr kubernetes
+kubectl delete servicecidr kubernetes
 servicecidr.networking.k8s.io "kubernetes" deleted
-^C
 
-k get servicecidr
+kubectl get servicecidr
 NAME           CIDRS          AGE
 kubernetes     10.96.0.0/12   32d
 svc-cidr-new   11.96.0.0/12   5m14s
 
-k get servicecidr kubernetes -oyaml
+kubectl get servicecidr kubernetes -oyaml
 ```
 
 ```yaml
-# kubectl get servicecidr kubernetes -oyaml
 apiVersion: networking.k8s.io/v1
 kind: ServiceCIDR
 metadata:
@@ -189,7 +185,7 @@ The deleted *ServiceCIDR* will remain in a terminating state till no more *Servi
 Let's query our *Service* again:
 
 ```bash
-k get svc
+kubectl get svc
 NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 check-ip-service   ClusterIP   10.97.6.41   <none>        80/TCP    7m14s
 kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
@@ -198,13 +194,13 @@ kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
 Nothing will change for existing *Services*. Now we create the new one:
 
 ```bash
-k expose pod check-ip --name check-ip-service2 --port 80
+kubectl expose pod check-ip --name check-ip-service2 --port 80
 ```
 
 And check again:
 
 ```bash
-k get svc
+kubectl get svc
 NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 check-ip-service    ClusterIP   10.97.6.41      <none>        80/TCP    7m24s
 check-ip-service2   ClusterIP   11.108.174.69   <none>        80/TCP    2s
