@@ -10,6 +10,8 @@ done
 
 kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
+mkdir -p "$SCRIPT_DIR/../course"
+
 echo ""
 echo "Lab ready!"
 echo ""
