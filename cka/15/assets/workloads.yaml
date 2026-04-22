@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-snake
+---
+# backend pod — label: app=backend
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-0
+  namespace: project-snake
+  labels:
+    app: backend
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+---
+# db1 pod — label: app=db1, listens on port 1111
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db1-0
+  namespace: project-snake
+  labels:
+    app: db1
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo 'server { listen 1111; location / { return 200 "database one\n"; add_header Content-Type text/plain; } }' \
+        > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+    ports:
+    - containerPort: 1111
+---
+# db2 pod — label: app=db2, listens on port 2222
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db2-0
+  namespace: project-snake
+  labels:
+    app: db2
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo 'server { listen 2222; location / { return 200 "database two\n"; add_header Content-Type text/plain; } }' \
+        > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+    ports:
+    - containerPort: 2222
+---
+# vault pod — label: app=vault, listens on port 3333
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vault-0
+  namespace: project-snake
+  labels:
+    app: vault
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo 'server { listen 3333; location / { return 200 "vault secret storage\n"; add_header Content-Type text/plain; } }' \
+        > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+    ports:
+    - containerPort: 3333
