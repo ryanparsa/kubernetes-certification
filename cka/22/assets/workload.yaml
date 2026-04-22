@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: berlin-external-monitor
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: berlin-external-monitor
+  template:
+    metadata:
+      labels:
+        app: berlin-external-monitor
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: berlin-external-proxy
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: berlin-external-proxy
+  template:
+    metadata:
+      labels:
+        app: berlin-external-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine

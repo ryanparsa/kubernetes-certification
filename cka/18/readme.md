@@ -1,6 +1,6 @@
 # Question 1 | DNS / FQDN / Headless Service
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the "cka-lab" kind cluster
 
 The *Deployment* `controller` in *Namespace* `lima-control` communicates with various cluster internal endpoints by using their DNS FQDN values.
 
@@ -23,14 +23,14 @@ For this question we need to understand how cluster internal DNS works in Kubern
 Let's exec into the *Pod* for testing:
 
 ```bash
-k -n lima-control get pod
+kubectl -n lima-control get pod
 NAME                        READY   STATUS    RESTARTS   AGE
-controller-586d6657-gdmch   1/1     Running   0          11m
+$(kubectl -n lima-control get pod -l app=controller -o name | head -n 1 | cut -d/ -f2)   1/1     Running   0          11m
 controller-586d6657-lvdtd   1/1     Running   0          11m
 
-k -n lima-control exec -it controller-586d6657-gdmch -- sh
+kubectl -n lima-control exec -it $(kubectl -n lima-control get pod -l app=controller -o name | head -n 1 | cut -d/ -f2) -- sh
 
-/ # nslookup google.com
+nslookup google.com
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -42,7 +42,7 @@ Non-authoritative answer:
 Name:   google.com
 Address: 2a00:1450:4001:82f::200e
 
-/ # nslookup non-exist.some.google.com
+nslookup non-exist.some.google.com
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -58,7 +58,7 @@ We can perform DNS queries using `nslookup` and see if they resolve into an IP a
 By default there is the `kubernetes` *Service* in `default` *Namespace* which can be used to access the K8s Api:
 
 ```bash
-/ # nslookup kubernetes.default.svc.cluster.local
+nslookup kubernetes.default.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -73,7 +73,7 @@ And we already have the value for `DNS_1` which is `kubernetes.default.svc.clust
 The next one is similar:
 
 ```bash
-/ # nslookup department.lima-workload.svc.cluster.local
+nslookup department.lima-workload.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -88,12 +88,12 @@ The value for `DNS_2` is `department.lima-workload.svc.cluster.local`. It is the
 This is the case because the *Service* is headless and doesn't have its own IP address, but it still has *Endpoints* and points properly to *Pods*:
 
 ```bash
-k -n lima-workload get svc
+kubectl -n lima-workload get svc
 NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
 department   ClusterIP   None           <none>        80/TCP    2m19s
 section      ClusterIP   10.99.121.17   <none>        80/TCP    2m18s
 
-k -n lima-workload get endpointslice
+kubectl -n lima-workload get endpointslice
 NAME               ADDRESSTYPE   PORTS   ENDPOINTS                   AGE
 department-wqvvq   IPv4          80      10.32.0.2:80,10.32.0.9:80   2m19s
 section-dtt9s      IPv4          80      10.32.0.10:80,10.32.0.3:80  2m19s
@@ -106,14 +106,14 @@ This means the decision which *Pod* IP to contact is now in the hands of the app
 Now things start to get spicy, because we can do this:
 
 ```bash
-/ # nslookup section100.section.lima-workload.svc.cluster.local
+nslookup section100.section.lima-workload.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
 Name:   section100.section.lima-workload.svc.cluster.local
 Address: 10.32.0.10
 
-/ # nslookup section200.section.lima-workload.svc.cluster.local
+nslookup section200.section.lima-workload.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -148,7 +148,7 @@ spec:
 It's possible to resolve a FQDN like `IP.NAMESPACE.pod.cluster.local` into an IP address:
 
 ```bash
-/ # nslookup 1-2-3-4.kube-system.pod.cluster.local
+nslookup 1-2-3-4.kube-system.pod.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -165,11 +165,11 @@ We set `DNS_4` to `1-2-3-4.kube-system.pod.cluster.local`.
 We should update the *ConfigMap*:
 
 ```bash
-k -n lima-control get cm
+kubectl -n lima-control get cm
 NAME               DATA   AGE
 control-config     4      10m
 
-k -n lima-control edit cm control-config
+kubectl -n lima-control edit cm control-config
 ```
 
 ```yaml
@@ -196,9 +196,9 @@ deployment.apps/controller restarted
 And the *Pod* logs also look happy now:
 
 ```bash
-k -n lima-control logs -f controller-54b5b69d7d-mgng2
+kubectl -n lima-control logs -f $(kubectl -n lima-control get pod -l app=controller -o name | head -n 1 | cut -d/ -f2)
 
-+ nslookup kubernetes.default.svc.cluster.local
+nslookup kubernetes.default.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -206,7 +206,7 @@ Name:   kubernetes.default.svc.cluster.local
 Address: 10.96.0.1
 
 
-+ nslookup department.lima-workload.svc.cluster.local
+nslookup department.lima-workload.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -216,7 +216,7 @@ Name:   department.lima-workload.svc.cluster.local
 Address: 10.32.0.9
 
 
-+ nslookup section100.section.lima-workload.svc.cluster.local
+nslookup section100.section.lima-workload.svc.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 
@@ -224,7 +224,7 @@ Name:   section100.section.lima-workload.svc.cluster.local
 Address: 10.32.0.10
 
 
-+ nslookup 1-2-3-4.kube-system.pod.cluster.local
+nslookup 1-2-3-4.kube-system.pod.cluster.local
 Server:         10.96.0.10
 Address:        10.96.0.10:53
 

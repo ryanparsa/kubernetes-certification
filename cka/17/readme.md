@@ -1,8 +1,8 @@
 # Question 17 | Find Container of Pod and check info
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the "cka-lab" kind cluster
 
-In Namespace `project-tiger` create a Pod named `tigers-reunite` of image `httpd:2-alpine` with labels `pod=container` and `container=pod`. Find out on which node the Pod is scheduled. Ssh into that node and find the containerd container belonging to that Pod.
+In *Namespace* `project-tiger` create a *Pod* named `tigers-reunite` of image `httpd:2-alpine` with labels `pod=container` and `container=pod`. Find out on which *Node* the *Pod* is scheduled. Connect to that *Node* and find the containerd container belonging to that *Pod*.
 
 Using command `crictl`:
 
@@ -17,24 +17,24 @@ Using command `crictl`:
 > [!NOTE]
 > In this environment `crictl` can be used for container management. In the real exam this could also be `docker`. Both commands can be used with the same arguments.
 
-First we create the Pod:
+First we create the *Pod*:
 
 ```bash
-k -n project-tiger run tigers-reunite --image=httpd:2-alpine --labels "pod=container,container=pod"
+kubectl -n project-tiger run tigers-reunite --image=httpd:2-alpine --labels "pod=container,container=pod"
 pod/tigers-reunite created
 ```
 
-Next we find out the node it's scheduled on:
+Next we find out the *Node* it's scheduled on:
 
 ```bash
-k -n project-tiger get pod -o wide
+kubectl -n project-tiger get pod -o wide
 NAME                                   READY   ...   NODE
 tigers-for-rent-web-57558cfbf8-4tldr   1/1     ...   cka-lab-worker
 tigers-for-rent-web-57558cfbf8-5pz4z   1/1     ...   cka-lab-control-plane
 tigers-reunite                         1/1     ...   cka-lab-worker
 ```
 
-Here it's `cka-lab-worker` so we exec into that node and check the container info:
+Here it's `cka-lab-worker` so we exec into that *Node* and check the container info:
 
 ```bash
 docker exec -it cka-lab-worker bash

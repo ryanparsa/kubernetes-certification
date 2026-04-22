@@ -1,5 +1,7 @@
 # Question 11 | Create Secret and mount into Pod
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 Create *Namespace* `secret` and implement the following in it:
 
 - Create *Pod* `secret-pod` with image `busybox:1`. It should be kept running by executing `sleep 1d` or something similar
@@ -11,7 +13,7 @@ Create *Namespace* `secret` and implement the following in it:
 First we create the *Namespace*:
 
 ```bash
-k create ns secret
+kubectl create ns secret
 namespace/secret created
 ```
 
@@ -36,7 +38,7 @@ metadata:
 ```
 
 ```bash
-k -f 11_secret1.yaml create
+kubectl -n secret create -f 11_secret1.yaml
 secret/secret1 created
 ```
 
@@ -45,7 +47,7 @@ secret/secret1 created
 Next we create the second *Secret*:
 
 ```bash
-k -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
+kubectl -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
 secret/secret2 created
 ```
 
@@ -54,7 +56,7 @@ secret/secret2 created
 Now we create the *Pod* template:
 
 ```bash
-k -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 11.yaml
+kubectl -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 11.yaml
 ```
 
 Then make the necessary changes:
@@ -105,25 +107,25 @@ status: {}
 And execute:
 
 ```bash
-k -f 11.yaml create
+kubectl -n secret create -f 11.yaml
 pod/secret-pod created
 ```
 
 Finally we verify:
 
 ```bash
-k -n secret exec secret-pod -- env | grep APP
+kubectl -n secret exec secret-pod -- env | grep APP
 APP_PASS=1234
 APP_USER=user1
 
-k -n secret exec secret-pod -- find /tmp/secret1
+kubectl -n secret exec secret-pod -- find /tmp/secret1
 /tmp/secret1
 /tmp/secret1/..data
 /tmp/secret1/halt
 /tmp/secret1/..2019_12_08_12_15_39.463036797
 /tmp/secret1/..2019_12_08_12_15_39.463036797/halt
 
-k -n secret exec secret-pod -- cat /tmp/secret1/halt
+kubectl -n secret exec secret-pod -- cat /tmp/secret1/halt
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          halt
