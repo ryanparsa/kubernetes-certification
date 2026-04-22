@@ -1,5 +1,7 @@
 # Question 15 | NetworkPolicy
 
+> **Solve this question on:** `controlplane`
+
 There was a security incident where an intruder was able to access the whole cluster from a single hacked backend Pod.
 
 To prevent this create a NetworkPolicy called `np-backend` in Namespace `project-snake`. It should allow the `backend-*` Pods only to:
@@ -10,7 +12,7 @@ To prevent this create a NetworkPolicy called `np-backend` in Namespace `project
 Use the `app` Pod labels in your policy.
 
 > [!NOTE]
-> All Pods in the Namespace run plain Nginx images. This allows simple connectivity tests like: `k -n project-snake exec POD_NAME -- curl POD_IP:PORT`
+> All Pods in the Namespace run plain Nginx images. This allows simple connectivity tests like: `kubectl -n project-snake exec POD_NAME -- curl POD_IP:PORT`
 
 > [!NOTE]
 > For example, connections from `backend-*` Pods to `vault-*` Pods on port 3333 should no longer work
@@ -20,14 +22,14 @@ Use the `app` Pod labels in your policy.
 First we look at the existing Pods and their labels:
 
 ```bash
-k -n project-snake get pod
+kubectl -n project-snake get pod
 NAME        READY   STATUS    RESTARTS   AGE
 backend-0   1/1     Running   0          8d
 db1-0       1/1     Running   0          8d
 db2-0       1/1     Running   0          8d
 vault-0     1/1     Running   0          8d
 
-k -n project-snake get pod -L app
+kubectl -n project-snake get pod -L app
 NAME        READY   STATUS    RESTARTS   AGE   APP
 backend-0   1/1     Running   0          8d    backend
 db1-0       1/1     Running   0          8d    db1
@@ -38,20 +40,20 @@ vault-0     1/1     Running   0          8d    vault
 We test the current connection situation and see nothing is restricted:
 
 ```bash
-k -n project-snake get pod -o wide
+kubectl -n project-snake get pod -o wide
 NAME        READY   STATUS    RESTARTS   AGE     IP          ...
 backend-0   1/1     Running   0          8d      10.44.0.24  ...
 db1-0       1/1     Running   0          8d      10.44.0.25  ...
 db2-0       1/1     Running   0          8d      10.44.0.23  ...
 vault-0     1/1     Running   0          8d      10.44.0.22  ...
 
-k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
+kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
 database one
 
-k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
+kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
 database two
 
-k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
+kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
 vault secret storage
 ```
 
@@ -147,20 +149,20 @@ Using this NP it would still be possible for `backend-*` Pods to connect to `db2
 We create the correct NP:
 
 ```bash
-k -f 15_np.yaml create
+kubectl apply -f 15_np.yaml
 ```
 
 And to verify:
 
 ```bash
-k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
+kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
 database one
 
-k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
+kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
 database two
 
-k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
-^C
+kubectl -n project-snake exec backend-0 -- curl --connect-timeout 2 -s 10.44.0.22:3333
+# (should timeout or be denied)
 ```
 
 Also helpful to use `kubectl describe` on the NP to see how K8s has interpreted the policy.
