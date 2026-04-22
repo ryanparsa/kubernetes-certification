@@ -6,7 +6,7 @@ There is a backup Job which needs to be adjusted to use a PVC to store backups.
 
 Create a StorageClass named `local-backup` which uses `provisioner: rancher.io/local-path` and `volumeBindingMode: WaitForFirstConsumer`. To prevent possible data loss the StorageClass should keep a PV retained even if a bound PVC is deleted.
 
-Adjust the Job at `/opt/course/10/backup.yaml` to use a PVC which requests `50Mi` storage and uses the new StorageClass.
+Adjust the Job at `/opt/course/10/backup.yaml` to use a PVC which request `50Mi` storage and uses the new StorageClass.
 
 Deploy your changes, verify the Job completed once and the PVC was bound to a newly created PV.
 
@@ -98,7 +98,7 @@ spec:
       restartPolicy: Never
 ```
 
-Currently it uses an `emptyDir` volume which means it only stores data in the temporary filesystem of the Pod. This means once the Pod is deleted the data is deleted as well.
+Currently it uses an `emptyDir` volume which means in only stores data in the temporary filesystem of the Pod. This means once the Pod is deleted the data is deleted as well.
 
 We could go ahead and create it now to see if everything else works:
 
@@ -118,7 +118,7 @@ Looks like it completed without errors.
 
 ### Step 3 — Adjust Job Template
 
-For this we first need to create a PVC and then use it in the Job template:
+For this we first need to create a PVC and then use in the Job template:
 
 ```bash
 ➜ candidate@cka6016:~$ cd /opt/course/10
