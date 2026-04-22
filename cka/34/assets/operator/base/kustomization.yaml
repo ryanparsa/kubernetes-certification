@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Resources use NAMESPACE_REPLACE as a placeholder namespace.
+# The prod overlay sets namespace: operator-prod which replaces all
+# metadata.namespace fields (including subjects[].namespace in RoleBindings).
+resources:
+- crds.yaml
+- serviceaccount.yaml
+- rbac.yaml
+- deployment.yaml
+- students.yaml
+- classes.yaml

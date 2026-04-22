@@ -1,12 +1,10 @@
 # Question 1 | Contexts
 
-> **Solve this question on:** `ssh cka9412`
+You're asked to extract the following information out of kubeconfig file `cka/1/course/kubeconfig`:
 
-You're asked to extract the following information out of kubeconfig file `/opt/course/1/kubeconfig` on `cka9412`:
-
-1. Write all kubeconfig context names into `/opt/course/1/contexts`, one per line
-2. Write the name of the current context into `/opt/course/1/current-context`
-3. Write the client-certificate of user `account-0027` base64-decoded into `/opt/course/1/cert`
+1. Write all kubeconfig context names into `cka/1/course/contexts`, one per line
+2. Write the name of the current context into `cka/1/course/current-context`
+3. Write the client-certificate of user `account-0027` base64-decoded into `cka/1/course/cert`
 
 ## Answer
 
@@ -17,24 +15,24 @@ All that's asked for here could be extracted by manually reading the kubeconfig 
 First we get all context names:
 
 ```bash
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config get-contexts
+k --kubeconfig cka/1/course/kubeconfig config get-contexts
 CURRENT   NAME            CLUSTER     AUTHINFO               NAMESPACE
           cluster-admin   kubernetes  admin@internal         
           cluster-w100    kubernetes  account-0027@internal  
 *         cluster-w200    kubernetes  account-0028@internal  
 
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config get-contexts -oname
+k --kubeconfig cka/1/course/kubeconfig config get-contexts -oname
 cluster-admin
 cluster-w100
 cluster-w200
 
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config get-contexts -oname > /opt/course/1/contexts
+k --kubeconfig cka/1/course/kubeconfig config get-contexts -oname > cka/1/course/contexts
 ```
 
 This will result in:
 
 ```
-# cka9412:/opt/course/1/contexts
+# cka/1/course/contexts
 cluster-admin
 cluster-w100
 cluster-w200
@@ -43,9 +41,9 @@ cluster-w200
 We could also do extractions using jsonpath:
 
 ```bash
-k --kubeconfig /opt/course/1/kubeconfig config view -o yaml
+k --kubeconfig cka/1/course/kubeconfig config view -o yaml
 
-k --kubeconfig /opt/course/1/kubeconfig config view -o jsonpath="{.contexts[*].name}"
+k --kubeconfig cka/1/course/kubeconfig config view -o jsonpath="{.contexts[*].name}"
 ```
 
 But it would probably be overkill for this task.
@@ -55,16 +53,16 @@ But it would probably be overkill for this task.
 Now we query the current context:
 
 ```bash
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config current-context 
+k --kubeconfig cka/1/course/kubeconfig config current-context 
 cluster-w200
 
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config current-context > /opt/course/1/current-context
+k --kubeconfig cka/1/course/kubeconfig config current-context > cka/1/course/current-context
 ```
 
 Which will result in:
 
 ```
-# cka9412:/opt/course/1/current-context
+# cka/1/course/current-context
 cluster-w200
 ```
 
@@ -73,7 +71,7 @@ cluster-w200
 And finally we extract the certificate and write it base64 decoded into the required location:
 
 ```bash
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config view -o yaml --raw
+k --kubeconfig cka/1/course/kubeconfig config view -o yaml --raw
 apiVersion: v1
 clusters:
 - cluster:
@@ -107,19 +105,19 @@ users:
 Instead of using `--raw` to see the sensitive certificate information, we could also simply open the kubeconfig file in an editor. No matter how, we copy the whole value of `client-certificate-data` and base64 decode it:
 
 ```bash
-➜ candidate@cka9412:~$ echo LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2RE... | base64 -d > /opt/course/1/cert
+echo LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2RE... | base64 -d > cka/1/course/cert
 ```
 
 Or if we like it automated:
 
 ```bash
-➜ candidate@cka9412:~$ k --kubeconfig /opt/course/1/kubeconfig config view --raw -ojsonpath="{.users[0].user.client-certificate-data}" | base64 -d > /opt/course/1/cert
+k --kubeconfig cka/1/course/kubeconfig config view --raw -ojsonpath="{.users[0].user.client-certificate-data}" | base64 -d > cka/1/course/cert
 ```
 
 Which will result in:
 
 ```
-# cka9412:/opt/course/1/cert
+# cka/1/course/cert
 -----BEGIN CERTIFICATE-----
 MIICvDCCAaQCFHYdjSZFKCyUCR1B2naXCg/UjSHLMA0GCSqGSIb3DQEBCwUAMBUx
 EzARBgNVBAMTCmt1YmVybmV0ZXMwHhcNMjQxMDI4MTkwOTUwWhcNMjYwMzEyMTkw

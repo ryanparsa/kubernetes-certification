@@ -1,7 +1,5 @@
 # Question 15 | NetworkPolicy
 
-> **Solve this question on:** `ssh cka7968`
-
 There was a security incident where an intruder was able to access the whole cluster from a single hacked backend Pod.
 
 To prevent this create a NetworkPolicy called `np-backend` in Namespace `project-snake`. It should allow the `backend-*` Pods only to:
@@ -22,16 +20,14 @@ Use the `app` Pod labels in your policy.
 First we look at the existing Pods and their labels:
 
 ```bash
-➜ ssh cka7968
-
-➜ candidate@cka7968:~$ k -n project-snake get pod
+k -n project-snake get pod
 NAME        READY   STATUS    RESTARTS   AGE
 backend-0   1/1     Running   0          8d
 db1-0       1/1     Running   0          8d
 db2-0       1/1     Running   0          8d
 vault-0     1/1     Running   0          8d
 
-➜ candidate@cka7968:~$ k -n project-snake get pod -L app
+k -n project-snake get pod -L app
 NAME        READY   STATUS    RESTARTS   AGE   APP
 backend-0   1/1     Running   0          8d    backend
 db1-0       1/1     Running   0          8d    db1
@@ -42,27 +38,27 @@ vault-0     1/1     Running   0          8d    vault
 We test the current connection situation and see nothing is restricted:
 
 ```bash
-➜ candidate@cka7968:~$ k -n project-snake get pod -o wide
+k -n project-snake get pod -o wide
 NAME        READY   STATUS    RESTARTS   AGE     IP          ...
 backend-0   1/1     Running   0          8d      10.44.0.24  ...
 db1-0       1/1     Running   0          8d      10.44.0.25  ...
 db2-0       1/1     Running   0          8d      10.44.0.23  ...
 vault-0     1/1     Running   0          8d      10.44.0.22  ...
 
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
+k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
 database one
 
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
+k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
 database two
 
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
+k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
 vault secret storage
 ```
 
 Now we create the NP by copying and changing an example from the K8s Docs:
 
 ```yaml
-# cka7968:/home/candidate/15_np.yaml
+# 15_np.yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -151,19 +147,19 @@ Using this NP it would still be possible for `backend-*` Pods to connect to `db2
 We create the correct NP:
 
 ```bash
-➜ candidate@cka7968:~$ k -f 15_np.yaml create
+k -f 15_np.yaml create
 ```
 
 And to verify:
 
 ```bash
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
+k -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
 database one
 
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
+k -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
 database two
 
-➜ candidate@cka7968:~$ k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
+k -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
 ^C
 ```
 

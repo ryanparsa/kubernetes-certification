@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-r500
+---
+# web-desktop backend pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-desktop
+  namespace: project-r500
+  labels:
+    app: web-desktop
+spec:
+  containers:
+  - name: web
+    image: nginx:alpine
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo 'server { listen 80; location / { return 200 "Web Desktop App\n"; add_header Content-Type text/plain; } }' \
+        > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+    ports:
+    - containerPort: 80
+---
+# web-mobile backend pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-mobile
+  namespace: project-r500
+  labels:
+    app: web-mobile
+spec:
+  containers:
+  - name: web
+    image: nginx:alpine
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo 'server { listen 80; location / { return 200 "Web Mobile App\n"; add_header Content-Type text/plain; } }' \
+        > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'
+    ports:
+    - containerPort: 80
+---
+# Service for web-desktop
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-desktop
+  namespace: project-r500
+spec:
+  selector:
+    app: web-desktop
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Service for web-mobile
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-mobile
+  namespace: project-r500
+spec:
+  selector:
+    app: web-mobile
+  ports:
+  - port: 80
+    targetPort: 80

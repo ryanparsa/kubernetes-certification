@@ -1,11 +1,9 @@
 # Question 17 | Operator, CRDs, RBAC, Kustomize
 
-> **Solve this question on:** `ssh cka6016`
-
-There is Kustomize config available at `/opt/course/17/operator`. It installs an operator which works with different *CRDs*. It has been deployed like this:
+There is Kustomize config available at `cka/34/course/operator`. It installs an operator which works with different *CRDs*. It has been deployed like this:
 
 ```bash
-kubectl kustomize /opt/course/17/operator/prod | kubectl apply -f -
+kubectl kustomize cka/34/course/operator/prod | kubectl apply -f -
 ```
 
 Perform the following changes in the Kustomize base config:
@@ -20,11 +18,9 @@ Deploy your Kustomize config changes to prod.
 Kustomize is a standalone tool to manage K8s Yaml files, but it also comes included with kubectl. The common idea is to have a base set of K8s Yaml and then override or extend it for different overlays, like done here for prod:
 
 ```bash
-➜ ssh cka6016
+cd cka/34/course/operator
 
-➜ candidate@cka6016:~$ cd /opt/course/17/operator
-
-➜ candidate@cka6016:/opt/course/17/operator$ ls
+ls
 base  prod
 ```
 
@@ -33,7 +29,7 @@ base  prod
 Let's investigate the base first for better understanding:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ k kustomize base
+k kustomize base
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -67,7 +63,7 @@ But for debugging it can be useful to build the base Yaml.
 ### Investigate Prod
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ k kustomize prod
+k kustomize prod
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -99,11 +95,11 @@ We can see that all resources now have `namespace: operator-prod`. Also prod add
 The instructions tell us to check the logs:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ k -n operator-prod get pod
+k -n operator-prod get pod
 NAME                        READY   STATUS    RESTARTS   AGE
 operator-7f4f58d4d9-v6ftw   1/1     Running   0          6m9s
 
-➜ candidate@cka6016:/opt/course/17/operator$ k -n operator-prod logs operator-7f4f58d4d9-v6ftw
+k -n operator-prod logs operator-7f4f58d4d9-v6ftw
 + true
 + kubectl get students
 Error from server (Forbidden): students.education.killer.sh is forbidden: User "system:serviceaccount:operator-prod:operator" cannot list resource "students" in API group "education.killer.sh" in the namespace "operator-prod"
@@ -146,7 +142,7 @@ spec:
 Now we need to adjust the existing *Role* `operator-role`. In the Kustomize config directory we find file `rbac.yaml` which we need to edit. Instead of manually editing the Yaml we could also generate it via command line:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ k -n operator-prod create role operator-role --verb list --resource student --resource class -oyaml --dry-run=client
+k -n operator-prod create role operator-role --verb list --resource student --resource class -oyaml --dry-run=client
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -166,11 +162,11 @@ rules:
 Now we copy&paste it into `rbac.yaml`:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ vim base/rbac.yaml
+vim base/rbac.yaml
 ```
 
 ```yaml
-# cka6016:/opt/course/17/operator/base/rbac.yaml
+# cka/34/course/operator/base/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -203,7 +199,7 @@ roleRef:
 And we deploy:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ kubectl kustomize /opt/course/17/operator/prod | kubectl apply -f -
+kubectl kustomize cka/34/course/operator/prod | kubectl apply -f -
 customresourcedefinition.apiextensions.k8s.io/classes.education.killer.sh unchanged
 customresourcedefinition.apiextensions.k8s.io/students.education.killer.sh unchanged
 serviceaccount/operator unchanged
@@ -219,7 +215,7 @@ student.education.killer.sh/student3 unchanged
 We can see that only the *Role* was configured, which is what we want. And the logs are not throwing errors any more:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ k -n operator-prod logs operator-7f4f58d4d9-v6ftw
+k -n operator-prod logs operator-7f4f58d4d9-v6ftw
 + kubectl get students
 NAME       AGE
 student1   22m
@@ -235,11 +231,11 @@ advanced   20m
 Finally we need to create a new *Student* resource. Here we can simply copy an existing one in `students.yaml`:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ vim base/students.yaml
+vim base/students.yaml
 ```
 
 ```yaml
-# cka6016:/opt/course/17/operator/base/students.yaml
+# cka/34/course/operator/base/students.yaml
 ...
 apiVersion: education.killer.sh/v1
 kind: Student
@@ -261,7 +257,7 @@ spec:
 And we deploy:
 
 ```bash
-➜ candidate@cka6016:/opt/course/17/operator$ kubectl kustomize /opt/course/17/operator/prod | kubectl apply -f -
+kubectl kustomize cka/34/course/operator/prod | kubectl apply -f -
 customresourcedefinition.apiextensions.k8s.io/classes.education.killer.sh unchanged
 customresourcedefinition.apiextensions.k8s.io/students.education.killer.sh unchanged
 serviceaccount/operator unchanged
@@ -274,7 +270,7 @@ student.education.killer.sh/student2 unchanged
 student.education.killer.sh/student3 unchanged
 student.education.killer.sh/student4 created
 
-➜ candidate@cka6016:/opt/course/17/operator$ k -n operator-prod get student
+k -n operator-prod get student
 NAME       AGE
 student1   28m
 student2   28m

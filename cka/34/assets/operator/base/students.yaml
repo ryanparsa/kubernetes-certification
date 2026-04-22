@@ -1,0 +1,26 @@
+apiVersion: education.killer.sh/v1
+kind: Student
+metadata:
+  name: student1
+  namespace: NAMESPACE_REPLACE
+spec:
+  name: Alice Johnson
+  description: A student specializing in Kubernetes networking and security
+---
+apiVersion: education.killer.sh/v1
+kind: Student
+metadata:
+  name: student2
+  namespace: NAMESPACE_REPLACE
+spec:
+  name: Bob Smith
+  description: A student focusing on cloud infrastructure and CI/CD pipelines
+---
+apiVersion: education.killer.sh/v1
+kind: Student
+metadata:
+  name: student3
+  namespace: NAMESPACE_REPLACE
+spec:
+  name: Carol Williams
+  description: A student excelling in container orchestration and management

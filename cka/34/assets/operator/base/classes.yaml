@@ -1,0 +1,8 @@
+apiVersion: education.killer.sh/v1
+kind: Class
+metadata:
+  name: advanced
+  namespace: NAMESPACE_REPLACE
+spec:
+  name: Advanced Kubernetes
+  description: An advanced class covering CKA topics and beyond
