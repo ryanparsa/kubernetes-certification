@@ -1,6 +1,6 @@
 # Question 8 | Update Kubernetes Version and join cluster
 
-Solve this question on: `ssh cka3962`
+> **Solve this question on:** `ssh cka3962`
 
 Your coworker notified you that node `cka3962-node1` is running an older Kubernetes version and is not even part of the cluster yet.
 

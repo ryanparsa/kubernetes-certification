@@ -1,6 +1,6 @@
 # Question 14 | Find out Cluster Information
 
-Solve this question on: `ssh cka8448`
+> **Solve this question on:** `ssh cka8448`
 
 You're ask to find out following information about the cluster:
 

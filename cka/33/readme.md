@@ -1,6 +1,6 @@
 # Question 16 | Namespaces and Api Resources
 
-Solve this question on: `ssh cka3200`
+> **Solve this question on:** `ssh cka3200`
 
 Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `/opt/course/16/resources.txt`.
 

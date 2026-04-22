@@ -1,6 +1,6 @@
 # Question 17 | Operator, CRDs, RBAC, Kustomize
 
-Solve this question on: `ssh cka6016`
+> **Solve this question on:** `ssh cka6016`
 
 There is Kustomize config available at `/opt/course/17/operator`. It installs an operator which works with different *CRDs*. It has been deployed like this:
 

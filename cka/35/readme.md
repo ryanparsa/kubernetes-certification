@@ -1,6 +1,6 @@
 # Preview Question 1 | ETCD Information
 
-Solve this question on: `ssh cka9412`
+> **Solve this question on:** `ssh cka9412`
 
 The cluster admin asked you to find out the following information about etcd running on `cka9412`:
 
