@@ -28,7 +28,7 @@ cka3962   Ready    control-plane   4h7m   v1.35.2
 The controlplane node seems to be running Kubernetes 1.35.2.
 
 ```bash
-➜ ssh cka3962-node1
+➜ candidate@cka3962:~$ ssh cka3962-node1
 ```
 
 ```bash
@@ -96,19 +96,19 @@ The following packages will be upgraded:
   kubectl kubelet
 2 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 Need to get 24.4 MB of archives.
-After this operation, 49.2 kB of additional disk space will be used.
-Get:1 https://pkgs.k8s.io/core:/stable:/v1.35/deb  kubectl 1.35.2-1.1 [11.2 MB]
-Get:2 https://pkgs.k8s.io/core:/stable:/v1.35/deb  kubelet 1.35.2-1.1 [13.2 MB]
-Fetched 24.4 MB in 1s (30.3 MB/s)
-(Reading database ... 113742 files and directories currently installed.)
+After this operation, 3060 kB disk space will be freed.
+Get:1 https://prod-cdn.packages.k8s.io/repositories/isv:/kubernetes:/core:/stable:/v1.35/deb  kubectl 1.35.2-1.1 [11.5 MB]
+Get:2 https://prod-cdn.packages.k8s.io/repositories/isv:/kubernetes:/core:/stable:/v1.35/deb  kubelet 1.35.2-1.1 [12.9 MB]
+Fetched 24.4 MB in 1s (32.4 MB/s) 
+(Reading database ... 72148 files and directories currently installed.)
 Preparing to unpack .../kubectl_1.35.2-1.1_amd64.deb ...
 Unpacking kubectl (1.35.2-1.1) over (1.34.5-1.1) ...
 Preparing to unpack .../kubelet_1.35.2-1.1_amd64.deb ...
 Unpacking kubelet (1.35.2-1.1) over (1.34.5-1.1) ...
 Setting up kubelet (1.35.2-1.1) ...
 Setting up kubectl (1.35.2-1.1) ...
-Scanning processes...
-Scanning linux images...
+Scanning processes...                                                                                                               
+Scanning linux images...                                                                                                            
 
 Running kernel seems to be up-to-date.
 
@@ -142,15 +142,19 @@ Now that we're up to date with kubeadm, kubectl and kubelet we can restart the k
        Docs: https://kubernetes.io/docs/
     Process: 14101 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_AR>
    Main PID: 14101 (code=exited, status=1/FAILURE)
-      CPU: 105ms
+        CPU: 105ms
+lines 1-9/9 (END)
 ```
 
-This is expected because the worker node hasn't joined the cluster yet, so no kubelet configuration exists. Let's join the node to the cluster.
+These errors occur because we still need to run kubeadm join to join the node into the cluster. Let's do this in the next step.
 
-### Join using kubeadm
+### Add cka3962-node1 to cluster
+
+First we log into the controlplane node and generate a new TLS bootstrap token, also printing out the join command:
 
 ```bash
-➜ exit
+➜ root@cka3962-node1:~# exit
+logout
 ```
 
 ```bash
@@ -175,7 +179,7 @@ We see the expiration of 23h for our token, we could adjust this by passing the 
 Next we connect again to `cka3962-node1` and simply execute the join command from above:
 
 ```bash
-➜ ssh cka3962-node1
+➜ root@cka3962:~# ssh cka3962-node1
 ```
 
 ```bash
@@ -224,10 +228,6 @@ Feb 27 14:40:01 cka3962-node1 kubelet[14321]: I0227 14:40:01.222198   14321 reco
 > ℹ️ If you have troubles with `kubeadm join` you might need to run `kubeadm reset` before
 
 Finally we check the node status:
-
-```bash
-➜ exit
-```
 
 ```bash
 ➜ root@cka3962:~# k get node

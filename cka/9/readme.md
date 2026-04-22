@@ -37,9 +37,9 @@ metadata:
   labels:
     run: api-contact
   name: api-contact
-  namespace: project-swan         # add
+  namespace: project-swan             # add
 spec:
-  serviceAccountName: secret-reader # add
+  serviceAccountName: secret-reader   # add
   containers:
   - image: nginx:1-alpine
     name: api-contact
@@ -85,7 +85,7 @@ how to fix it, please visit the webpage mentioned above.
   "reason": "Forbidden",
   "details": {},
   "code": 403
-}
+}~ $ 
 
 ➜ / # curl -k https://kubernetes.default/api/v1/secrets
 {
@@ -102,26 +102,13 @@ how to fix it, please visit the webpage mentioned above.
 }
 ```
 
-We see that we need to authenticate. For this we can use the Service Account token mounted into every Pod by default at `/var/run/secrets/kubernetes.io/serviceaccount`. Let's check what's available:
+The first command fails because of an untrusted certificate, but we can ignore this with `-k` for this scenario. We explain at the end how we can add the correct certificate instead of having to use the insecure `-k` option.
 
-```bash
-➜ / # find /var/run/secrets/kubernetes.io/serviceaccount
-/var/run/secrets/kubernetes.io/serviceaccount
-/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-/var/run/secrets/kubernetes.io/serviceaccount/namespace
-/var/run/secrets/kubernetes.io/serviceaccount/token
+The last command shows 403 forbidden, this is because we are not passing any authorisation information. For the K8s Api we are connecting as `system:anonymous`, which should not have permission to perform the query. We want to change this and connect using the Pod's ServiceAccount named `secret-reader`.
 
-➜ / # cat /var/run/secrets/kubernetes.io/serviceaccount/token
-# returns service account token
+### Use ServiceAccount Token to authenticate
 
-➜ / # cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-# returns the ca certificate
-
-➜ / # cat /var/run/secrets/kubernetes.io/serviceaccount/namespace
-# returns project-swan
-```
-
-Let's store the token in an environment variable and use it to authenticate our request:
+We find the token at `/var/run/secrets/kubernetes.io/serviceaccount`, so we do:
 
 ```bash
 ➜ / # TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
@@ -140,20 +127,53 @@ Let's store the token in an environment variable and use it to authenticate our 
       "metadata": {
         "name": "read-me",
         "namespace": "project-swan",
-        "uid": "e2e45842-688b-5057-af4e-6431f04cc0d6",
-        "resourceVersion": "4881",
-        "creationTimestamp": "2024-12-28T13:11:21Z"
+...
+```
+
+Now we're able to list all Secrets as the Pod's ServiceAccount `secret-reader`.
+
+For troubleshooting we could also check if the ServiceAccount is actually able to list Secrets:
+
+```bash
+➜ candidate@cka9412:~$ k auth can-i get secret --as system:serviceaccount:project-swan:secret-reader
+yes
+```
+
+### Store result at requested location
+
+We write the full result into `/opt/course/9/result.json`:
+
+```
+# cka9412:/opt/course/9/result.json
+{
+  "kind": "SecretList",
+  "apiVersion": "v1",
+  "metadata": {
+    "resourceVersion": "4881"
+  },
+  "items": [
+    {
+...
+    {
+      "metadata": {
+        "name": "read-me",
+        "namespace": "project-swan",
+        "uid": "f7c9a279-9609-4f9a-aa30-d29e175b7a6c",
+        "resourceVersion": "3380",
+        "creationTimestamp": "2024-12-05T15:11:58Z",
+        ...
       },
       "data": {
-        "secret": "SGFsdCBjb21iaW5lZCB3aXRoIGFuIGVuZXJneS4uLg=="
+        "token": "ZjMyMDEzOTYtZjVkOC00NTg0LWE2ZjEtNmYyZGZkYjM4NzVl"
       },
       "type": "Opaque"
     }
   ]
 }
+...
 ```
 
-Great! We can access the secrets. Now let's save this result to the requested location. We need to save the result both inside the pod and then copy it to the host:
+The easiest way would probably be to copy and paste the result manually. But if it's too long or not possible we could also do:
 
 ```bash
 ➜ / # curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}" > result.json
@@ -172,5 +192,3 @@ To connect without `curl -k` we can specify the CertificateAuthority (CA):
 
 ➜ / # curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
 ```
-
-This approach uses the proper CA certificate instead of ignoring SSL verification with `-k`.
