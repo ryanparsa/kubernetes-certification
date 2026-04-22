@@ -1,8 +1,10 @@
 # Question 16 | Namespaces and Api Resources
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/33/course/resources.txt`.
 
-Find the `project-*` *Namespace* with the highest number of `Roles` defined in it and write its name and amount of *Roles* into `cka/33/course/crowded-namespace.txt`.
+Find the `project-*` *Namespace* with the highest number of *Roles* defined in it and write its name and amount of *Roles* into `cka/33/course/crowded-namespace.txt`.
 
 ## Answer
 
@@ -11,15 +13,15 @@ Find the `project-*` *Namespace* with the highest number of `Roles` defined in i
 We can get a list of all resources:
 
 ```bash
-k api-resources    # shows all
+kubectl api-resources    # shows all
 
-k api-resources -h   # a bit of help is always good
+kubectl api-resources -h   # a bit of help is always good
 ```
 
 So we write them into the requested location:
 
 ```bash
-k api-resources --namespaced -o name > cka/33/course/resources.txt
+kubectl api-resources --namespaced -o name > cka/33/course/resources.txt
 ```
 
 Which results in the file:
@@ -59,23 +61,23 @@ roles.rbac.authorization.k8s.io
 csistoragecapacities.storage.k8s.io
 ```
 
-### Namespace with most Roles
+### Namespace with most *Roles*
 
 ```bash
-k -n project-jinan get role --no-headers | wc -l
+kubectl -n project-jinan get role --no-headers | wc -l
 No resources found in project-jinan namespace.
 0
 
-k -n project-miami get role --no-headers | wc -l
+kubectl -n project-miami get role --no-headers | wc -l
 300
 
-k -n project-melbourne get role --no-headers | wc -l
+kubectl -n project-melbourne get role --no-headers | wc -l
 2
 
-k -n project-seoul get role --no-headers | wc -l
+kubectl -n project-seoul get role --no-headers | wc -l
 10
 
-k -n project-toronto get role --no-headers | wc -l
+kubectl -n project-toronto get role --no-headers | wc -l
 No resources found in project-toronto namespace.
 0
 ```
