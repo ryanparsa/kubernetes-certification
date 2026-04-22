@@ -57,6 +57,24 @@ Above we can see that kubeadm is already installed in the exact needed version, 
 With the correct kubeadm version we can continue:
 
 ```bash
+➜ root@cka3962-node1:~# kubeadm upgrade node
+error: couldn't create a Kubernetes client from file "/etc/kubernetes/kubelet.conf": failed to load admin kubeconfig: open /etc/kubernetes/kubelet.conf: no such file or directory
+To see the stack trace of this error execute with --v=5 or higher
+```
+
+This is usually the proper command to upgrade a worker node. But as mentioned in the question description, this node is not yet part of the cluster. Hence there is nothing to update. We'll add the node to the cluster later using kubeadm join. For now we can continue with updating kubelet and kubectl:
+
+```bash
+➜ root@cka3962-node1:~# apt update
+Hit:1 https://prod-cdn.packages.k8s.io/repositories/isv:/kubernetes:/core:/stable:/v1.34/deb  InRelease
+Hit:2 https://prod-cdn.packages.k8s.io/repositories/isv:/kubernetes:/core:/stable:/v1.35/deb  InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+2 packages can be upgraded. Run 'apt list --upgradable' to see them.
+```
+
+```bash
 ➜ root@cka3962-node1:~# apt show kubectl -a | grep 1.35
 Version: 1.35.2-1.1
 APT-Sources: https://pkgs.k8s.io/core:/stable:/v1.35/deb  Packages
@@ -168,9 +186,12 @@ Next we connect again to `cka3962-node1` and simply execute the join command fro
 [preflight] Use 'kubeadm init phase upload-config kubeadm --config your-config-file' to re-upload it.
 [kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/instance-config.yaml"
 [patches] Applied patch of type "application/strategic-merge-patch+json" to target "kubeletconfiguration"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
 [kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
 [kubelet-start] Starting the kubelet
-[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap...
+[kubelet-check] Waiting for a healthy kubelet at http://127.0.0.1:10248/healthz. This can take up to 4m0s
+[kubelet-check] The kubelet is healthy after 1.02973788s
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap
 
 This node has joined the cluster:
 * Certificate signing request was sent to apiserver and a response was received.
