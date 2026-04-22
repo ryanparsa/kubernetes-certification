@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operator
+  namespace: NAMESPACE_REPLACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operator
+  template:
+    metadata:
+      labels:
+        app: operator
+    spec:
+      serviceAccountName: operator
+      containers:
+      - name: operator
+        image: bitnami/kubectl:latest
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -x
+          while true; do
+            kubectl get students
+            kubectl get classes
+            sleep 60
+          done

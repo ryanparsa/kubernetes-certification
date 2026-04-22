@@ -1,7 +1,5 @@
 # Question 12 | Deployment on all Nodes
 
-> **Solve this question on:** `ssh cka2556`
-
 Implement the following in *Namespace* `project-tiger`:
 
 - Create a *Deployment* named `deploy-important` with `3` replicas
@@ -23,14 +21,13 @@ The idea here is that we create a "Inter-pod anti-affinity" which allows us to s
 Let's begin by creating the *Deployment* template:
 
 ```bash
-➜ ssh cka2556
-➜ candidate@cka2556:~$ k -n project-tiger create deployment --image=nginx:1-alpine deploy-important --dry-run=client -o yaml > 12.yaml
+k -n project-tiger create deployment --image=nginx:1-alpine deploy-important --dry-run=client -o yaml > 12.yaml
 ```
 
 Then change the yaml to:
 
 ```yaml
-# cka2556:/home/candidate/12.yaml
+# 12.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,7 +74,7 @@ Specify a topologyKey, which is a pre-populated Kubernetes label, you can find t
 We can achieve the same with `topologySpreadConstraints`. Best to try out and play with both.
 
 ```yaml
-# cka2556:/home/candidate/12.yaml
+# 12.yaml (topologySpreadConstraints version)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,14 +116,14 @@ status: {}
 Let's run it:
 
 ```bash
-➜ candidate@cka2556:~$ k -f 12.yaml create
+k -f 12.yaml create
 deployment.apps/deploy-important created
 ```
 
 Then we check the *Deployment* status where it shows 2/3 ready count:
 
 ```bash
-➜ candidate@cka2556:~$ k -n project-tiger get deploy -l id=very-important
+k -n project-tiger get deploy -l id=very-important
 NAME               READY   UP-TO-DATE   AVAILABLE   AGE
 deploy-important   2/3     3            2           19s
 ```
@@ -134,11 +131,11 @@ deploy-important   2/3     3            2           19s
 And running the following we see one *Pod* on each worker node and one not scheduled.
 
 ```bash
-➜ candidate@cka2556:~$ k -n project-tiger get pod -o wide -l id=very-important
+k -n project-tiger get pod -o wide -l id=very-important
 NAME                                  READY   STATUS    ...   IP           NODE
 deploy-important-78f98b75f9-5s6js   0/2     Pending  ...   <none>       <none>
-deploy-important-78f98b75f9-657hx   2/2     Running  ...   10.44.0.33   cka2556-node1
-deploy-important-78f98b75f9-9bz8q   2/2     Running  ...   10.36.0.20   cka2556-node2
+deploy-important-78f98b75f9-657hx   2/2     Running  ...   10.244.1.x   cka-lab-worker
+deploy-important-78f98b75f9-9bz8q   2/2     Running  ...   10.244.2.x   cka-lab-worker2
 ```
 
 If we kubectl describe the not scheduled *Pod* it will show us the reason `didn't match pod anti-affinity rules`:

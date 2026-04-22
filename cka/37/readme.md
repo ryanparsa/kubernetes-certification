@@ -1,7 +1,5 @@
 # Preview Question 3 | Change Service CIDR
 
-> **Solve this question on:** `ssh cka9412`
-
 1.  Create a *Pod* named `check-ip` in *Namespace* `default` using image `httpd:2-alpine`
 2.  Expose it on port `80` as a ClusterIP *Service* named `check-ip-service`. Remember/output the IP of that *Service*
 3.  Change the Service CIDR to `11.96.0.0/12` for the cluster
@@ -14,31 +12,33 @@
 Let's create the *Pod* and expose it:
 
 ```bash
-➜ ssh cka9412
-➜ candidate@cka9412:~$ k run check-ip --image=httpd:2-alpine
+k run check-ip --image=httpd:2-alpine
 pod/check-ip created
 
-➜ candidate@cka9412:~$ k expose pod check-ip --name check-ip-service --port 80
+k expose pod check-ip --name check-ip-service --port 80
 ```
 
 And check the *Service* IP:
 
 ```bash
-➜ candidate@cka9412:~$ k get svc
+k get svc
 NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 check-ip-service   ClusterIP   10.97.6.41   <none>        80/TCP    3s
 kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
 ```
 
-Now we change the *Service* CIDR in the kube-apiserver manifest:
+Now we change the *Service* CIDR in the kube-apiserver manifest.
+
+> ℹ️ In kind, exec into the control-plane container to edit static pod manifests:
+> `docker exec -it cka-lab-control-plane bash`
 
 ```bash
-➜ candidate@cka9412:~$ sudo -i
-➜ root@cka9412:~# vim /etc/kubernetes/manifests/kube-apiserver.yaml
+# docker exec -it cka-lab-control-plane bash
+vim /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
 ```yaml
-# cka9412:/etc/kubernetes/manifests/kube-apiserver.yaml
+# /etc/kubernetes/manifests/kube-apiserver.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -64,20 +64,22 @@ spec:
 We wait for the kube-apiserver to be restarted, which can take a minute:
 
 ```bash
-➜ root@cka9412:~# watch crictl ps
+# docker exec -it cka-lab-control-plane bash
+watch crictl ps
 
-➜ root@cka9412:~# kubectl -n kube-system get pod | grep api
-kube-apiserver-cka9412            1/1     Running   0             20s
+kubectl -n kube-system get pod | grep api
+kube-apiserver-cka-lab-control-plane   1/1     Running   0             20s
 ```
 
 Now we do the same for the controller manager:
 
 ```bash
-➜ root@cka9412:~# vim /etc/kubernetes/manifests/kube-controller-manager.yaml
+# docker exec -it cka-lab-control-plane bash
+vim /etc/kubernetes/manifests/kube-controller-manager.yaml
 ```
 
 ```yaml
-# cka9412:/etc/kubernetes/manifests/kube-controller-manager.yaml
+# /etc/kubernetes/manifests/kube-controller-manager.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -114,20 +116,21 @@ spec:
 We wait for the kube-controller-manager to be restarted, which can take a minute:
 
 ```bash
-➜ root@cka9412:~# watch crictl ps
+# docker exec -it cka-lab-control-plane bash
+watch crictl ps
 
-➜ root@cka9412:~# kubectl -n kube-system get pod | grep controller
-kube-controller-manager-cka9412   1/1     Running   0               39s
+kubectl -n kube-system get pod | grep controller
+kube-controller-manager-cka-lab-control-plane   1/1     Running   0               39s
 ```
 
 Finally we need to create an additional `ServiceCIDR` resource:
 
 ```bash
-➜ root@cka9412:~# k get servicecidr
+k get servicecidr
 NAME         CIDRS          AGE
 kubernetes   10.96.0.0/12   32d
 
-➜ root@cka9412:~# cat <<'EOF' | k apply -f -
+cat <<'EOF' | k apply -f -
 apiVersion: networking.k8s.io/v1
 kind: ServiceCIDR
 metadata:
@@ -138,7 +141,7 @@ spec:
 EOF
 servicecidr.networking.k8s.io/svc-cidr-new created
 
-➜ root@cka9412:~# k get servicecidr
+k get servicecidr
 NAME           CIDRS          AGE
 kubernetes     10.96.0.0/12   32d
 svc-cidr-new   11.96.0.0/12   4s
@@ -147,16 +150,16 @@ svc-cidr-new   11.96.0.0/12   4s
 We also need to delete the old `ServiceCIDR` resource:
 
 ```bash
-➜ root@cka9412:~# k delete servicecidr kubernetes
+k delete servicecidr kubernetes
 servicecidr.networking.k8s.io "kubernetes" deleted
 ^C
 
-➜ root@cka9412:~# k get servicecidr
+k get servicecidr
 NAME           CIDRS          AGE
 kubernetes     10.96.0.0/12   32d
 svc-cidr-new   11.96.0.0/12   5m14s
 
-➜ root@cka9412:~# k get servicecidr kubernetes -oyaml
+k get servicecidr kubernetes -oyaml
 ```
 
 ```yaml
@@ -186,7 +189,7 @@ The deleted *ServiceCIDR* will remain in a terminating state till no more *Servi
 Let's query our *Service* again:
 
 ```bash
-➜ root@cka9412:~$ k get svc
+k get svc
 NAME               TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 check-ip-service   ClusterIP   10.97.6.41   <none>        80/TCP    7m14s
 kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
@@ -195,13 +198,13 @@ kubernetes         ClusterIP   10.96.0.1    <none>        443/TCP   32d
 Nothing will change for existing *Services*. Now we create the new one:
 
 ```bash
-➜ root@cka9412:~$ k expose pod check-ip --name check-ip-service2 --port 80
+k expose pod check-ip --name check-ip-service2 --port 80
 ```
 
 And check again:
 
 ```bash
-➜ root@cka9412:~# k get svc
+k get svc
 NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 check-ip-service    ClusterIP   10.97.6.41      <none>        80/TCP    7m24s
 check-ip-service2   ClusterIP   11.108.174.69   <none>        80/TCP    2s

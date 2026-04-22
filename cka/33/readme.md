@@ -1,10 +1,8 @@
 # Question 16 | Namespaces and Api Resources
 
-> **Solve this question on:** `ssh cka3200`
+Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/33/course/resources.txt`.
 
-Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `/opt/course/16/resources.txt`.
-
-Find the `project-*` *Namespace* with the highest number of `Roles` defined in it and write its name and amount of *Roles* into `/opt/course/16/crowded-namespace.txt`.
+Find the `project-*` *Namespace* with the highest number of `Roles` defined in it and write its name and amount of *Roles* into `cka/33/course/crowded-namespace.txt`.
 
 ## Answer
 
@@ -21,15 +19,13 @@ k api-resources -h   # a bit of help is always good
 So we write them into the requested location:
 
 ```bash
-➜ ssh cka3200
-
-➜ candidate@cka3200:~$ k api-resources --namespaced -o name > /opt/course/16/resources.txt
+k api-resources --namespaced -o name > cka/33/course/resources.txt
 ```
 
 Which results in the file:
 
 ```bash
-# cka3200:/opt/course/16/resources.txt
+# cka/33/course/resources.txt
 bindings
 configmaps
 endpoints
@@ -66,20 +62,20 @@ csistoragecapacities.storage.k8s.io
 ### Namespace with most Roles
 
 ```bash
-➜ candidate@cka3200:~$ k -n project-jinan get role --no-headers | wc -l
+k -n project-jinan get role --no-headers | wc -l
 No resources found in project-jinan namespace.
 0
 
-➜ candidate@cka3200:~$ k -n project-miami get role --no-headers | wc -l
+k -n project-miami get role --no-headers | wc -l
 300
 
-➜ candidate@cka3200:~$ k -n project-melbourne get role --no-headers | wc -l
+k -n project-melbourne get role --no-headers | wc -l
 2
 
-➜ candidate@cka3200:~$ k -n project-seoul get role --no-headers | wc -l
+k -n project-seoul get role --no-headers | wc -l
 10
 
-➜ candidate@cka3200:~$ k -n project-toronto get role --no-headers | wc -l
+k -n project-toronto get role --no-headers | wc -l
 No resources found in project-toronto namespace.
 0
 ```
@@ -87,6 +83,6 @@ No resources found in project-toronto namespace.
 Finally we write the name and amount into the file:
 
 ```bash
-# cka3200:/opt/course/16/crowded-namespace.txt
+# cka/33/course/crowded-namespace.txt
 project-miami with 300 roles
 ```
