@@ -73,7 +73,7 @@ This shows kubelet is controlled via systemd, but no other service named `kube` 
 
 The kubelet could also have a different manifests directory specified via a KubeletConfiguration, but the one above is the default one.
 
-This means the main 4 controlplane services are setup as static Pods. Actually, let's check all Pods running in the `kube-system` Namespace:
+This means the main 4 controlplane services are setup as static Pods. Actually, let's check all Pods running on in the kube-system Namespace:
 
 ```bash
 ➜ root@cka8448:~# k -n kube-system get pod -o wide

@@ -51,10 +51,6 @@ kube-system   coredns-6f8b9d9f4b-fg7bt                   1/1     ...
 For the second command we create file:
 
 ```bash
-➜ candidate@cka8448:~$ vim /opt/course/5/find_pods_uid.sh
-```
-
-```bash
 # cka8448:/opt/course/5/find_pods_uid.sh
 kubectl get pod -A --sort-by=.metadata.uid
 ```

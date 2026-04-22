@@ -61,7 +61,7 @@ status: {}
 Then create the *Pod* and confirm it's in a non-ready state:
 
 ```bash
-➜ candidate@cka3200:~$ k -f 4_pod1.yaml create
+➜ candidate@cka3200:~$ candidate@cka3200:~$ k -f 4_pod1.yaml create
 pod/ready-if-service-ready created
 
 ➜ candidate@cka3200:~$ k get pod ready-if-service-ready
@@ -117,3 +117,5 @@ Which will result in our first *Pod* being ready, just give it a minute for the 
 NAME                     READY   STATUS    RESTARTS   AGE
 ready-if-service-ready   1/1     Running   0          2m10s
 ```
+
+Look at these Pods working together!

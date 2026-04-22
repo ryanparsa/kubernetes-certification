@@ -77,7 +77,7 @@ First we log into the controlplane and try to create a snapshot of etcd:
 ^C
 ```
 
-But it fails or hangs because we need to authenticate ourselves. For the necessary information we can check the etcd manifest:
+But it fails or hangs because we need to authenticate ourselves. For the necessary information we can check the etc manifest:
 
 ```bash
 ➜ root@cka2560:~# vim /etc/kubernetes/manifests/etcd.yaml
