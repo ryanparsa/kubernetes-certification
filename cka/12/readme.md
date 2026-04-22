@@ -1,6 +1,6 @@
 # Question 12 | Deployment on all Nodes
 
-Solve this question on: `ssh cka2556`
+> **Solve this question on:** `ssh cka2556`
 
 Implement the following in *Namespace* `project-tiger`:
 

@@ -1,6 +1,6 @@
 # Question 1 | DNS / FQDN / Headless Service
 
-Solve this question on: `ssh cka6016`
+> **Solve this question on:** `ssh cka6016`
 
 The *Deployment* `controller` in *Namespace* `lima-control` communicates with various cluster internal endpoints by using their DNS FQDN values.
 
@@ -16,7 +16,7 @@ Ensure the *Deployment* works with the updated values.
 > [!NOTE]
 > ℹ️ You can use `nslookup` or `dig` inside a *Pod* of the `controller` *Deployment*
 
-## Answer:
+## Answer
 
 For this question we need to understand how cluster internal DNS works in Kubernetes. The most common use is `SERVICE.NAMESPACE.svc.cluster.local` which will resolve to the IP address of the Kubernetes *Service*. Note that we're asked to specify the FQDNs here so short values like `SERVICE.NAMESPACE` are not possible even if they would work.
 

@@ -1,6 +1,6 @@
 # Question 16 | Update CoreDNS Configuration
 
-Solve this question on: `ssh cka5774`
+> **Solve this question on:** `ssh cka5774`
 
 The CoreDNS configuration in the cluster needs to be updated:
 

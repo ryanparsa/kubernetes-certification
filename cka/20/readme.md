@@ -1,6 +1,6 @@
 # Question 3 | Kubelet client/server cert info
 
-Solve this question on: `ssh cka5248`
+> **Solve this question on:** `ssh cka5248`
 
 Node `cka5248-node1` has been added to the cluster using kubeadm and TLS bootstrapping.
 
@@ -14,7 +14,7 @@ Write the information into file `/opt/course/3/certificate-info.txt`.
 > [!NOTE]
 > ℹ️ You can connect to the worker node using `ssh cka5248-node1` from `cka5248`
 
-## Answer:
+## Answer
 
 First we check the kubelet client certificate:
 

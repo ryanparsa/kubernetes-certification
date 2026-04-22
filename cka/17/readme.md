@@ -1,6 +1,6 @@
 # Question 17 | Find Container of Pod and check info
 
-Solve this question on: `ssh cka2556`
+> **Solve this question on:** `ssh cka2556`
 
 In Namespace `project-tiger` create a Pod named `tigers-reunite` of image `httpd:2-alpine` with labels `pod=container` and `container=pod`. Find out on which node the Pod is scheduled. Ssh into that node and find the containerd container belonging to that Pod.
 

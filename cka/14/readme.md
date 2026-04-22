@@ -1,6 +1,6 @@
 # Question 14 | Check how long certificates are valid
 
-Solve this question on: `ssh cka9412`
+> **Solve this question on:** `ssh cka9412`
 
 Perform some tasks on cluster certificates:
 

@@ -1,6 +1,6 @@
 # Question 15 | NetworkPolicy
 
-Solve this question on: `ssh cka7968`
+> **Solve this question on:** `ssh cka7968`
 
 There was a security incident where an intruder was able to access the whole cluster from a single hacked backend Pod.
 
