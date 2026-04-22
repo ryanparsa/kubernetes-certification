@@ -2,6 +2,8 @@
 
 Perform some tasks on cluster certificates:
 
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
+
 1. Check how long the kube-apiserver server certificate is valid using openssl or cfssl. Write the expiration date into `cka/14/course/expiration`. Run the `kubeadm` command to list the expiration dates and confirm both methods show the same one
 2. Write the `kubeadm` command that would renew the kube-apiserver certificate into `cka/14/course/kubeadm-renew-certs.sh`
 
