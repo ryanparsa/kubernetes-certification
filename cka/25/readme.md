@@ -22,9 +22,7 @@ Choices of `[TYPE]` are: `not-installed`, `process`, `static-pod`, `pod`
 
 We could start by finding processes of the requested components, especially the kubelet at first.
 
-> [!NOTE]
-> Run the following system-level commands from inside the control plane node: `docker exec -it cka-lab-control-plane bash`
-> kubectl commands can be run from your local machine.
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 
 ```bash
 ps aux | grep kubelet
@@ -87,7 +85,7 @@ The kubelet could also have a different manifests directory specified via a Kube
 This means the main 4 controlplane services are setup as static Pods. Actually, let's check all Pods running on in the kube-system Namespace:
 
 ```bash
-k -n kube-system get pod -o wide
+kubectl -n kube-system get pod -o wide
 ```
 
 ```
@@ -115,7 +113,7 @@ kube-proxy   1         ...   kubernetes.io/os=linux   67m
 ```
 
 ```bash
-k -n kube-system get deploy
+kubectl -n kube-system get deploy
 ```
 
 ```
