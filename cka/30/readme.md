@@ -1,6 +1,6 @@
 # Question 13 | Multi Containers and Pod shared Volume
 
-Solve this question on: `ssh cka3200`
+> **Solve this question on:** `ssh cka3200`
 
 Create a *Pod* with multiple containers named `multi-container-playground` in *Namespace* `default`:
 

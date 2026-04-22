@@ -1,6 +1,6 @@
 # Question 4 | Pod Ready if Service is reachable
 
-Solve this question on: `ssh cka3200`
+> **Solve this question on:** `ssh cka3200`
 
 Do the following in *Namespace* `default`:
 
@@ -15,7 +15,7 @@ Then:
 2. The already existing *Service* `service-am-i-ready` should now have that second *Pod* as endpoint
 3. Now the first *Pod* should be in ready state, check that
 
-## Answer:
+## Answer
 
 It's a bit of an anti-pattern for one *Pod* to check another *Pod* for being ready using probes, hence the normally available `readinessProbe.httpGet` doesn't work for absolute remote urls. Still the workaround requested in this task should show how probes and Pod\<-\>Service communication works.
 
