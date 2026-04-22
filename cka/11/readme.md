@@ -1,5 +1,7 @@
 # Question 11 | DaemonSet on all Nodes
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 Use *Namespace* `project-tiger` for the following. Create a *DaemonSet* named `ds-important` with image `httpd:2-alpine` and labels `id=ds-important` and `uuid=18426a0b-5f59-4e10-923f-c0e078e82462`. The *Pods* it creates should request 10 millicore cpu and 10 mebibyte memory. The *Pods* of that *DaemonSet* should run on all nodes, also controlplanes.
 
 ## Answer
@@ -7,7 +9,7 @@ Use *Namespace* `project-tiger` for the following. Create a *DaemonSet* named `d
 As of now we aren't able to create a *DaemonSet* directly using `kubectl`, so we create a *Deployment* and just change it up:
 
 ```bash
-k -n project-tiger create deployment --image=httpd:2.4-alpine ds-important --dry-run=client -o yaml > 11.yaml
+k -n project-tiger create deployment --image=httpd:2-alpine ds-important --dry-run=client -o yaml > 11.yaml
 ```
 
 Or we could search for a *DaemonSet* example yaml in the K8s docs and alter it to our needs.
@@ -15,7 +17,6 @@ Or we could search for a *DaemonSet* example yaml in the K8s docs and alter it t
 We adjust the yaml to:
 
 ```yaml
-# cka2556:/home/candidate/11.yaml
 apiVersion: apps/v1
 kind: DaemonSet                               # change from Deployment to Daemonset
 metadata:
