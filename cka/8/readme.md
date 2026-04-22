@@ -1,11 +1,11 @@
 # Question 8 | Update Kubernetes Version and join cluster
 
-Your coworker notified you that node `cka-worker` is running an older Kubernetes version and is not even part of the cluster yet.
+Your coworker notified you that node `cka-lab-worker` is running an older Kubernetes version and is not even part of the cluster yet.
 
 1. Update the node's Kubernetes to the exact version of the controlplane
 2. Add the node to the cluster using kubeadm
 
-> ℹ️ You can connect to the worker node using `docker exec -it cka-lab-worker bash` (or `kubectl debug node/cka-lab-worker -it --image=ubuntu`)
+> **Solve this question on:** `docker exec -it cka-lab-worker bash`
 
 > ⚠️ **Kind limitation:** In this local kind lab both nodes already run the same Kubernetes version and the worker is already joined. You can still practise generating a join token (`kubeadm token create --print-join-command`) and exploring the kubeadm upgrade workflow.
 
