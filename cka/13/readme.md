@@ -1,8 +1,6 @@
 # Question 13 | Gateway Api Ingress
 
-> **Solve this question on:** `ssh cka7968`
-
-The team from Project r500 wants to replace their Ingress (networking.k8s.io) with a Gateway Api (gateway.networking.k8s.io) solution. The old Ingress is available at `/opt/course/13/ingress.yaml`.
+The team from Project r500 wants to replace their Ingress (networking.k8s.io) with a Gateway Api (gateway.networking.k8s.io) solution. The old Ingress is available at `cka/13/course/ingress.yaml`.
 
 Perform the following in *Namespace* `project-r500` and for the already existing *Gateway*:
 
@@ -29,9 +27,7 @@ The magic of the Gateway Api comes more to shine because of further resources (*
 It was mentioned that a *Gateway* already exists, let's verify this:
 
 ```bash
-➜ ssh cka7968
-
-➜ candidate@cka7968:~$ k get crd
+k get crd
 NAME                                        CREATED AT
 clientsettingspolicies.gateway.nginx.org    2024-12-28T13:11:21Z
 gatewayclasses.gateway.networking.k8s.io    2024-12-28T13:11:21Z
@@ -44,11 +40,11 @@ observabilitypolicies.gateway.nginx.org     2024-12-28T13:11:23Z
 referencegrants.gateway.networking.k8s.io   2024-12-28T13:11:23Z
 snippetsfilters.gateway.nginx.org           2024-12-28T13:11:23Z
 
-➜ candidate@cka7968:~$ k get gateway -A
+k get gateway -A
 NAMESPACE      NAME   CLASS   ADDRESS   PROGRAMMED   AGE
 project-r500   main   nginx             True         2m
 
-➜ candidate@cka7968:~$ k get gatewayclass -A
+k get gatewayclass -A
 NAME    CONTROLLER                                     ACCEPTED   AGE
 nginx   gateway.nginx.org/nginx-gateway-controller   True       2m12s
 ```
@@ -56,7 +52,7 @@ nginx   gateway.nginx.org/nginx-gateway-controller   True       2m12s
 We can see that various *CRDs* from gateway.networking.k8s.io are available. In this scenario we'll only work directly with *HTTPRoute* which we need to create. It will reference the existing *Gateway* `main` which references the existing *GatewayClass* `nginx`:
 
 ```bash
-➜ candidate@cka7968:~$ k -n project-r500 get gateway main -oyaml
+k -n project-r500 get gateway main -oyaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -80,7 +76,7 @@ spec:
 We can already contact the *Gateway* like this:
 
 ```bash
-➜ candidate@cka7968:~$ curl r500.gateway:30080
+curl r500.gateway:30080
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -95,7 +91,7 @@ We receive a 404 because no routes have been defined yet. We receive this 404 fr
 The url `r500.gateway:30080` is reachable because of a static entry in `/etc/hosts` which points to the only node in the cluster. And on that node, as well as on all others if there would be more, port 30080 is open because of a NodePort *Service*:
 
 ```bash
-➜ candidate@cka7968:~$ k -n nginx-gateway get svc
+k -n nginx-gateway get svc
 NAME            TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
 nginx-gateway   NodePort   10.103.36.0   <none>        80:30080/TCP   58m
 ```
@@ -105,11 +101,11 @@ nginx-gateway   NodePort   10.103.36.0   <none>        80:30080/TCP   58m
 Now we'll have a look at the provided *Ingress* Yaml which we need to convert:
 
 ```bash
-➜ candidate@cka7968:~$ vim /opt/course/13/ingress.yaml
+vim cka/13/course/ingress.yaml
 ```
 
 ```yaml
-# cka7968:/opt/course/13/ingress.yaml
+# cka/13/course/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -169,17 +165,17 @@ spec:
 After creation we can test:
 
 ```bash
-➜ candidate@cka7968:~$ k -n project-r500 get httproute
+k -n project-r500 get httproute
 NAME               HOSTNAMES          AGE
 traffic-director   ["r500.gateway"]   7s
 
-➜ candidate@cka7968:~$ curl r500.gateway:30080/desktop
+curl r500.gateway:30080/desktop
 Web Desktop App
 
-➜ candidate@cka7968:~$ curl r500.gateway:30080/mobile
+curl r500.gateway:30080/mobile
 Web Mobile App
 
-➜ candidate@cka7968:~$ curl r500.gateway:30080
+curl r500.gateway:30080
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -298,13 +294,13 @@ We need to understand that the order of rules matters. If we would add the deskt
 Our solution should result in this:
 
 ```bash
-➜ candidate@cka7968:~$ curl -H "User-Agent: mobile" r500.gateway:30080/auto
+curl -H "User-Agent: mobile" r500.gateway:30080/auto
 Web Mobile App
 
-➜ candidate@cka7968:~$ curl -H "User-Agent: something" r500.gateway:30080/auto
+curl -H "User-Agent: something" r500.gateway:30080/auto
 Web Desktop App
 
-➜ candidate@cka7968:~$ curl r500.gateway:30080/auto
+curl r500.gateway:30080/auto
 Web Desktop App
 ```
 
