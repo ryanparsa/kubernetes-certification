@@ -1,11 +1,13 @@
-# Question 13 | Gateway Api Ingress
+# Question 13 | Gateway API Ingress
 
-The team from Project r500 wants to replace their Ingress (networking.k8s.io) with a Gateway Api (gateway.networking.k8s.io) solution. The old Ingress is available at `cka/13/course/ingress.yaml`.
+The team from Project r500 wants to replace their *Ingress* (networking.k8s.io) with a *Gateway API* (gateway.networking.k8s.io) solution. The old *Ingress* is available at `cka/13/course/ingress.yaml`.
+
+> **Solve this question on:** the `cka-lab` kind cluster
 
 Perform the following in *Namespace* `project-r500` and for the already existing *Gateway*:
 
-1. Create a new *HTTPRoute* named `traffic-director` which replicates the routes from the old Ingress
-2. Extend the new *HTTPRoute* with path `/auto` which forwards to mobile backend if the User-Agent is exactly `mobile` and to desktop backend otherwise
+1. Create a new *HTTPRoute* named `traffic-director` which replicates the routes from the old *Ingress*
+2. Extend the new *HTTPRoute* with path `/auto` which forwards to mobile backend if the `User-Agent` is exactly `mobile` and to desktop backend otherwise
 
 The existing *Gateway* is reachable at `http://r500.gateway:30080` which means your implementation should work for these commands:
 
@@ -20,14 +22,14 @@ curl r500.gateway:30080/auto
 
 Comparing for example the older *Ingress* (networking.k8s.io/v1) and newer *HTTPRoute* (gateway.networking.k8s.io/v1) *CRDs* then they look quite similar in what they offer. They have a different config structure but provide the same idea of functionality.
 
-The magic of the Gateway Api comes more to shine because of further resources (*GRPCRoute*, *TCPRoute*) and the architecture which is designed to be more flexible and extendable. This will provide better integration into existing cloud infrastructure and providers like GCP or AWS will be able to develop their own Gateway Api implementations.
+The magic of the *Gateway API* comes more to shine because of further resources (*GRPCRoute*, *TCPRoute*) and the architecture which is designed to be more flexible and extendable. This will provide better integration into existing cloud infrastructure and providers like GCP or AWS will be able to develop their own *Gateway API* implementations.
 
 ### Investigate CRDs
 
 It was mentioned that a *Gateway* already exists, let's verify this:
 
 ```bash
-k get crd
+kubectl get crd
 NAME                                        CREATED AT
 clientsettingspolicies.gateway.nginx.org    2024-12-28T13:11:21Z
 gatewayclasses.gateway.networking.k8s.io    2024-12-28T13:11:21Z
@@ -40,11 +42,11 @@ observabilitypolicies.gateway.nginx.org     2024-12-28T13:11:23Z
 referencegrants.gateway.networking.k8s.io   2024-12-28T13:11:23Z
 snippetsfilters.gateway.nginx.org           2024-12-28T13:11:23Z
 
-k get gateway -A
+kubectl get gateway -A
 NAMESPACE      NAME   CLASS   ADDRESS   PROGRAMMED   AGE
 project-r500   main   nginx             True         2m
 
-k get gatewayclass -A
+kubectl get gatewayclass -A
 NAME    CONTROLLER                                     ACCEPTED   AGE
 nginx   gateway.nginx.org/nginx-gateway-controller   True       2m12s
 ```
@@ -52,7 +54,7 @@ nginx   gateway.nginx.org/nginx-gateway-controller   True       2m12s
 We can see that various *CRDs* from gateway.networking.k8s.io are available. In this scenario we'll only work directly with *HTTPRoute* which we need to create. It will reference the existing *Gateway* `main` which references the existing *GatewayClass* `nginx`:
 
 ```bash
-k -n project-r500 get gateway main -oyaml
+kubectl -n project-r500 get gateway main -oyaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -86,12 +88,12 @@ curl r500.gateway:30080
 </html>
 ```
 
-We receive a 404 because no routes have been defined yet. We receive this 404 from a Nginx because the Gateway Api implementation in this scenario has been done via the Nginx Gateway Fabric. But for this scenario it wouldn't matter if another implementation (Traefik, Envoy, ...) would've been used, because all will work with the same Gateway Api *CRDs*.
+We receive a 404 because no routes have been defined yet. We receive this 404 from a Nginx because the *Gateway API* implementation in this scenario has been done via the Nginx Gateway Fabric. But for this scenario it wouldn't matter if another implementation (Traefik, Envoy, ...) would've been used, because all will work with the same *Gateway API* *CRDs*.
 
 The url `r500.gateway:30080` is reachable because of a static entry in `/etc/hosts` which points to the only node in the cluster. And on that node, as well as on all others if there would be more, port 30080 is open because of a NodePort *Service*:
 
 ```bash
-k -n nginx-gateway get svc
+kubectl -n nginx-gateway get svc
 NAME            TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
 nginx-gateway   NodePort   10.103.36.0   <none>        80:30080/TCP   58m
 ```
@@ -165,7 +167,7 @@ spec:
 After creation we can test:
 
 ```bash
-k -n project-r500 get httproute
+kubectl -n project-r500 get httproute
 NAME               HOSTNAMES          AGE
 traffic-director   ["r500.gateway"]   7s
 
@@ -304,4 +306,4 @@ curl r500.gateway:30080/auto
 Web Desktop App
 ```
 
-Great, Gateway Api ftw!
+Great, *Gateway API* ftw!
