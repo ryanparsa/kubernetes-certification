@@ -1,11 +1,9 @@
 # Question 11 | Create Secret and mount into Pod
 
-> **Solve this question on:** `ssh cka2560`
-
 Create *Namespace* `secret` and implement the following in it:
 
 - Create *Pod* `secret-pod` with image `busybox:1`. It should be kept running by executing `sleep 1d` or something similar
-- Create the existing *Secret* `/opt/course/11/secret1.yaml` and mount it readonly into the *Pod* at `/tmp/secret1`
+- Create the existing *Secret* `cka/28/course/secret1.yaml` and mount it readonly into the *Pod* at `/tmp/secret1`
 - Create a new *Secret* called `secret2` which should contain `user=user1` and `pass=1234`. These entries should be available inside the *Pod*'s container as environment variables `APP_USER` and `APP_PASS`
 
 ## Answer
@@ -13,9 +11,7 @@ Create *Namespace* `secret` and implement the following in it:
 First we create the *Namespace*:
 
 ```bash
-➜ ssh cka2560
-
-➜ candidate@cka2560:~$ k create ns secret
+k create ns secret
 namespace/secret created
 ```
 
@@ -24,11 +20,11 @@ namespace/secret created
 To create the existing *Secret* we need to adjust the *Namespace* for it:
 
 ```bash
-➜ candidate@cka2560:~$ cp /opt/course/11/secret1.yaml 11_secret1.yaml
+cp cka/28/course/secret1.yaml 11_secret1.yaml
 ```
 
 ```yaml
-# cka2560:/home/candidate/11_secret1.yaml
+# 11_secret1.yaml
 apiVersion: v1
 data:
   halt: IyEgL2Jpbi9zaAo...
@@ -40,7 +36,7 @@ metadata:
 ```
 
 ```bash
-➜ candidate@cka2560:~$ k -f 11_secret1.yaml create
+k -f 11_secret1.yaml create
 secret/secret1 created
 ```
 
@@ -49,7 +45,7 @@ secret/secret1 created
 Next we create the second *Secret*:
 
 ```bash
-➜ candidate@cka2560:~$ k -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
+k -n secret create secret generic secret2 --from-literal=user=user1 --from-literal=pass=1234
 secret/secret2 created
 ```
 
@@ -58,13 +54,13 @@ secret/secret2 created
 Now we create the *Pod* template:
 
 ```bash
-➜ candidate@cka2560:~$ k -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 11.yaml
+k -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 11.yaml
 ```
 
 Then make the necessary changes:
 
 ```yaml
-# cka2560:/home/candidate/11.yaml
+# 11.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -109,25 +105,25 @@ status: {}
 And execute:
 
 ```bash
-➜ candidate@cka2560:~$ k -f 11.yaml create
+k -f 11.yaml create
 pod/secret-pod created
 ```
 
 Finally we verify:
 
 ```bash
-➜ candidate@cka2560:~$ k -n secret exec secret-pod -- env | grep APP
+k -n secret exec secret-pod -- env | grep APP
 APP_PASS=1234
 APP_USER=user1
 
-➜ candidate@cka2560:~$ k -n secret exec secret-pod -- find /tmp/secret1
+k -n secret exec secret-pod -- find /tmp/secret1
 /tmp/secret1
 /tmp/secret1/..data
 /tmp/secret1/halt
 /tmp/secret1/..2019_12_08_12_15_39.463036797
 /tmp/secret1/..2019_12_08_12_15_39.463036797/halt
 
-➜ candidate@cka2560:~$ k -n secret exec secret-pod -- cat /tmp/secret1/halt
+k -n secret exec secret-pod -- cat /tmp/secret1/halt
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          halt

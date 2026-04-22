@@ -1,19 +1,17 @@
 # Question 14 | Find out Cluster Information
 
-> **Solve this question on:** `ssh cka8448`
-
 You're ask to find out following information about the cluster:
 
 1. How many controlplane nodes are available?
 2. How many worker nodes (non controlplane nodes) are available?
 3. What is the Service CIDR?
 4. Which Networking (or CNI Plugin) is configured and where is its config file?
-5. Which suffix will static pods have that run on `cka8448`?
+5. Which suffix will static pods have that run on `cka-lab-control-plane`?
 
-Write your answers into file `/opt/course/14/cluster-info`, structured like this:
+Write your answers into file `cka/31/course/cluster-info`, structured like this:
 
 ```
-# /opt/course/14/cluster-info
+# cka/31/course/cluster-info
 1: [ANSWER]
 2: [ANSWER]
 3: [ANSWER]
@@ -26,64 +24,45 @@ Write your answers into file `/opt/course/14/cluster-info`, structured like this
 ### How many controlplane and worker nodes are available?
 
 ```bash
-➜ ssh cka8448
-
-➜ candidate@cka8448:~$ k get node
-NAME      STATUS   ROLES           AGE   VERSION
-cka8448   Ready    control-plane   71m   v1.33.1
+k get node
+NAME                    STATUS   ROLES           AGE   VERSION
+cka-lab-control-plane   Ready    control-plane   71m   v1.33.1
 ```
 
 We see one controlplane and no worker nodes.
 
 ### What is the Service CIDR?
 
-```bash
-➜ candidate@cka8448:~$ sudo -i
+Access the control-plane node to inspect the kube-apiserver manifest:
 
-➜ root@cka8448:~# cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep range
+```bash
+docker exec cka-lab-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep range
     - --service-cluster-ip-range=10.96.0.0/12
 ```
 
 ### Which Networking (or CNI Plugin) is configured and where is its config file?
 
 ```bash
-➜ root@cka8448:~# find /etc/cni/net.d/
+docker exec cka-lab-control-plane find /etc/cni/net.d/
 /etc/cni/net.d/
-/etc/cni/net.d/.kubernetes-cni-keep
-/etc/cni/net.d/10-weave.conflist
-/etc/cni/net.d/87-podman-bridge.conflist
-
-➜ root@cka8448:~# cat /etc/cni/net.d/10-weave.conflist
-{
-    "cniVersion": "0.3.0",
-    "name": "weave",
-    "plugins": [
-        {
-            "name": "weave",
-            "type": "weave-net",
-            "hairpinMode": true
-        },
-        {
-            "type": "portmap",
-            "capabilities": {"portMappings": true},
-            "snat": true
-        }
-    ]
-}
+/etc/cni/net.d/10-kindnet.conflist
 ```
 
-By default the kubelet looks into `/etc/cni/net.d` to discover the CNI plugins. This will be the same on every controlplane and worker nodes.
+In kind clusters, the default CNI plugin is **kindnet**. The config file is at `/etc/cni/net.d/10-kindnet.conflist`.
 
-### Which suffix will static pods have that run on cka8448?
+> [!NOTE]
+> In the real exam environment, a different CNI (such as Weave or Flannel) may be configured. The approach is the same: look in `/etc/cni/net.d/` on the node.
+
+### Which suffix will static pods have that run on cka-lab-control-plane?
 
 The suffix is the node hostname with a leading hyphen.
 
 ### Result
 
-The resulting `/opt/course/14/cluster-info` could look like:
+The resulting `cka/31/course/cluster-info` could look like:
 
 ```
-# /opt/course/14/cluster-info
+# cka/31/course/cluster-info
 
 # How many controlplane nodes are available?
 1: 1
@@ -95,8 +74,8 @@ The resulting `/opt/course/14/cluster-info` could look like:
 3: 10.96.0.0/12
 
 # Which Networking (or CNI Plugin) is configured and where is its config file?
-4: Weave, /etc/cni/net.d/10-weave.conflist
+4: kindnet, /etc/cni/net.d/10-kindnet.conflist
 
-# Which suffix will static pods have that run on cka8448?
-5: -cka8448
+# Which suffix will static pods have that run on cka-lab-control-plane?
+5: -cka-lab-control-plane
 ```
