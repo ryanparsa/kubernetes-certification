@@ -20,6 +20,7 @@ apiVersion: v1
 metadata:
  name: safari-pv
 spec:
+ storageClassName: ""
  capacity:
   storage: 2Gi
  accessModes:
@@ -52,6 +53,7 @@ metadata:
   name: safari-pvc
   namespace: project-t230
 spec:
+  storageClassName: ""
   accessModes:
     - ReadWriteOnce
   resources:

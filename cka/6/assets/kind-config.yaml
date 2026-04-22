@@ -3,3 +3,6 @@ apiVersion: kind.x-k8s.io/v1alpha4
 name: cka-lab
 nodes:
 - role: control-plane
+  extraMounts:
+  - hostPath: /tmp/cka6-data
+    containerPath: /Volumes/Data
