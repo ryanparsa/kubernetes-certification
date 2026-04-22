@@ -28,9 +28,9 @@ Here is the mapping for the mock exam questions to their corresponding directori
 | Simulator B     | Question 5      | `22`      |        |
 | Simulator B     | Question 6      | `23`      |        |
 | Simulator B     | Question 7      | `24`      |        |
-| Simulator B     | Question 8      | `25`      |        |
-| Simulator B     | Question 9      | `26`      |        |
-| Simulator B     | Question 10     | `27`      |        |
+| Simulator B     | Question 8      | `25`      | Done   |
+| Simulator B     | Question 9      | `26`      | Done   |
+| Simulator B     | Question 10     | `27`      | Done   |
 | Simulator B     | Question 11     | `28`      |        |
 | Simulator B     | Question 12     | `29`      |        |
 | Simulator B     | Question 13     | `30`      | Done   |
