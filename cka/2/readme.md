@@ -1,13 +1,11 @@
 # Question 2 | MinIO Operator, CRD Config, Helm Install
 
-> **Solve this question on:** `ssh cka7968`
-
 Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and create the *Tenant* CRD:
 
 1. Create *Namespace* `minio`
 2. Install Helm chart `minio/operator` into the new *Namespace*. The Helm Release should be called `minio-operator`
-3. Update the `Tenant` resource in `/opt/course/2/minio-tenant.yaml` to include `enableSFTP: true` under `features`
-4. Create the `Tenant` resource from `/opt/course/2/minio-tenant.yaml`
+3. Update the `Tenant` resource in `cka/2/course/minio-tenant.yaml` to include `enableSFTP: true` under `features`
+4. Create the `Tenant` resource from `cka/2/course/minio-tenant.yaml`
 
 > [!NOTE]
 > It is not required for MinIO to run properly. Installing the Helm Chart and the *Tenant* resource as requested is enough
@@ -29,9 +27,7 @@ Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and
 First we create the requested *Namespace* `minio`:
 
 ```bash
-➜ ssh cka7968
-
-➜ candidate@cka7968:~$ k create ns minio
+k create ns minio
 namespace/minio created
 ```
 
@@ -40,15 +36,15 @@ namespace/minio created
 Now we install the MinIO Helm chart into it and name the release `minio-operator`:
 
 ```bash
-➜ candidate@cka7968:~$ helm repo list
+helm repo list
 NAME    URL
-minio   http://localhost:6000
+minio   https://operator.min.io
 
-➜ candidate@cka7968:~$ helm search repo
+helm search repo minio
 NAME            CHART VERSION   APP VERSION     DESCRIPTION
-minio/operator  6.0.4           v6.0.4          A Helm chart for MinIO Operator
+minio/operator  ...             ...             A Helm chart for MinIO Operator
 
-➜ candidate@cka7968:~$ helm -n minio install minio-operator minio/operator
+helm -n minio install minio-operator minio/operator
 NAME: minio-operator
 LAST DEPLOYED: Sun Dec 22 17:04:37 2024
 NAMESPACE: minio
@@ -56,11 +52,11 @@ STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 
-➜ candidate@cka7968:~$ helm -n minio ls
+helm -n minio ls
 NAME            NAMESPACE   REVISION  ...  STATUS     CHART           APP VERSION
 minio-operator  minio       1         ...  deployed   operator-6.0.4  v6.0.4
 
-➜ candidate@cka7968:~$ k -n minio get pod
+k -n minio get pod
 NAME                                READY   STATUS    RESTARTS   AGE
 minio-operator-7b595f559d-5hrj5     1/1     Running   0          24s
 minio-operator-7b595f559d-sl22g     1/1     Running   0          25s
@@ -69,7 +65,7 @@ minio-operator-7b595f559d-sl22g     1/1     Running   0          25s
 Because we installed the Helm chart there are now some *CRDs* available:
 
 ```bash
-➜ candidate@cka7968:~$ k get crd
+k get crd
 NAME                        CREATED AT
 miniojobs.job.min.io        2024-12-22T17:04:38Z
 policybindings.sts.min.io   2024-12-22T17:04:38Z
@@ -79,7 +75,7 @@ tenants.minio.min.io        2024-12-22T17:04:38Z
 Just like we can create a *Pod*, we can now create a *Tenant*, *MinIOJob* or *PolicyBinding*. We can also list all available fields for the *Tenant* *CRD* like this:
 
 ```bash
-➜ candidate@cka7968:~$ k describe crd tenant
+k describe crd tenant
 Name:         tenants.minio.min.io
 Namespace:
 Labels:       app.kubernetes.io/managed-by=Helm
@@ -108,7 +104,7 @@ Spec:
 We need to update the Yaml in the file which creates a *Tenant* resource:
 
 ```bash
-➜ candidate@cka7968:~$ vim /opt/course/2/minio-tenant.yaml
+vim cka/2/course/minio-tenant.yaml
 ```
 
 ```yaml
@@ -146,7 +142,7 @@ spec:
 We can see available fields for `features` like this:
 
 ```bash
-➜ candidate@cka7968:~$ k describe crd tenant | grep -i feature -A 20
+k describe crd tenant | grep -i feature -A 20
             Features:
               Properties:
                 Bucket DNS:
@@ -175,10 +171,10 @@ We can see available fields for `features` like this:
 Finally we can create the *Tenant* resource:
 
 ```bash
-➜ candidate@cka7968:~$ k -f /opt/course/2/minio-tenant.yaml apply
+k -f cka/2/course/minio-tenant.yaml apply
 tenant.minio.min.io/tenant created
 
-➜ candidate@cka7968:~$ k -n minio get tenant
+k -n minio get tenant
 NAME     STATE                      HEALTH   AGE
 tenant   empty tenant credentials            21s
 ```

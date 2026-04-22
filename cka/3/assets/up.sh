@@ -10,8 +10,11 @@ done
 
 kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-mkdir -p "$SCRIPT_DIR/../course"
-cp "$SCRIPT_DIR/task-kubeconfig.yaml" "$SCRIPT_DIR/../course/kubeconfig"
+kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
+
+echo "Waiting for StatefulSet o3db to be ready..."
+kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n project-h800 \
+  statefulset/o3db --timeout=120s
 
 echo ""
 echo "Lab ready!"

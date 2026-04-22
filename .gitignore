@@ -75,7 +75,11 @@ secrets/
 *.pem
 
 # CKA lab output directories
+cka/1/course/
+cka/2/course/
+cka/3/course/
 cka/4/course/
+cka/5/course/
 cka/16/course/
 cka/17/course/
 cka/20/course/
