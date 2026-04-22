@@ -1,7 +1,5 @@
 # Question 6 | Fix Kubelet
 
-> **Solve this question on:** `ssh cka1024`
-
 There seems to be an issue with the kubelet on controlplane node `cka1024`, it's not running.
 
 Fix the kubelet and confirm that the node is available in `Ready` state.
@@ -17,12 +15,15 @@ The procedure on scenarios like these is to first check if the kubelet is runnin
 
 ### Investigate
 
+> [!NOTE]
+> In this local lab, access the control plane node with: `docker exec -it cka-lab-control-plane bash`
+> The cluster was started before kubelet was broken, so the API server remains accessible via `kubectl`.
+> In the real exam you would `ssh` into the node and see `kubectl get node` fail with connection refused.
+
 Check node status:
 
 ```bash
-➜ ssh cka1024
-
-➜ candidate@cka1024:~$ k get node
+k get node
 ```
 
 ```
@@ -37,9 +38,9 @@ The connection to the server 192.168.100.41:6443 was refused - did you specify t
 Okay, this looks very wrong. First we check if the kubelet is running:
 
 ```bash
-➜ candidate@cka1024:~$ sudo -i
+sudo -i
 
-➜ root@cka1024:~# ps aux | grep kubelet
+ps aux | grep kubelet
 ```
 
 ```
@@ -49,7 +50,7 @@ root       12892  0.0  0.1   7076  ...  0:00 grep --color=auto kubelet
 No kubectl process running, just the grep command itself is displayed. We check if the kubelet is configured as service, which is default for a kubeadm installation:
 
 ```bash
-➜ root@cka1024:~# service kubelet status
+service kubelet status
 ```
 
 ```
@@ -73,9 +74,9 @@ Active: inactive (dead) since Sun 2025-03-23 08:16:52 UTC; 1 month 0 days ago
 But the kubelet is configured as a service with config at `/usr/lib/systemd/system/kubelet.service`, let's try to start it:
 
 ```bash
-➜ root@cka1024:~# service kubelet start
+service kubelet start
 
-➜ root@cka1024:~# service kubelet status
+service kubelet status
 ```
 
 ```
@@ -89,7 +90,7 @@ But the kubelet is configured as a service with config at `/usr/lib/systemd/syst
    Main PID: 13014 (code=exited, status=203/EXEC)
         CPU: 10ms
 
-Apr 23 12:31:07 cka1024 systemd[1]: kubelet.service: Failed with result 'exit-code'.
+Apr 23 12:31:07 cka-lab-control-plane systemd[1]: kubelet.service: Failed with result 'exit-code'.
 ```
 
 Above we see it's trying to execute `/usr/local/bin/kubelet` in this line:
@@ -101,10 +102,18 @@ Process: 13014 ExecStart=/usr/local/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELE
 It does so with some arguments defined in its service config file. A good way to find errors and get more info is to run the command manually:
 
 ```bash
-➜ root@cka1024:~# /usr/local/bin/kubelet
--bash: /usr/local/bin/kubelet: No such file or directory
+/usr/local/bin/kubelet
+```
 
-➜ root@cka1024:~# whereis kubelet
+```
+-bash: /usr/local/bin/kubelet: No such file or directory
+```
+
+```bash
+whereis kubelet
+```
+
+```
 kubelet: /usr/bin/kubelet
 ```
 
@@ -115,7 +124,7 @@ That's the issue: wrong path to the kubelet binary.
 Usually we need to dig a bit deeper and check logs using `journalctl -u kubelet` or `cat /var/log/syslog | grep kubelet`:
 
 ```bash
-➜  root@cka1024:~# cat /var/log/syslog | grep kubelet
+cat /var/log/syslog | grep kubelet
 ```
 
 ```
@@ -143,11 +152,11 @@ We already did this above before checking the logs and it showed us that a wrong
 We go ahead and correct the path in file `/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf`:
 
 ```bash
-➜ root@cka1024:~# vim /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+vim /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 ```
 
 ```yaml
-# cka1024:/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+# /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 # Note: This dropin only works with kubeadm and kubelet v1.11+
 [Service]
@@ -167,11 +176,11 @@ In the very last line we updated the binary path to `/usr/bin/kubelet`.
 Now we reload the service:
 
 ```bash
-➜ root@cka1024:~# systemctl daemon-reload
+systemctl daemon-reload
 
-➜ root@cka1024:~# service kubelet restart
+service kubelet restart
 
-➜ root@cka1024:~# service kubelet status
+service kubelet status
 ```
 
 ```
@@ -190,7 +199,7 @@ Now we reload the service:
 ```
 
 ```bash
-➜ root@cka1024:~# ps aux | grep kubelet
+ps aux | grep kubelet
 ```
 
 ```
@@ -200,7 +209,7 @@ root       13124  9.2  7.1 1896084 82432 ?       Ssl  12:33   0:01 /usr/bin/kube
 That looks much better. We can wait for the containers to appear, which can take a minute:
 
 ```bash
-➜ root@cka1024:~# watch crictl ps
+watch crictl ps
 ```
 
 ```
@@ -217,12 +226,12 @@ f5de1f6e11d5c  ...  26 seconds ago    Running     etcd                      ...
 Also the node should be available, give it a bit of time though:
 
 ```bash
-➜ root@cka1024:~# k get node
+k get node
 ```
 
 ```
 NAME      STATUS   ROLES           AGE   VERSION
-cka1024   Ready    control-plane   31d   v1.33.1
+cka-lab-control-plane   Ready    control-plane   31d   v1.33.1
 ```
 
 > [!NOTE]
@@ -231,13 +240,13 @@ cka1024   Ready    control-plane   31d   v1.33.1
 Finally we create the requested *Pod*:
 
 ```bash
-➜ root@cka1024:~# k run success --image nginx:1-alpine
+k run success --image nginx:1-alpine
 pod/success created
 
-➜ root@cka1024:~# k get pod success -o wide
+k get pod success -o wide
 ```
 
 ```
 NAME      READY   STATUS    ...   NODE      NOMINATED NODE   READINESS GATES
-success   1/1     Running   ...   cka1024   <none>           <none>
+success   1/1     Running   ...   cka-lab-control-plane   <none>           <none>
 ```

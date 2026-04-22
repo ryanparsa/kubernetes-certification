@@ -1,7 +1,5 @@
 # Question 4 | Pod Ready if Service is reachable
 
-> **Solve this question on:** `ssh cka3200`
-
 Do the following in *Namespace* `default`:
 
 1. Create a *Pod* named `ready-if-service-ready` of image `nginx:1-alpine`
@@ -22,15 +20,13 @@ It's a bit of an anti-pattern for one *Pod* to check another *Pod* for being rea
 First we create the first *Pod*:
 
 ```bash
-➜ ssh cka3200
-
-➜ candidate@cka3200:~$ k run ready-if-service-ready --image=nginx:1-alpine --dry-run=client -o yaml > 4_pod1.yaml
+k run ready-if-service-ready --image=nginx:1-alpine --dry-run=client -o yaml > 4_pod1.yaml
 ```
 
 Next perform the necessary additions manually:
 
 ```yaml
-# cka3200:/home/candidate/4_pod1.yaml
+# 4_pod1.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -61,10 +57,10 @@ status: {}
 Then create the *Pod* and confirm it's in a non-ready state:
 
 ```bash
-➜ candidate@cka3200:~$ candidate@cka3200:~$ k -f 4_pod1.yaml create
+k -f 4_pod1.yaml create
 pod/ready-if-service-ready created
 
-➜ candidate@cka3200:~$ k get pod ready-if-service-ready
+k get pod ready-if-service-ready
 NAME                     READY   STATUS    RESTARTS   AGE
 ready-if-service-ready   0/1     Running   0          8s
 ```
@@ -72,7 +68,7 @@ ready-if-service-ready   0/1     Running   0          8s
 We can also check the reason for this using `describe`:
 
 ```bash
-➜ candidate@cka3200:~$ k describe pod ready-if-service-ready
+k describe pod ready-if-service-ready
 ...
   Warning  Unhealthy  7s (x4 over 23s)  kubelet            Readiness probe failed: command timed out: "sh -c wget -T2 -O- http://service-am-i-ready:80" timed out after 1s
 ```
@@ -80,14 +76,14 @@ We can also check the reason for this using `describe`:
 Now we create the second *Pod*:
 
 ```bash
-➜ candidate@cka3200:~$ k run am-i-ready --image=nginx:1-alpine --labels="id=cross-server-ready"
+k run am-i-ready --image=nginx:1-alpine --labels="id=cross-server-ready"
 pod/am-i-ready created
 ```
 
 The already existing *Service* `service-am-i-ready` should now have an *Endpoint*:
 
 ```bash
-➜ candidate@cka3200:~$ k describe svc service-am-i-ready
+k describe svc service-am-i-ready
 Name:                     service-am-i-ready
 Namespace:                default
 Labels:                   id=cross-server-ready
@@ -105,7 +101,7 @@ Session Affinity:         None
 Internal Traffic Policy:  Cluster
 Events:                   <none>
 
-➜ candidate@cka3200:~$ k get endpointslice service-am-i-ready-ch6d6 
+k get endpointslice service-am-i-ready-ch6d6 
 NAME                       ADDRESSTYPE   PORTS   ENDPOINTS    AGE
 service-am-i-ready-ch6d6   IPv4          80      10.44.0.30   6d19h
 ```
@@ -113,7 +109,7 @@ service-am-i-ready-ch6d6   IPv4          80      10.44.0.30   6d19h
 Which will result in our first *Pod* being ready, just give it a minute for the *Readiness* probe to check again:
 
 ```bash
-➜ candidate@cka3200:~$ k get pod ready-if-service-ready
+k get pod ready-if-service-ready
 NAME                     READY   STATUS    RESTARTS   AGE
 ready-if-service-ready   1/1     Running   0          2m10s
 ```
