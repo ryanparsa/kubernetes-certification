@@ -2,22 +2,23 @@
 
 > **Solve this question on:** the `cka-lab` kind cluster
 
-Create a *Static Pod* named `my-static-pod` in *Namespace* `default` on the `controlplane` node. It should be of image `nginx:1-alpine` and have resource requests for `10m` CPU and `20Mi` memory.
+Create a *Static Pod* named `my-static-pod` in *Namespace* `default` on the *Node* `cka-lab-control-plane`. It should be of image `nginx:1-alpine` and have resource requests for `10m` CPU and `20Mi` memory.
 
-Create a *NodePort Service* named `static-pod-service` which exposes that static *Pod* on port `80`.
+Create a *NodePort Service* named `static-pod-service` which exposes that *Static Pod* on port `80`.
 
 > [!NOTE]
-> ℹ️ For verification check if the new *Service* has one *Endpoint*. In the kind lab you can access the control-plane node with `docker exec -it cka-lab-control-plane bash`
+> ℹ️ For verification check if the new *Service* has one *Endpoint*. In the kind lab you can access the *Node* `cka-lab-control-plane` with `docker exec -it cka-lab-control-plane bash`
 
 ## Answer
 
 ```bash
-# Access the control-plane node
+# Access the control-plane Node
 docker exec -it cka-lab-control-plane bash
 
 cd /etc/kubernetes/manifests/
 
-k run my-static-pod --image=nginx:1-alpine -o yaml --dry-run=client > my-static-pod.yaml
+# Create the Static Pod manifest
+kubectl run my-static-pod --image=nginx:1-alpine -o yaml --dry-run=client > my-static-pod.yaml
 ```
 
 Then edit the `my-static-pod.yaml` to add the requested resource requests:
@@ -44,17 +45,17 @@ spec:
 status: {}
 ```
 
-And make sure it's running:
+And make sure it's running (this check should be done from the host after exiting the node container or in another terminal):
 
 ```bash
-k get pod -A | grep my-static
+kubectl get pod -A | grep my-static
 default       my-static-pod-cka-lab-control-plane   1/1     Running   0            20s
 ```
 
-Now we expose that static *Pod*:
+Now we expose that *Static Pod*:
 
 ```bash
-k expose pod my-static-pod-cka-lab-control-plane --name static-pod-service --type=NodePort --port 80
+kubectl expose pod my-static-pod-cka-lab-control-plane --name static-pod-service --type=NodePort --port 80
 ```
 
 This will generate a *Service* yaml like:
@@ -83,7 +84,7 @@ status:
 Then we check the *Service* and *Endpoints*:
 
 ```bash
-k get svc,endpointslice -l run=my-static-pod
+kubectl get svc,endpointslice -l run=my-static-pod
 NAME                         TYPE       CLUSTER-IP      ...   PORT(S)        AGE
 service/static-pod-service   NodePort   10.98.249.240   ...   80:32699/TCP   34s
 
@@ -91,10 +92,10 @@ NAME                       ADDRESSTYPE   PORTS   ENDPOINTS   AGE
 static-pod-service-2h7cf   IPv4          80      10.32.0.4   34s
 ```
 
-Also we should be able to access that Nginx container from inside the kind node, your NodePort might be different than the one used here:
+Also we should be able to access that Nginx container from inside the kind *Node*, your NodePort might be different than the one used here:
 
 ```bash
-k get node -owide
+kubectl get node -owide
 NAME                      STATUS   ROLES           AGE   VERSION   INTERNAL-IP   ...
 cka-lab-control-plane     Ready    control-plane   8d    v1.33.1   172.18.0.2    ...
 
