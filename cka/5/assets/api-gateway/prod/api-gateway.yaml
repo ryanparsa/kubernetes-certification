@@ -1,3 +1,10 @@
+apiVersion: v1
+data:
+  horizontal-scaling: "80"
+kind: ConfigMap
+metadata:
+  name: horizontal-scaling-config
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
