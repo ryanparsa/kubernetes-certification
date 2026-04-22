@@ -1,12 +1,10 @@
 # Question 7 | Etcd Operations
 
-> **Solve this question on:** `ssh cka2560`
-
 You have been tasked to perform the following etcd operations:
 
-Run `etcd --version` and store the output at `/opt/course/7/etcd-version`
+Run `etcd --version` and store the output at `cka/24/course/etcd-version`
 
-Make a snapshot of etcd and save it at `/opt/course/7/etcd-snapshot.db`
+Make a snapshot of etcd and save it at `cka/24/course/etcd-snapshot.db`
 
 ## Answer
 
@@ -15,11 +13,7 @@ Make a snapshot of etcd and save it at `/opt/course/7/etcd-snapshot.db`
 Here we simply need to execute a command, shouldn't be that hard:
 
 ```bash
-➜ ssh cka2560
-
-➜ candidate@cka2560:~$ sudo -i
-
-➜ root@cka2560:~# etcd --version
+etcd --version
 ```
 
 ```
@@ -30,14 +24,14 @@ apt install etcd-server
 Well, etcd is not installed directly on the controlplane but it runs as a *Pod* instead. So we do:
 
 ```bash
-root@cka2560:~# k -n kube-system get pod
+k -n kube-system get pod
 ```
 
 ```
 NAME                              READY   STATUS    RESTARTS      AGE
 coredns-78c4c75bb8-fgkfv          1/1     Running   0             15d
 coredns-78c4c75bb8-l7mmh          1/1     Running   0             15d
-etcd-cka2560                      1/1     Running   0             13m
+etcd-cka-lab-control-plane                      1/1     Running   0             13m
 kube-apiserver-cka2560            1/1     Running   0             15d
 kube-controller-manager-cka2560   1/1     Running   0             15d
 kube-proxy-f56td                  1/1     Running   0             15d
@@ -46,7 +40,7 @@ weave-net-44k9c                   2/2     Running   1 (15d ago)   15d
 ```
 
 ```bash
-root@cka2560:~# k -n kube-system exec etcd-cka2560 -- etcd --version
+k -n kube-system exec etcd-cka-lab-control-plane -- etcd --version
 ```
 
 ```
@@ -57,19 +51,19 @@ Go OS/Arch: linux/amd64
 ```
 
 ```bash
-root@cka2560:~# k -n kube-system exec etcd-cka2560 -- etcd --version > /opt/course/7/etcd-version
+k -n kube-system exec etcd-cka-lab-control-plane -- etcd --version > cka/24/course/etcd-version
 ```
 
 ### Step 2: Etcd Snapshot
 
-First we log into the controlplane and try to create a snapshot of etcd:
+> [!NOTE]
+> For the snapshot, exec into the control plane node first: `docker exec -it cka-lab-control-plane bash`
+> Inside the node, `cka/24/course/` on your host is mounted at `/opt/course/7/`.
+
+First we try to create a snapshot of etcd:
 
 ```bash
-➜ ssh cka2560
-
-➜ candidate@cka2560:~$ sudo -i
-
-➜ root@cka2560:~# ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db
+ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db
 ```
 
 ```
@@ -80,13 +74,13 @@ First we log into the controlplane and try to create a snapshot of etcd:
 But it fails or hangs because we need to authenticate ourselves. For the necessary information we can check the etc manifest:
 
 ```bash
-➜ root@cka2560:~# vim /etc/kubernetes/manifests/etcd.yaml
+vim /etc/kubernetes/manifests/etcd.yaml
 ```
 
 We only check the `etcd.yaml` for necessary information we don't change it.
 
 ```yaml
-# cka2560:/etc/kubernetes/manifests/etcd.yaml
+# /etc/kubernetes/manifests/etcd.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -152,7 +146,7 @@ status: {}
 But we also know that the api-server is connecting to etcd, so we can check how its manifest is configured:
 
 ```bash
-➜ root@cka2560:~# cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd
 ```
 
 ```
@@ -174,7 +168,7 @@ ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
 Which should provide successful output:
 
 ```bash
-➜ root@cka2560:~# ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
+ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
 --cacert /etc/kubernetes/pki/etcd/ca.crt \
 --cert /etc/kubernetes/pki/etcd/server.crt \
 --key /etc/kubernetes/pki/etcd/server.key
@@ -198,10 +192,15 @@ Snapshot saved at /opt/course/7/etcd-snapshot.db
 We create a *Pod* in the cluster and wait for it to be running:
 
 ```bash
-➜ root@cka2560:~# kubectl run test --image=nginx
-pod/test created
+kubectl run test --image=nginx
+```
 
-➜ root@cka2560:~# kubectl get pod -l run=test
+```
+pod/test created
+```
+
+```bash
+kubectl get pod -l run=test
 ```
 
 ```
@@ -212,11 +211,11 @@ test   1/1     Running   0          17s
 Next we stop all controlplane components:
 
 ```bash
-➜ root@cka2560:~# cd /etc/kubernetes/manifests/
+cd /etc/kubernetes/manifests/
 
-➜ root@cka2560:/etc/kubernetes/manifests# mv * ..
+mv * ..
 
-➜ root@cka2560:/etc/kubernetes/manifests# watch crictl ps
+watch crictl ps
 ```
 
 It's very important to wait for all K8s controlplane containers to be removed before continuing. This can take a minute!
@@ -236,7 +235,7 @@ etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd
 ```
 
 ```bash
-➜ root@cka2560:~# etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
+etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
 ```
 
 ```
@@ -251,7 +250,7 @@ We could specify another host to make the backup from by using `etcdctl --endpoi
 The restored files are located at the new folder `/var/lib/etcd-snapshot`, now we have to tell etcd to use that directory:
 
 ```bash
-➜ root@cka2560:~# vim /etc/kubernetes/etcd.yaml
+vim /etc/kubernetes/etcd.yaml
 ```
 
 ```yaml
@@ -286,15 +285,15 @@ status: {}
 Now we move all controlplane yaml again into the manifest directory. Give it some time (up to several minutes) for etcd to restart and for the api-server to be reachable again:
 
 ```bash
-➜ root@cka2560:/etc/kubernetes/manifests# mv ../*.yaml .
+mv ../*.yaml .
 
-➜ root@cka2560:/etc/kubernetes/manifests# watch crictl ps
+watch crictl ps
 ```
 
 Then we check again for the *Pod*:
 
 ```bash
-➜ root@cka2560:~# kubectl get pod -l run=test
+kubectl get pod -l run=test
 ```
 
 ```

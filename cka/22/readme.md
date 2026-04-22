@@ -1,12 +1,9 @@
 # Question 5 | Kubectl sorting
-
-> **Solve this question on:** `ssh cka8448`
-
 Create two bash script files which use kubectl sorting to:
 
-Write a command into `/opt/course/5/find_pods.sh` which lists all *Pods* in all *Namespaces* sorted by their AGE (`metadata.creationTimestamp`)
+Write a command into `cka/22/course/find_pods.sh` which lists all *Pods* in all *Namespaces* sorted by their AGE (`metadata.creationTimestamp`)
 
-Write a command into `/opt/course/5/find_pods_uid.sh` which lists all *Pods* in all *Namespaces* sorted by field `metadata.uid`
+Write a command into `cka/22/course/find_pods_uid.sh` which lists all *Pods* in all *Namespaces* sorted by field `metadata.uid`
 
 ## Answer
 
@@ -15,20 +12,18 @@ A good resources here (and for many other things) is the kubectl-cheat-sheet. Yo
 ### Step 1
 
 ```bash
-➜ ssh cka8448
-
-➜ candidate@cka8448:~$ vim /opt/course/5/find_pods.sh
+vim cka/22/course/find_pods.sh
 ```
 
 ```bash
-# cka8448:/opt/course/5/find_pods.sh
+# cka/22/course/find_pods.sh
 kubectl get pod -A --sort-by=.metadata.creationTimestamp
 ```
 
 We should be able to execute it and see sorting by AGE:
 
 ```bash
-➜ sh /opt/course/5/find_pods.sh
+sh cka/22/course/find_pods.sh
 ```
 
 ```
@@ -51,14 +46,14 @@ kube-system   coredns-6f8b9d9f4b-fg7bt                   1/1     ...
 For the second command we create file:
 
 ```bash
-# cka8448:/opt/course/5/find_pods_uid.sh
+# cka/22/course/find_pods_uid.sh
 kubectl get pod -A --sort-by=.metadata.uid
 ```
 
 When we execute we should see a different sorting order:
 
 ```bash
-➜ sh /opt/course/5/find_pods_uid.sh
+sh cka/22/course/find_pods_uid.sh
 ```
 
 ```

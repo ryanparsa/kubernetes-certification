@@ -76,6 +76,9 @@ secrets/
 
 # CKA lab output directories
 cka/4/course/
+cka/22/course/
+cka/24/course/
+cka/25/course/
 
 # Documentation build artifacts
 _build/
