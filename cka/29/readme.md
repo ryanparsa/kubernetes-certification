@@ -107,7 +107,7 @@ Using `nodeAffinity` still requires the toleration.
 
 ### Verify
 
-Now we create the *Pod* and check if it is scheduled:
+Now we create the *Pod* and and check if is scheduled:
 
 ```bash
 ➜ candidate@cka5248:~$ k -f 12.yaml create

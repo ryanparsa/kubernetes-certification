@@ -64,7 +64,7 @@ spec:
 status: {}
 ```
 
-We check if everything is good with the *Pod*:
+Well, there was a lot requested here! We check if everything is good with the *Pod*:
 
 ```bash
 ➜ candidate@cka3200:~$ k -f 13.yaml create

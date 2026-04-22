@@ -115,7 +115,7 @@ spec:
 ...
 ```
 
-The scheduler sets the `nodeName` for a Pod declaration. How it finds the correct node to schedule on is a very complicated matter and takes many variables into account.
+The scheduler sets the `nodeName` for a Pod declaration. How it finds the correct node to schedule on, that's a very much complicated matter and takes many variables into account.
 
 As we cannot `kubectl apply` or `kubectl edit`, in this case we need to delete and create or replace:
 
@@ -141,7 +141,7 @@ It looks like our Pod is running on the controlplane now as requested, although 
 ➜ root@cka5248:/etc/kubernetes/manifests# mv ../kube-scheduler.yaml .
 ```
 
-Check it's running:
+Checks it's running:
 
 ```bash
 ➜ root@cka5248:~# kubectl -n kube-system get pod | grep schedule
