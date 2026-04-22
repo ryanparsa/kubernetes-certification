@@ -1,10 +1,10 @@
 # Question 10 | RBAC ServiceAccount Role RoleBinding
 
-Solve this question on: `ssh cka3962`
+> **Solve this question on:** `ssh cka3962`
 
 Create a new *ServiceAccount* `processor` in *Namespace* `project-hamster`. Create a *Role* and *RoleBinding*, both named `processor` as well. These should allow the new *SA* to only create *Secrets* and *ConfigMaps* in that *Namespace*.
 
-## Answer:
+## Answer
 
 ### Let's talk a little about RBAC resources
 
