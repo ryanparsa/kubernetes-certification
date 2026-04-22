@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup
+  namespace: project-bern
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      volumes:
+        - name: backup
+          emptyDir: {}
+      containers:
+        - name: bash
+          image: bash:5
+          command:
+            - bash
+            - -c
+            - |
+              set -x
+              touch /backup/backup-$(date +%Y-%m-%d-%H-%M-%S).tar.gz
+              sleep 15
+          volumeMounts:
+            - name: backup
+              mountPath: /backup
+      restartPolicy: Never

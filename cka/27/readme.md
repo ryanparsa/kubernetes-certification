@@ -1,12 +1,10 @@
 # Question 10 | PV PVC Dynamic Provisioning
 
-> **Solve this question on:** `ssh cka6016`
-
 There is a backup Job which needs to be adjusted to use a PVC to store backups.
 
 Create a StorageClass named `local-backup` which uses `provisioner: rancher.io/local-path` and `volumeBindingMode: WaitForFirstConsumer`. To prevent possible data loss the StorageClass should keep a PV retained even if a bound PVC is deleted.
 
-Adjust the Job at `/opt/course/10/backup.yaml` to use a PVC which request `50Mi` storage and uses the new StorageClass.
+Adjust the Job at `cka/27/course/backup.yaml` to use a PVC which request `50Mi` storage and uses the new StorageClass.
 
 Deploy your changes, verify the Job completed once and the PVC was bound to a newly created PV.
 
@@ -27,17 +25,15 @@ Cloud companies like AWS or GCP provide their own StorageClasses and providers, 
 First we can have a look at existing ones:
 
 ```bash
-➜ ssh cka6016
-
-➜ candidate@cka6016:~$ k get sc
+k get sc
 NAME         PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE       ...
 local-path   rancher.io/local-path   Delete          WaitForFirstConsumer    ...
 ```
 
-The `local-path` is the default one available if the Local Path Provisioner is installed. But we can see it has a `reclaimPolicy` of `Delete`. Still we could use this one as template for the one we need to create:
+The `local-path` is the default one available since the Local Path Provisioner is installed in kind by default. But we can see it has a `reclaimPolicy` of `Delete`. Still we could use this one as template for the one we need to create:
 
 ```bash
-➜ candidate@cka6016:~$ vim sc.yaml
+vim sc.yaml
 ```
 
 ```yaml
@@ -53,10 +49,10 @@ volumeBindingMode: WaitForFirstConsumer
 We need to use `reclaimPolicy: Retain` because this will cause the PV to not get deleted even after the associated PVC is deleted. It's very easy to delete resources in Kubernetes which can lead to quick data loss. Especially in this case where important data, like from a backup, is in play.
 
 ```bash
-➜ candidate@cka6016:~$ k -f sc.yaml apply
+k -f sc.yaml apply
 storageclass.storage.k8s.io/local-backup created
 
-➜ candidate@cka6016:~$ k get sc
+k get sc
 NAME           PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ...
 local-backup   rancher.io/local-path   Retain          WaitForFirstConsumer   ...
 local-path     rancher.io/local-path   Delete          WaitForFirstConsumer   ...
@@ -69,7 +65,7 @@ This looks like what we want. Now we have the choice between two StorageClasses.
 Let's have a look at the existing Job:
 
 ```yaml
-# cka6016:/opt/course/10/backup.yaml
+# cka/27/course/backup.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -103,10 +99,10 @@ Currently it uses an `emptyDir` volume which means in only stores data in the te
 We could go ahead and create it now to see if everything else works:
 
 ```bash
-➜ candidate@cka6016:~$ k -f /opt/course/10/backup.yaml apply
+k -f cka/27/course/backup.yaml apply
 job.batch/backup created
 
-➜ candidate@cka6016:~$ k -n project-bern get job,pod
+k -n project-bern get job,pod
 NAME               STATUS     COMPLETIONS   DURATION   AGE
 job.batch/backup   Complete   1/1           5s         11s
 
@@ -121,15 +117,15 @@ Looks like it completed without errors.
 For this we first need to create a PVC and then use in the Job template:
 
 ```bash
-➜ candidate@cka6016:~$ cd /opt/course/10
+cd cka/27/course
 
-➜ candidate@cka6016:/opt/course/10$ cp backup.yaml backup.yaml_ori
+cp backup.yaml backup.yaml_ori
 
-➜ candidate@cka6016:/opt/course/10$ vim backup.yaml
+vim backup.yaml
 ```
 
 ```yaml
-# cka6016:/opt/course/10/backup.yaml
+# cka/27/course/backup.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -179,10 +175,10 @@ We first made a backup of the provided file, which is always a good idea. Then w
 First we delete the existing Job because we did create it once before without any changes. And then we deploy:
 
 ```bash
-➜ candidate@cka6016:/opt/course/10$ k delete -f backup.yaml 
+k delete -f cka/27/course/backup.yaml 
 job.batch "backup" deleted
 
-➜ candidate@cka6016:/opt/course/10$ k apply -f backup.yaml 
+k apply -f cka/27/course/backup.yaml 
 persistentvolumeclaim/backup-pvc created
 job.batch/backup created
 ```
@@ -190,7 +186,7 @@ job.batch/backup created
 Then we should see the Job execution created a Pod which used the PVC which created a PV:
 
 ```bash
-➜ candidate@cka6016:/opt/course/10$ k -n project-bern get job,pod,pvc,pv
+k -n project-bern get job,pod,pvc,pv
 NAME               STATUS    COMPLETIONS   DURATION   AGE
 job.batch/backup   Running   0/1           13s        13s
 
@@ -206,10 +202,10 @@ pvc-dbcce...  50Mi       ...  Retain          Bound   project-bern/backup-pvc   
 
 ### Optional Investigation
 
-Because the Local Path Provisioner is used we can actually see the volume represented on the filesystem. And because this cluster only has one node, and we're already on it, we can simply do:
+Because the Local Path Provisioner is used we can actually see the volume represented on the filesystem. Since kind nodes are Docker containers, we can exec into the node:
 
 ```bash
-➜ candidate@cka6016:~$ find /opt/local-path-provisioner
+docker exec cka-lab-control-plane find /opt/local-path-provisioner
 /opt/local-path-provisioner/
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc/backup-2024-12-30-17-27-51.tar.gz
@@ -218,25 +214,19 @@ Because the Local Path Provisioner is used we can actually see the volume repres
 If we run the Job again we should see another backup file:
 
 ```bash
-➜ candidate@cka6016:~$ k -n project-bern delete job backup 
+k -n project-bern delete job backup 
 job.batch "backup" deleted
 
-➜ candidate@cka6016:~$ k apply -f backup.yaml 
+k apply -f cka/27/course/backup.yaml 
 persistentvolumeclaim/backup-pvc unchanged
 job.batch/backup created
 
-➜ candidate@cka6016:~$ k -n project-bern get job,pod,pvc,pv
+k -n project-bern get job,pod,pvc,pv
 NAME               STATUS     COMPLETIONS   DURATION   AGE
 job.batch/backup   Complete   1/1           18s        20s
 
 NAME               READY   STATUS      RESTARTS   AGE
 pod/backup-jpq2t   0/1     Completed   0          20s
-
-➜ candidate@cka6016:~$ find /opt/local-path-provisioner
-/opt/local-path-provisioner/
-/opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc
-/opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc/backup-2024-12-30-17-27-51.tar.gz
-/opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc/backup-2024-12-30-17-34-26.tar.gz
 ```
 
 And if we delete the PVC we should still see the PV and the files in the volume (filesystem in this case):
@@ -245,10 +235,10 @@ And if we delete the PVC we should still see the PV and the files in the volume 
 > Removing the PVC and Job might affect your scoring for this question, so best create them again after testing deletion.
 
 ```bash
-➜ candidate@cka6016:~$ k -n project-bern delete pvc backup-pvc 
+k -n project-bern delete pvc backup-pvc 
 persistentvolumeclaim "backup-pvc" deleted
 
-➜ candidate@cka6016:~$ k get pv,pvc -A
+k get pv,pvc -A
 NAME          CAPACITY   ...  RECLAIM POLICY   STATUS     CLAIM                     ...
 pvc-dbcce...  50Mi       ...  Retain           Released   project-bern/backup-pvc   ...
 ```
