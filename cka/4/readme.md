@@ -1,10 +1,8 @@
 # Question 4 | Find Pods first to be terminated
 
-> **Solve this question on:** `ssh cka2556`
-
 Check all available *Pods* in the *Namespace* `project-c13` and find the names of those that would probably be terminated first if the nodes run out of resources (cpu or memory).
 
-Write the *Pod* names into `/opt/course/4/pods-terminated-first.txt`.
+Write the *Pod* names into `cka/4/course/pods-terminated-first.txt`.
 
 ## Answer
 
@@ -13,12 +11,10 @@ When available cpu or memory resources on the nodes reach their limit, Kubernete
 Hence we should look for *Pods* without resource requests defined, we can do this with a manual approach:
 
 ```bash
-➜ ssh cka2556
-
-➜ candidate@cka2556:~$ k -n project-c13 describe pod | less -p Requests
+k -n project-c13 describe pod | less -p Requests
 ```
 
-Or we do something like:
+Or:
 
 ```bash
 k -n project-c13 describe pod | grep -A 3 -E 'Requests|^Name:'
@@ -27,7 +23,7 @@ k -n project-c13 describe pod | grep -A 3 -E 'Requests|^Name:'
 We see that the *Pods* of *Deployment* `c13-3cc-runner-heavy` don't have any resource requests specified. Hence our answer would be:
 
 ```
-# /opt/course/4/pods-terminated-first.txt
+# cka/4/course/pods-terminated-first.txt
 c13-3cc-runner-heavy-65588d7d6-djtv9map
 c13-3cc-runner-heavy-65588d7d6-v8kf5map
 c13-3cc-runner-heavy-65588d7d6-wwpb4map
@@ -38,7 +34,7 @@ c13-3cc-runner-heavy-65588d7d6-wwpb4map
 Not necessary and probably too slow for this task, but to automate this process you could use jsonpath:
 
 ```bash
-➜ candidate@cka2556:~$ k -n project-c13 get pod -o jsonpath="{range .items[*]} {.metadata.name}{.spec.containers[*].resources}{'\n'}"
+k -n project-c13 get pod -o jsonpath="{range .items[*]} {.metadata.name}{.spec.containers[*].resources}{'\n'}"
  c13-2x3-api-c848b775d-7nggw{"requests":{"cpu":"50m","memory":"20Mi"}}
  c13-2x3-api-c848b775d-qrrlp{"requests":{"cpu":"50m","memory":"20Mi"}}
  c13-2x3-api-c848b775d-qtrs7{"requests":{"cpu":"50m","memory":"20Mi"}}
@@ -65,7 +61,7 @@ This lists all *Pod* names and their requests/limits, hence we see the three *Po
 Or we look for the Quality of Service classes:
 
 ```bash
-➜ candidate@cka2556:~$ k get pods -n project-c13 -o jsonpath="{range .items[*]}{.metadata.name} {.status.qosClass}{'\n'}"
+k get pods -n project-c13 -o jsonpath="{range .items[*]}{.metadata.name} {.status.qosClass}{'\n'}"
 c13-2x3-api-c848b775d-7nggw Burstable
 c13-2x3-api-c848b775d-qrrlp Burstable
 c13-2x3-api-c848b775d-qtrs7 Burstable

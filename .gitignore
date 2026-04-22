@@ -74,6 +74,9 @@ secrets/
 *.key
 *.pem
 
+# CKA lab output directories
+cka/4/course/
+
 # Documentation build artifacts
 _build/
 .doctrees/
