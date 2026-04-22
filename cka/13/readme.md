@@ -260,7 +260,7 @@ If the question text mentions something like "add one new path /auth" then this 
           port: 80
 ```
 
-Note that we use `- path:` and `headers:`, not `- path:` and `- headers:`. This means both `path` and `headers` will be connected **AND**.  So only if the path is `/auto` **AND** the header user-agent is `mobile` we route to mobile. 
+Note that we use `- path:` and `header:`, not `- path:` and `- header:`. This means both `path` and `header` will be connected **AND**.  So only if the path is `/auto` **AND** the header user-agent is `mobile` we route to mobile. 
 
 If we would do the following then these would be connected **OR** and it would be wrong for this question:
 
