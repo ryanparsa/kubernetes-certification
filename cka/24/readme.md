@@ -1,5 +1,8 @@
 # Question 7 | Etcd Operations
 
+> **Solve this question on:** the "cka-lab" kind cluster
+> **For tasks requiring direct access to the control plane node (e.g. etcd snapshot):** `docker exec -it cka-lab-control-plane bash`
+
 You have been tasked to perform the following etcd operations:
 
 Run `etcd --version` and store the output at `cka/24/course/etcd-version`
@@ -24,7 +27,7 @@ apt install etcd-server
 Well, etcd is not installed directly on the controlplane but it runs as a *Pod* instead. So we do:
 
 ```bash
-k -n kube-system get pod
+kubectl -n kube-system get pod
 ```
 
 ```
@@ -39,7 +42,7 @@ kube-scheduler-cka-lab-control-plane            1/1     Running   0             
 ```
 
 ```bash
-k -n kube-system exec etcd-cka-lab-control-plane -- etcd --version
+kubectl -n kube-system exec etcd-cka-lab-control-plane -- etcd --version
 ```
 
 ```
@@ -50,7 +53,7 @@ Go OS/Arch: linux/amd64
 ```
 
 ```bash
-k -n kube-system exec etcd-cka-lab-control-plane -- etcd --version > cka/24/course/etcd-version
+kubectl -n kube-system exec etcd-cka-lab-control-plane -- etcd --version > cka/24/course/etcd-version
 ```
 
 ### Step 2: Etcd Snapshot
@@ -70,7 +73,7 @@ ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db
 ^C
 ```
 
-But it fails or hangs because we need to authenticate ourselves. For the necessary information we can check the etc manifest:
+But it fails or hangs because we need to authenticate ourselves. For the necessary information we can check the etcd manifest:
 
 ```bash
 vim /etc/kubernetes/manifests/etcd.yaml
@@ -166,13 +169,6 @@ ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
 
 Which should provide successful output:
 
-```bash
-ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
---cacert /etc/kubernetes/pki/etcd/ca.crt \
---cert /etc/kubernetes/pki/etcd/server.crt \
---key /etc/kubernetes/pki/etcd/server.key
-```
-
 ```
 {"level":"info","ts":"2025-03-02T13:35:48.806437Z","caller":"snapshot/v3_snapshot.go:65","msg":"created temporary db file","path":"/opt/course/7/etcd-snapshot.db.part"}
 {"level":"info","ts":"2025-03-02T13:35:48.929550Z","logger":"client","caller":"v3@v3.5.16/maintenance.go:212","msg":"opened snapshot stream; downloading"}
@@ -233,10 +229,6 @@ The restore is an offline operation (it doesn't need to connect to etcd), so no 
 etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
 ```
 
-```bash
-etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
-```
-
 ```
 2025-03-02T13:38:07Z    info    snapshot/v3_snapshot.go:265     restoring snapshot      {"path": "/opt/course/7/etcd-snapshot.db", "wal-dir": "/var/lib/etcd-snapshot/member/wal", "data-dir": "/var/lib/etcd-snapshot", "snap-dir": "/var/lib/etcd-snapshot/member/snap", "initial-memory-map-size": 0}
 2025-03-02T13:38:07Z    info    membership/store.go:141 Trimming membership information from the backend...
@@ -249,11 +241,11 @@ We could specify another host to make the backup from by using `etcdctl --endpoi
 The restored files are located at the new folder `/var/lib/etcd-snapshot`, now we have to tell etcd to use that directory:
 
 ```bash
-vim /etc/kubernetes/etcd.yaml
+vim /etc/kubernetes/manifests/etcd.yaml
 ```
 
 ```yaml
-# /etc/kubernetes/etcd.yaml
+# /etc/kubernetes/manifests/etcd.yaml
 apiVersion: v1
 kind: Pod
 metadata:
