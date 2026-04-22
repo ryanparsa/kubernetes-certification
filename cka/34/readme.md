@@ -1,5 +1,7 @@
 # Question 17 | Operator, CRDs, RBAC, Kustomize
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 There is Kustomize config available at `cka/34/course/operator`. It installs an operator which works with different *CRDs*. It has been deployed like this:
 
 ```bash
@@ -29,7 +31,7 @@ base  prod
 Let's investigate the base first for better understanding:
 
 ```bash
-k kustomize base
+kubectl kustomize base
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -63,7 +65,7 @@ But for debugging it can be useful to build the base Yaml.
 ### Investigate Prod
 
 ```bash
-k kustomize prod
+kubectl kustomize prod
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -95,11 +97,11 @@ We can see that all resources now have `namespace: operator-prod`. Also prod add
 The instructions tell us to check the logs:
 
 ```bash
-k -n operator-prod get pod
+kubectl -n operator-prod get pod
 NAME                        READY   STATUS    RESTARTS   AGE
 operator-7f4f58d4d9-v6ftw   1/1     Running   0          6m9s
 
-k -n operator-prod logs operator-7f4f58d4d9-v6ftw
+kubectl -n operator-prod logs operator-7f4f58d4d9-v6ftw
 + true
 + kubectl get students
 Error from server (Forbidden): students.education.killer.sh is forbidden: User "system:serviceaccount:operator-prod:operator" cannot list resource "students" in API group "education.killer.sh" in the namespace "operator-prod"
@@ -142,7 +144,7 @@ spec:
 Now we need to adjust the existing *Role* `operator-role`. In the Kustomize config directory we find file `rbac.yaml` which we need to edit. Instead of manually editing the Yaml we could also generate it via command line:
 
 ```bash
-k -n operator-prod create role operator-role --verb list --resource student --resource class -oyaml --dry-run=client
+kubectl -n operator-prod create role operator-role --verb list --resource student --resource class -oyaml --dry-run=client
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -215,7 +217,7 @@ student.education.killer.sh/student3 unchanged
 We can see that only the *Role* was configured, which is what we want. And the logs are not throwing errors any more:
 
 ```bash
-k -n operator-prod logs operator-7f4f58d4d9-v6ftw
+kubectl -n operator-prod logs operator-7f4f58d4d9-v6ftw
 + kubectl get students
 NAME       AGE
 student1   22m
@@ -270,7 +272,7 @@ student.education.killer.sh/student2 unchanged
 student.education.killer.sh/student3 unchanged
 student.education.killer.sh/student4 created
 
-k -n operator-prod get student
+kubectl -n operator-prod get student
 NAME       AGE
 student1   28m
 student2   28m
