@@ -27,4 +27,7 @@ spec:
       containers:
       - image: httpd:2-alpine
         name: httpd
+        resources:
+          requests:
+            cpu: 100m
       serviceAccountName: api-gateway

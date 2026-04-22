@@ -10,6 +10,20 @@ done
 
 kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
+# Install metrics-server with kubelet-insecure-tls (required for kind)
+kubectl apply --kubeconfig "$KUBECONFIG_FILE" \
+  -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl patch deployment metrics-server \
+  --kubeconfig "$KUBECONFIG_FILE" \
+  -n kube-system \
+  --type='json' \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+
+echo "Waiting for metrics-server to be ready..."
+kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
+  -n kube-system deployment/metrics-server --timeout=120s
+
 # Create the course/ directory and copy kustomize structure into it
 mkdir -p "$SCRIPT_DIR/../course"
 cp -r "$SCRIPT_DIR/api-gateway" "$SCRIPT_DIR/../course/api-gateway"
