@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-jinan
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-miami
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-melbourne
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-seoul
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-toronto
