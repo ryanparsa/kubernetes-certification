@@ -1,6 +1,6 @@
 # Question 15 | Cluster Event Logging
 
-Solve this question on: `ssh cka6016`
+> **Solve this question on:** `ssh cka6016`
 
 1. Write a `kubectl` command into `/opt/course/15/cluster_events.sh` which shows the latest events in the whole cluster, ordered by time (`metadata.creationTimestamp`)
 2. Delete the kube-proxy *Pod* and write the events this caused into `/opt/course/15/pod_kill.log` on `cka6016`

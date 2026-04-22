@@ -1,6 +1,6 @@
 # Preview Question 2 | Kube-Proxy iptables
 
-Solve this question on: `ssh cka3962`
+> **Solve this question on:** `ssh cka3962`
 
 You're asked to confirm that kube-proxy is running correctly. For this perform the following in *Namespace* `project-hamster`:
 

@@ -1,6 +1,6 @@
 # Preview Question 3 | Change Service CIDR
 
-Solve this question on: `ssh cka9412`
+> **Solve this question on:** `ssh cka9412`
 
 1.  Create a *Pod* named `check-ip` in *Namespace* `default` using image `httpd:2-alpine`
 2.  Expose it on port `80` as a ClusterIP *Service* named `check-ip-service`. Remember/output the IP of that *Service*
