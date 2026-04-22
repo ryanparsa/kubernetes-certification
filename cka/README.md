@@ -35,12 +35,12 @@ Here is the mapping for the mock exam questions to their corresponding directori
 | Simulator B         | Question 12     | `29`      | Done   |     |
 | Simulator B         | Question 13     | `30`      | Done   |     |
 | Simulator B         | Question 14     | `31`      | Done   |     |
-| Simulator B         | Question 15     | `32`      | Done   |     |
-| Simulator B         | Question 16     | `33`      | Done   |     |
-| Simulator B         | Question 17     | `34`      | Done   |     |
-| Simulator A Preview | Question 1      | `35`      | Done   |
-| Simulator A Preview | Question 2      | `36`      | Done   |
-| Simulator A Preview | Question 3      | `37`      | Done   |
+| Simulator B         | Question 15     | `32`      | Done   | Ready |
+| Simulator B         | Question 16     | `33`      | Done   | Ready |
+| Simulator B         | Question 17     | `34`      | Done   | Ready |
+| Simulator A Preview | Question 1      | `35`      | Done   | Ready |
+| Simulator A Preview | Question 2      | `36`      | Done   | Ready |
+| Simulator A Preview | Question 3      | `37`      | Done   | Ready |
 
 ## Extra Ref to get new tasks
 
