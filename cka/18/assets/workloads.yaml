@@ -1,0 +1,157 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lima-control
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lima-workload
+---
+# ConfigMap with placeholder DNS values (user must fill in correct FQDNs)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: control-config
+  namespace: lima-control
+data:
+  DNS_1: "placeholder-1"
+  DNS_2: "placeholder-2"
+  DNS_3: "placeholder-3"
+  DNS_4: "placeholder-4"
+---
+# Controller Deployment that resolves DNS entries from the ConfigMap
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  namespace: lima-control
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      containers:
+      - name: controller
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          while true; do
+            set -x
+            nslookup ${DNS_1} || true
+            nslookup ${DNS_2} || true
+            nslookup ${DNS_3} || true
+            nslookup ${DNS_4} || true
+            set +x
+            sleep 10
+          done
+        env:
+        - name: DNS_1
+          valueFrom:
+            configMapKeyRef:
+              name: control-config
+              key: DNS_1
+        - name: DNS_2
+          valueFrom:
+            configMapKeyRef:
+              name: control-config
+              key: DNS_2
+        - name: DNS_3
+          valueFrom:
+            configMapKeyRef:
+              name: control-config
+              key: DNS_3
+        - name: DNS_4
+          valueFrom:
+            configMapKeyRef:
+              name: control-config
+              key: DNS_4
+---
+# Headless Service for department pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: department
+  namespace: lima-workload
+spec:
+  clusterIP: None
+  selector:
+    name: department
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Regular Service for section pods (enables hostname.subdomain DNS)
+apiVersion: v1
+kind: Service
+metadata:
+  name: section
+  namespace: lima-workload
+spec:
+  selector:
+    name: section
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# Department pod 1
+apiVersion: v1
+kind: Pod
+metadata:
+  name: department-pod-1
+  namespace: lima-workload
+  labels:
+    name: department
+spec:
+  containers:
+  - name: pod
+    image: nginx:alpine
+---
+# Department pod 2
+apiVersion: v1
+kind: Pod
+metadata:
+  name: department-pod-2
+  namespace: lima-workload
+  labels:
+    name: department
+spec:
+  containers:
+  - name: pod
+    image: nginx:alpine
+---
+# Section pod 100 — hostname + subdomain enable FQDN: section100.section.lima-workload.svc.cluster.local
+apiVersion: v1
+kind: Pod
+metadata:
+  name: section100
+  namespace: lima-workload
+  labels:
+    name: section
+spec:
+  hostname: section100
+  subdomain: section
+  containers:
+  - name: pod
+    image: httpd:2-alpine
+---
+# Section pod 200 — hostname + subdomain enable FQDN: section200.section.lima-workload.svc.cluster.local
+apiVersion: v1
+kind: Pod
+metadata:
+  name: section200
+  namespace: lima-workload
+  labels:
+    name: section
+spec:
+  hostname: section200
+  subdomain: section
+  containers:
+  - name: pod
+    image: httpd:2-alpine
