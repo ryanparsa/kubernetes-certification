@@ -2,15 +2,15 @@
 
 The metrics-server has been installed in the cluster. Write two bash scripts which use `kubectl`:
 
-1. Script `cka/7/course/7/node.sh` should show resource usage of nodes
-2. Script `cka/7/course/7/pod.sh` should show resource usage of Pods and their containers
+1. Script `cka/7/course/node.sh` should show resource usage of nodes
+2. Script `cka/7/course/pod.sh` should show resource usage of Pods and their containers
 
 ## Answer
 
 The command we need to use here is top:
 
 ```bash
-k top -h
+kubectl top -h
 Display resource (CPU/memory) usage.
 
  The top command allows you to see the resource consumption for nodes or pods.
@@ -31,22 +31,22 @@ Use "kubectl options" for a list of global command-line options (applies to all 
 We see that the metrics server provides information about resource usage:
 
 ```bash
-k top node
-NAME          CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
-cka-control-plane   104m         10%    1121Mi          60%       
+kubectl top node
+NAME                    CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+cka-lab-control-plane   104m         10%    1121Mi          60%
 ```
 
 We create the first file, ensure to **not** use aliases but instead the full command names:
 
 ```bash
-# cka/7/course/7/node.sh
+# cka/7/course/node.sh
 kubectl top node
 ```
 
 For the second file we might need to check the docs again:
 
 ```bash
-k top pod -h
+kubectl top pod -h
 Display resource (CPU/memory) usage of pods.
 ...
   --containers=false:
@@ -57,6 +57,6 @@ Display resource (CPU/memory) usage of pods.
 With this we can finish this task:
 
 ```bash
-# cka/7/course/7/pod.sh
+# cka/7/course/pod.sh
 kubectl top pod --containers=true
 ```
