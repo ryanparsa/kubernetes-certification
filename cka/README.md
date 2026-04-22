@@ -14,11 +14,11 @@ Here is the mapping for the mock exam questions to their corresponding directori
 | Simulator A         | Question 8      | `8`       | Done   |     |
 | Simulator A         | Question 9      | `9`       | Done   |     |
 | Simulator A         | Question 10     | `10`      | Done   |     |
-| Simulator A         | Question 11     | `11`      | Done   |     |
-| Simulator A         | Question 12     | `12`      | Done   |     |
-| Simulator A         | Question 13     | `13`      | Done   |     |
-| Simulator A         | Question 14     | `14`      | Done   |     |
-| Simulator A         | Question 15     | `15`      | Done   |     |
+| Simulator A         | Question 11     | `11`      | Done   | Ready |
+| Simulator A         | Question 12     | `12`      | Done   | Ready |
+| Simulator A         | Question 13     | `13`      | Done   | Ready |
+| Simulator A         | Question 14     | `14`      | Done   | Ready |
+| Simulator A         | Question 15     | `15`      | Done   | Ready |
 | Simulator A         | Question 16     | `16`      | Done   |     |
 | Simulator A         | Question 17     | `17`      | Done   |     |
 | Simulator B         | Question 1      | `18`      | Done   |     |
