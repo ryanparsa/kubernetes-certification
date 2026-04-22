@@ -28,15 +28,14 @@ k -n kube-system get pod
 ```
 
 ```
-NAME                              READY   STATUS    RESTARTS      AGE
-coredns-78c4c75bb8-fgkfv          1/1     Running   0             15d
-coredns-78c4c75bb8-l7mmh          1/1     Running   0             15d
+NAME                                            READY   STATUS    RESTARTS      AGE
+coredns-78c4c75bb8-fgkfv                        1/1     Running   0             15d
+coredns-78c4c75bb8-l7mmh                        1/1     Running   0             15d
 etcd-cka-lab-control-plane                      1/1     Running   0             13m
-kube-apiserver-cka2560            1/1     Running   0             15d
-kube-controller-manager-cka2560   1/1     Running   0             15d
-kube-proxy-f56td                  1/1     Running   0             15d
-kube-scheduler-cka2560            1/1     Running   0             15d
-weave-net-44k9c                   2/2     Running   1 (15d ago)   15d
+kube-apiserver-cka-lab-control-plane            1/1     Running   0             15d
+kube-controller-manager-cka-lab-control-plane   1/1     Running   0             15d
+kube-proxy-f56td                                1/1     Running   0             15d
+kube-scheduler-cka-lab-control-plane            1/1     Running   0             15d
 ```
 
 ```bash
@@ -99,12 +98,12 @@ spec:
     - --client-cert-auth=true
     - --data-dir=/var/lib/etcd
     - --initial-advertise-peer-urls=https://192.168.100.31:2380
-    - --initial-cluster=cka2560=https://192.168.100.31:2380
+    - --initial-cluster=cka-lab-control-plane=https://192.168.100.31:2380
     - --key-file=/etc/kubernetes/pki/etcd/server.key                            # use
     - --listen-client-urls=https://127.0.0.1:2379,https://192.168.100.31:2379   # use
     - --listen-metrics-urls=http://127.0.0.1:2381
     - --listen-peer-urls=https://192.168.100.31:2380
-    - --name=cka2560
+    - --name=cka-lab-control-plane
     - --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
     - --peer-client-cert-auth=true
     - --peer-key-file=/etc/kubernetes/pki/etcd/peer.key
