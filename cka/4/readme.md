@@ -1,5 +1,7 @@
 # Question 4 | Find Pods first to be terminated
 
+> **Solve this question on:** the `cka-lab` kind cluster
+
 Check all available *Pods* in the *Namespace* `project-c13` and find the names of those that would probably be terminated first if the nodes run out of resources (cpu or memory).
 
 Write the *Pod* names into `cka/4/course/pods-terminated-first.txt`.

@@ -2,6 +2,8 @@
 
 There is *ServiceAccount* `secret-reader` in *Namespace* `project-swan`. Create a *Pod* of image `nginx:1-alpine` named `api-contact` which uses this *ServiceAccount*.
 
+> **Solve this question on:** the `cka-lab` kind cluster
+
 Exec into the *Pod* and use `curl` to manually query all *Secrets* from the Kubernetes Api.
 
 Write the result into file `cka/9/course/9/result.json`.
@@ -17,7 +19,7 @@ You can find information in the K8s Docs by searching for "curl api" for example
 First we create the *Pod*:
 
 ```bash
-k run api-contact --image=nginx:1-alpine --dry-run=client -o yaml > 9.yaml
+kubectl run api-contact --image=nginx:1-alpine --dry-run=client -o yaml > 9.yaml
 
 vim 9.yaml
 ```
@@ -47,7 +49,7 @@ status: {}
 Create it:
 
 ```bash
-k -f 9.yaml apply
+kubectl -f 9.yaml apply
 pod/api-contact created
 ```
 
@@ -60,9 +62,9 @@ Once in the container we can connect to the K8s Api using `curl`, it's usually a
 So we can try to contact the K8s Api:
 
 ```bash
-k -n project-swan exec api-contact -it -- sh
+kubectl -n project-swan exec api-contact -it -- sh
 
-/ # curl https://kubernetes.default
+curl https://kubernetes.default
 curl: (60) SSL peer certificate or SSH remote key was not OK
 More details here: https://curl.se/docs/sslcerts.html
 
@@ -70,7 +72,7 @@ curl failed to verify the legitimacy of the server and therefore could not
 establish a secure connection to it. To learn more about this situation and
 how to fix it, please visit the webpage mentioned above.
 
-/ # curl -k https://kubernetes.default
+curl -k https://kubernetes.default
 {
   "kind": "Status",
   "apiVersion": "v1",
@@ -80,9 +82,9 @@ how to fix it, please visit the webpage mentioned above.
   "reason": "Forbidden",
   "details": {},
   "code": 403
-}~ $ 
+}
 
-/ # curl -k https://kubernetes.default/api/v1/secrets
+curl -k https://kubernetes.default/api/v1/secrets
 {
   "kind": "Status",
   "apiVersion": "v1",
@@ -106,9 +108,9 @@ The last command shows 403 forbidden, this is because we are not passing any aut
 We find the token at `/var/run/secrets/kubernetes.io/serviceaccount`, so we do:
 
 ```bash
-/ # TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 
-/ # curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
+curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
 {
   "kind": "SecretList",
   "apiVersion": "v1",
@@ -130,7 +132,7 @@ Now we're able to list all Secrets as the Pod's ServiceAccount `secret-reader`.
 For troubleshooting we could also check if the ServiceAccount is actually able to list Secrets:
 
 ```bash
-k auth can-i get secret --as system:serviceaccount:project-swan:secret-reader
+kubectl auth can-i get secret --as system:serviceaccount:project-swan:secret-reader
 yes
 ```
 
@@ -167,11 +169,11 @@ We write the full result into `cka/9/course/9/result.json`:
 The easiest way would probably be to copy and paste the result manually. But if it's too long or not possible we could also do:
 
 ```bash
-/ # curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}" > result.json
+curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}" > result.json
 
-/ # exit
+exit
 
-k -n project-swan exec api-contact -it -- cat result.json > cka/9/course/9/result.json
+kubectl -n project-swan exec api-contact -it -- cat result.json > cka/9/course/9/result.json
 ```
 
 ### Connect via HTTPS with correct CA
@@ -179,7 +181,7 @@ k -n project-swan exec api-contact -it -- cat result.json > cka/9/course/9/resul
 To connect without `curl -k` we can specify the CertificateAuthority (CA):
 
 ```bash
-/ # CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
-/ # curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
+curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
 ```

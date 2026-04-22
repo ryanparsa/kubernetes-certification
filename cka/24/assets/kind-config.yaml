@@ -4,5 +4,5 @@ name: cka-lab
 nodes:
 - role: control-plane
   extraMounts:
-  - hostPath: /tmp/cka6-data
-    containerPath: /Volumes/Data
+  - hostPath: ../course
+    containerPath: /opt/course/7

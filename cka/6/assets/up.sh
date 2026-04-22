@@ -8,6 +8,7 @@ for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
+mkdir -p /tmp/cka6-data
 kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"

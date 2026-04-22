@@ -1,6 +1,6 @@
 # Preview Question 1 | ETCD Information
 
-The cluster admin asked you to find out the following information about etcd running on the control-plane node:
+The cluster admin asked you to find out the following information about etcd running on the control-plane *Node*:
 
 - Server private key location
 - Server certificate expiration date
@@ -12,21 +12,20 @@ Write these information into `cka/35/course/etcd-info.txt`
 
 ### Find out etcd information
 
-Let's check the nodes:
+Let's check the *Nodes*:
 
 ```bash
-k get node
+kubectl get node
 NAME                        STATUS   ROLES           AGE   VERSION
 cka-lab-control-plane       Ready    control-plane   9d    v1.35.2
 ```
 
 First we check how etcd is setup in this cluster.
 
-> ℹ️ In kind, exec into the control-plane container to run commands as root:
-> `docker exec -it cka-lab-control-plane bash`
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 
 ```bash
-k -n kube-system get pod
+kubectl -n kube-system get pod
 NAME                                          READY   STATUS    RESTARTS   AGE
 coredns-6f4c58b94d-djpgr                      1/1     Running   0          8d
 coredns-6f4c58b94d-ds6ch                      1/1     Running   0          8d
@@ -40,7 +39,7 @@ kube-scheduler-cka-lab-control-plane          1/1     Running   0          9d
 We see it's running as a *Pod*, more specific a static *Pod*. So we check for the default kubelet directory for static manifests:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
+docker exec -it cka-lab-control-plane bash
 find /etc/kubernetes/manifests/
 /etc/kubernetes/manifests/
 /etc/kubernetes/manifests/kube-controller-manager.yaml
@@ -97,7 +96,7 @@ spec:
 We see that client authentication is enabled and also the requested path to the server private key, now let's find out the expiration of the server certificate:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
+docker exec -it cka-lab-control-plane bash
 openssl x509  -noout -text -in /etc/kubernetes/pki/etcd/server.crt | grep Validity -A2
         Validity
             Not Before: Oct 29 14:14:27 2024 GMT

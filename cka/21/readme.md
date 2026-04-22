@@ -1,5 +1,7 @@
 # Question 4 | Pod Ready if Service is reachable
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 Do the following in *Namespace* `default`:
 
 1. Create a *Pod* named `ready-if-service-ready` of image `nginx:1-alpine`
@@ -10,23 +12,23 @@ Do the following in *Namespace* `default`:
 Then:
 
 1. Create a second *Pod* named `am-i-ready` of image `nginx:1-alpine` with label `id: cross-server-ready`
-2. The already existing *Service* `service-am-i-ready` should now have that second *Pod* as endpoint
+2. The already existing *Service* `service-am-i-ready` should now have that second *Pod* as *Endpoint*
 3. Now the first *Pod* should be in ready state, check that
 
 ## Answer
 
-It's a bit of an anti-pattern for one *Pod* to check another *Pod* for being ready using probes, hence the normally available `readinessProbe.httpGet` doesn't work for absolute remote urls. Still the workaround requested in this task should show how probes and Pod\<-\>Service communication works.
+It's a bit of an anti-pattern for one *Pod* to check another *Pod* for being ready using probes, hence the normally available `readinessProbe.httpGet` doesn't work for absolute remote urls. Still the workaround requested in this task should show how probes and *Pod*<->*Service* communication works.
 
 First we create the first *Pod*:
 
 ```bash
-k run ready-if-service-ready --image=nginx:1-alpine --dry-run=client -o yaml > 4_pod1.yaml
+kubectl run ready-if-service-ready --image=nginx:1-alpine --dry-run=client -o yaml > cka/21/course/4_pod1.yaml
 ```
 
 Next perform the necessary additions manually:
 
 ```yaml
-# 4_pod1.yaml
+# cka/21/course/4_pod1.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -57,10 +59,10 @@ status: {}
 Then create the *Pod* and confirm it's in a non-ready state:
 
 ```bash
-k -f 4_pod1.yaml create
+kubectl create -f cka/21/course/4_pod1.yaml
 pod/ready-if-service-ready created
 
-k get pod ready-if-service-ready
+kubectl get pod ready-if-service-ready
 NAME                     READY   STATUS    RESTARTS   AGE
 ready-if-service-ready   0/1     Running   0          8s
 ```
@@ -68,7 +70,7 @@ ready-if-service-ready   0/1     Running   0          8s
 We can also check the reason for this using `describe`:
 
 ```bash
-k describe pod ready-if-service-ready
+kubectl describe pod ready-if-service-ready
 ...
   Warning  Unhealthy  7s (x4 over 23s)  kubelet            Readiness probe failed: command timed out: "sh -c wget -T2 -O- http://service-am-i-ready:80" timed out after 1s
 ```
@@ -76,14 +78,14 @@ k describe pod ready-if-service-ready
 Now we create the second *Pod*:
 
 ```bash
-k run am-i-ready --image=nginx:1-alpine --labels="id=cross-server-ready"
+kubectl run am-i-ready --image=nginx:1-alpine --labels="id=cross-server-ready"
 pod/am-i-ready created
 ```
 
 The already existing *Service* `service-am-i-ready` should now have an *Endpoint*:
 
 ```bash
-k describe svc service-am-i-ready
+kubectl describe svc service-am-i-ready
 Name:                     service-am-i-ready
 Namespace:                default
 Labels:                   id=cross-server-ready
@@ -92,24 +94,24 @@ Selector:                 id=cross-server-ready
 Type:                     ClusterIP
 IP Family Policy:         SingleStack
 IP Families:              IPv4
-IP:                       10.108.19.168
-IPs:                      10.108.19.168
+IP:                       10.108.19.XXX
+IPs:                      10.108.19.XXX
 Port:                     <unset>  80/TCP
 TargetPort:               80/TCP
-Endpoints:                10.44.0.30:80
+Endpoints:                10.44.0.XXX:80
 Session Affinity:         None
 Internal Traffic Policy:  Cluster
 Events:                   <none>
 
-k get endpointslice service-am-i-ready-ch6d6 
+kubectl get endpointslice
 NAME                       ADDRESSTYPE   PORTS   ENDPOINTS    AGE
-service-am-i-ready-ch6d6   IPv4          80      10.44.0.30   6d19h
+service-am-i-ready-XXXXX   IPv4          80      10.44.0.XXX  6d19h
 ```
 
 Which will result in our first *Pod* being ready, just give it a minute for the *Readiness* probe to check again:
 
 ```bash
-k get pod ready-if-service-ready
+kubectl get pod ready-if-service-ready
 NAME                     READY   STATUS    RESTARTS   AGE
 ready-if-service-ready   1/1     Running   0          2m10s
 ```

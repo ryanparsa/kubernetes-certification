@@ -1,5 +1,7 @@
 # Question 5 | Kustomize configure HPA Autoscaler
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 Previously the application `api-gateway` used some external autoscaler which should now be replaced with a *HorizontalPodAutoscaler* (*HPA*). The application has been deployed to *Namespaces* `api-gateway-staging` and `api-gateway-prod` like this:
 
 ```
@@ -30,7 +32,7 @@ base  prod  staging
 Let's investigate the base first for better understanding:
 
 ```bash
-k kustomize base
+kubectl kustomize base
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -74,7 +76,7 @@ But for debugging it can be useful to build the base Yaml.
 Now we look at the staging directory:
 
 ```bash
-k kustomize staging
+kubectl kustomize staging
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -143,9 +145,9 @@ transformers:
 We should be able to build and deploy the staging Yaml:
 
 ```bash
-k kustomize staging | kubectl diff -f -
+kubectl kustomize staging | kubectl diff -f -
 
-k kustomize staging | kubectl apply -f -
+kubectl kustomize staging | kubectl apply -f -
 serviceaccount/api-gateway unchanged
 configmap/horizontal-scaling-config unchanged
 deployment.apps/api-gateway unchanged
@@ -154,7 +156,7 @@ deployment.apps/api-gateway unchanged
 Actually we see that no changes were performed, because everything is already deployed:
 
 ```bash
-k -n api-gateway-staging get deploy,cm
+kubectl -n api-gateway-staging get deploy,cm
 NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/api-gateway   1/1     1            1           20m
 
@@ -168,7 +170,7 @@ configmap/kube-root-ca.crt           1       21m
 Everything said about staging is also true about prod, there are just different values of resources changed. Hence we should also see that there are no changes to be applied:
 
 ```bash
-k kustomize prod
+kubectl kustomize prod
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -180,9 +182,9 @@ metadata:
 We can see that now *Namespace* `api-gateway-prod` is being used.
 
 ```bash
-k kustomize prod | kubectl diff -f -
+kubectl kustomize prod | kubectl diff -f -
 
-k kustomize prod | kubectl apply -f -
+kubectl kustomize prod | kubectl apply -f -
 serviceaccount/api-gateway unchanged
 configmap/horizontal-scaling-config unchanged
 deployment.apps/api-gateway unchanged
@@ -195,14 +197,14 @@ And everything seems to be up to date for prod as well.
 We need to remove the *ConfigMap* from base, staging and prod because staging and prod both reference it as a patch. If we would only remove it from base we would run into an error when trying to build staging for example:
 
 ```bash
-k kustomize staging
+kubectl kustomize staging
 error: no resource matches strategic merge patch "ConfigMap.v1.[noGrp]/horizontal-scaling-config.[noNs]": no matches for Id ConfigMap.v1.[noGrp]/horizontal-scaling-config.[noNs]; failed to find unique target for patch ConfigMap.v1.[noGrp]/horizontal-scaling-config.[noNs]
 ```
 
 So we edit files `base/api-gateway.yaml`, `staging/api-gateway.yaml` and `prod/api-gateway.yaml` and remove the *ConfigMap*. Afterwards we should get no errors and Yaml without that *ConfigMap*:
 
 ```bash
-k kustomize staging
+kubectl kustomize staging
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -231,7 +233,7 @@ spec:
         name: httpd
       serviceAccountName: api-gateway
 
-k kustomize prod
+kubectl kustomize prod
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -298,6 +300,9 @@ spec:
       containers:
       - image: httpd:2-alpine
         name: httpd
+        resources:
+          requests:
+            cpu: 100m
 ```
 
 Notice that we don't specify a *Namespace* here as done also for the other resources. The *Namespace* will be set by staging and prod overlays automatically.
@@ -326,7 +331,7 @@ metadata:
 With that change we should see that staging will have the *HPA* with `maxReplicas: 4` from base, whereas prod will have `maxReplicas: 6`:
 
 ```bash
-k kustomize staging | grep maxReplicas -B5
+kubectl kustomize staging | grep maxReplicas -B5
 kind: HorizontalPodAutoscaler
 metadata:
   name: api-gateway
@@ -334,7 +339,7 @@ metadata:
 spec:
   maxReplicas: 4
 
-k kustomize prod | grep maxReplicas -B5
+kubectl kustomize prod | grep maxReplicas -B5
 kind: HorizontalPodAutoscaler
 metadata:
   name: api-gateway
@@ -348,7 +353,7 @@ spec:
 Finally we apply the changes, first staging:
 
 ```bash
-k kustomize staging | kubectl diff -f -
+kubectl kustomize staging | kubectl diff -f -
 diff -u -N /tmp/LIVE-3038173353/autoscaling.v2.HorizontalPodAutoscaler.api-gateway-staging.api-gateway /tmp/MERGED-332240272/autoscaling.v2.HorizontalPodAutoscaler.api-gateway-staging.api-gateway
 --- /tmp/LIVE-3038173353/autoscaling.v2.HorizontalPodAutoscaler.api-gateway-staging.api-gateway 2024-12-23 16:21:47.771211074 +0000
 +++ /tmp/MERGED-332240272/autoscaling.v2.HorizontalPodAutoscaler.api-gateway-staging.api-gateway       2024-12-23 16:21:47.772211169 +0000
@@ -378,42 +383,42 @@ diff -u -N /tmp/LIVE-3038173353/autoscaling.v2.HorizontalPodAutoscaler.api-gatew
 +  currentMetrics: null
 +  desiredReplicas: 0
 
-k kustomize staging | kubectl apply -f -
+kubectl kustomize staging | kubectl apply -f -
 serviceaccount/api-gateway unchanged
 deployment.apps/api-gateway unchanged
 horizontalpodautoscaler.autoscaling/api-gateway created
 
-k kustomize staging | kubectl diff -f -
+kubectl kustomize staging | kubectl diff -f -
 ```
 
 And next for prod:
 
 ```bash
-k kustomize prod | kubectl apply -f -
+kubectl kustomize prod | kubectl apply -f -
 serviceaccount/api-gateway unchanged
 deployment.apps/api-gateway unchanged
 horizontalpodautoscaler.autoscaling/api-gateway created
 
-k kustomize prod | kubectl diff -f -
+kubectl kustomize prod | kubectl diff -f -
 ```
 
 We notice that the *HPA* was created as expected, but nothing was done with the *ConfigMap* that we removed from the Yaml files earlier. We need to delete the remote *ConfigMaps* manually, why is explained in more detail at the end of this solution.
 
 ```bash
-k -n api-gateway-staging get cm
+kubectl -n api-gateway-staging get cm
 NAME                        DATA   AGE
 horizontal-scaling-config   1       61m
 kube-root-ca.crt            1       61m
 
-k -n api-gateway-staging delete cm horizontal-scaling-config
+kubectl -n api-gateway-staging delete cm horizontal-scaling-config
 configmap "horizontal-scaling-config" deleted
 
-k -n api-gateway-prod get cm
+kubectl -n api-gateway-prod get cm
 NAME                        DATA   AGE
 horizontal-scaling-config   2       61m
 kube-root-ca.crt            1       62m
 
-k -n api-gateway-prod delete cm horizontal-scaling-config
+kubectl -n api-gateway-prod delete cm horizontal-scaling-config
 configmap "horizontal-scaling-config" deleted
 
 ```
@@ -425,7 +430,7 @@ Done!
 After deleting the *ConfigMaps* manually we should not see any changes when running a diff. This is because the *ConfigMap* does not exist any longer in our Yaml and we already applied all changes. But we might see something like this:
 
 ```bash
-k kustomize prod | kubectl diff -f -
+kubectl kustomize prod | kubectl diff -f -
 diff -u -N /tmp/LIVE-849078037/apps.v1.Deployment.api-gateway-prod.api-gateway /tmp/MERGED-2513424623/apps.v1.Deployment.api-gateway-prod.api-gateway
 --- /tmp/LIVE-849078037/apps.v1.Deployment.api-gateway-prod.api-gateway 2024-12-23 16:37:44.763088538 +0000
 +++ /tmp/MERGED-2513424623/apps.v1.Deployment.api-gateway-prod.api-gateway     2024-12-23 16:37:44.766088823 +0000
@@ -452,7 +457,7 @@ diff -u -N /tmp/LIVE-849078037/apps.v1.Deployment.api-gateway-prod.api-gateway /
 Above we can see that we would change the replicas from 2 to 1. This is because the *HPA* already set the replicas to the `minReplicas` that we defined and it's different than the default `replicas:` of the *Deployment*:
 
 ```bash
-k -n api-gateway-prod get hpa
+kubectl -n api-gateway-prod get hpa
 NAME          ...   MINPODS   MAXPODS   REPLICAS   AGE
 api-gateway   ...   2         6         2          15m
 ```
