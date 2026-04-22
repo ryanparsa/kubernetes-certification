@@ -12,47 +12,71 @@
 
 ```bash
 ➜ ssh cka6016
-```
 
-Write the cluster events command:
+➜ candidate@cka6016:~$ vim /opt/course/15/cluster_events.sh
+```
 
 ```bash
 # cka6016:/opt/course/15/cluster_events.sh
 kubectl get events -A --sort-by=.metadata.creationTimestamp
 ```
 
-### Step 2
-
-Delete the kube-proxy Pod:
+And we can execute it which should show recent events:
 
 ```bash
-➜ candidate@cka6016:~$ k -n kube-system get pod | grep proxy
-kube-proxy-wb4tb   1/1     Running   0          9d
-
-➜ candidate@cka6016:~$ k -n kube-system delete pod kube-proxy-wb4tb
-pod "kube-proxy-wb4tb" deleted
+➜ candidate@cka6016:~$ sh /opt/course/15/cluster_events.sh
+NAMESPACE     LAST SEEN   TYPE     REASON           OBJECT                       MESSAGE
+...
+32.0.2:8181: connect: connection refused
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-fvzw5    Successfully pulled image "httpd:2-alpine" in 4.574s (4.575s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-fvzw5    Created container httpd
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-9fg47    Successfully pulled image "httpd:2-alpine" in 425ms (4.976s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-fvzw5    Started container httpd
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-xnprt    Successfully pulled image "httpd:2-alpine" in 711ms (5.685s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-xnprt    Created container httpd
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-9fg47    Created container httpd
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-9fg47    Started container httpd
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-xnprt    Started container httpd
+...
 ```
 
-Now we run the events script and write them into the pod_kill.log:
+### Step 2
+
+We delete the kube-proxy Pod:
+
+```bash
+➜ candidate@cka6016:~$ k -n kube-system get pod -l k8s-app=kube-proxy -owide
+NAME               READY   ...     NODE      NOMINATED NODE   READINESS GATES
+kube-proxy-lf2fs   1/1     ...     cka6016   <none>           <none>
+
+➜ candidate@cka6016:~$ k -n kube-system delete pod kube-proxy-lf2fs
+pod "kube-proxy-lf2fs" deleted
+```
+
+Now we can check the events, for example by using the command that we created before:
 
 ```bash
 ➜ candidate@cka6016:~$ sh /opt/course/15/cluster_events.sh
 ```
 
-Write the events caused by deleting into `/opt/course/15/pod_kill.log` on `cka6016`:
+Write the events caused by the deletion into `/opt/course/15/pod_kill.log` on `cka6016`:
 
 ```bash
-# /opt/course/15/pod_kill.log
-kube-system   0s    Normal   Killing     pod/kube-proxy-wb4tb      Stopping container kube-proxy
-kube-system   0s    Normal   Scheduled   pod/kube-proxy-wb4tb      Successfully assigned kube-system/kube-proxy-wb4tb to cka6016
-kube-system   0s    Normal   Pulled      pod/kube-proxy-wb4tb      Container image "registry.k8s.io/kube-proxy:v1.33.1" already present on machine
-kube-system   0s    Normal   Created     pod/kube-proxy-wb4tb      Created container kube-proxy
-kube-system   0s    Normal   Started     pod/kube-proxy-wb4tb      Started container kube-proxy
+# cka6016:/opt/course/15/pod_kill.log
+kube-system   12s         Normal    Killing             pod/kube-proxy-lf2fs                    Stopping container kube-proxy
+kube-system   12s         Normal    SuccessfulCreate    daemonset/kube-proxy                    Created pod: kube-proxy-wb4tb
+kube-system   11s         Normal    Scheduled           pod/kube-proxy-wb4tb                    Successfully assigned kube-system/kube-proxy-wb4tb to cka6016
+kube-system   11s         Normal    Pulled              pod/kube-proxy-wb4tb                    Container image "registry.k8s.io/kube-proxy:v1.33.1" already present on machine
+kube-system   11s         Normal    Created             pod/kube-proxy-wb4tb                    Created container kube-proxy
+kube-system   11s         Normal    Started             pod/kube-proxy-wb4tb                    Started container kube-proxy
+default       10s         Normal    Starting            node/cka6016  
 ```
 
 ### Step 3
 
-Now we manually kill the containerd container of the kube-proxy *Pod*:
+> ℹ️ Node cka6016 is already the controlplane and the only node of the cluster. Otherwise we might have to ssh onto the correct worker node where the Pod is running instead
+
+Finally we will try to provoke events by killing the container belonging to the container of a kube-proxy Pod:
 
 ```bash
 ➜ candidate@cka6016:~$ sudo -i
