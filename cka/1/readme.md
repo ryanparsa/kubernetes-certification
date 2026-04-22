@@ -15,18 +15,18 @@ All that's asked for here could be extracted by manually reading the kubeconfig 
 First we get all context names:
 
 ```bash
-k --kubeconfig cka/1/course/kubeconfig config get-contexts
+kubectl --kubeconfig cka/1/course/kubeconfig config get-contexts
 CURRENT   NAME            CLUSTER     AUTHINFO               NAMESPACE
           cluster-admin   kubernetes  admin@internal         
           cluster-w100    kubernetes  account-0027@internal  
 *         cluster-w200    kubernetes  account-0028@internal  
 
-k --kubeconfig cka/1/course/kubeconfig config get-contexts -oname
+kubectl --kubeconfig cka/1/course/kubeconfig config get-contexts -oname
 cluster-admin
 cluster-w100
 cluster-w200
 
-k --kubeconfig cka/1/course/kubeconfig config get-contexts -oname > cka/1/course/contexts
+kubectl --kubeconfig cka/1/course/kubeconfig config get-contexts -oname > cka/1/course/contexts
 ```
 
 This will result in:
@@ -41,9 +41,9 @@ cluster-w200
 We could also do extractions using jsonpath:
 
 ```bash
-k --kubeconfig cka/1/course/kubeconfig config view -o yaml
+kubectl --kubeconfig cka/1/course/kubeconfig config view -o yaml
 
-k --kubeconfig cka/1/course/kubeconfig config view -o jsonpath="{.contexts[*].name}"
+kubectl --kubeconfig cka/1/course/kubeconfig config view -o jsonpath="{.contexts[*].name}"
 ```
 
 But it would probably be overkill for this task.
@@ -53,10 +53,10 @@ But it would probably be overkill for this task.
 Now we query the current context:
 
 ```bash
-k --kubeconfig cka/1/course/kubeconfig config current-context 
+kubectl --kubeconfig cka/1/course/kubeconfig config current-context
 cluster-w200
 
-k --kubeconfig cka/1/course/kubeconfig config current-context > cka/1/course/current-context
+kubectl --kubeconfig cka/1/course/kubeconfig config current-context > cka/1/course/current-context
 ```
 
 Which will result in:
@@ -71,7 +71,7 @@ cluster-w200
 And finally we extract the certificate and write it base64 decoded into the required location:
 
 ```bash
-k --kubeconfig cka/1/course/kubeconfig config view -o yaml --raw
+kubectl --kubeconfig cka/1/course/kubeconfig config view -o yaml --raw
 apiVersion: v1
 clusters:
 - cluster:
@@ -111,7 +111,7 @@ echo LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2RE... | base64 -d > cka/1/cours
 Or if we like it automated:
 
 ```bash
-k --kubeconfig cka/1/course/kubeconfig config view --raw -ojsonpath="{.users[0].user.client-certificate-data}" | base64 -d > cka/1/course/cert
+kubectl --kubeconfig cka/1/course/kubeconfig config view --raw -ojsonpath="{.users[?(@.name=='account-0027@internal')].user.client-certificate-data}" | base64 -d > cka/1/course/cert
 ```
 
 Which will result in:
