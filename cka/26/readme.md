@@ -2,20 +2,22 @@
 
 Temporarily stop the kube-scheduler, this means in a way that you can start it again afterwards.
 
-Create a single Pod named `manual-schedule` of image `httpd:2-alpine`, confirm it's created but not scheduled on any node.
+Create a single *Pod* named `manual-schedule` of image `httpd:2-alpine`, confirm it's created but not scheduled on any *Node*.
 
-Now you're the scheduler and have all its power, manually schedule that Pod on node `cka-lab-control-plane`. Make sure it's running.
+Now you're the scheduler and have all its power, manually schedule that *Pod* on *Node* `cka-lab-control-plane`. Make sure it's running.
 
-Start the kube-scheduler again and confirm it's running correctly by creating a second Pod named `manual-schedule2` of image `httpd:2-alpine` and check if it's running on `cka-lab-worker`.
+Start the kube-scheduler again and confirm it's running correctly by creating a second *Pod* named `manual-schedule2` of image `httpd:2-alpine` and check if it's running on `cka-lab-worker`.
+
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 
 ## Answer
 
 ### Step 1 — Stop the Scheduler
 
-First we find the controlplane node:
+First we find the controlplane *Node*:
 
 ```bash
-k get node
+kubectl get node
 NAME                        STATUS   ROLES           AGE     VERSION
 cka-lab-control-plane       Ready    control-plane   6d22h   v1.33.1
 cka-lab-worker              Ready    <none>          6d22h   v1.33.1
@@ -28,11 +30,11 @@ kubectl -n kube-system get pod | grep schedule
 kube-scheduler-cka-lab-control-plane            1/1     Running   0               6d22h
 ```
 
-Kill the Scheduler (temporarily) by moving the static Pod manifest out of the manifests directory:
+Kill the Scheduler (temporarily) by moving the static *Pod* manifest out of the manifests directory:
 
 ```bash
 # Run this inside the control-plane node container
-docker exec -it cka-lab-control-plane mv /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/
+mv /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/
 ```
 
 And it should be stopped:
@@ -44,29 +46,29 @@ kubectl -n kube-system get pod | grep schedule
 > [!NOTE]
 > In this environment `docker exec` is used to access the kind node. In the real exam you would use `ssh` and `sudo -i`.
 
-### Step 2 — Create a Pod
+### Step 2 — Create a *Pod*
 
-Now we create the Pod:
+Now we create the *Pod*:
 
 ```bash
-k run manual-schedule --image=httpd:2-alpine
+kubectl run manual-schedule --image=httpd:2-alpine
 pod/manual-schedule created
 ```
 
-And confirm it has no node assigned:
+And confirm it has no *Node* assigned:
 
 ```bash
-k get pod manual-schedule -o wide
+kubectl get pod manual-schedule -o wide
 NAME              READY   STATUS    RESTARTS   AGE   IP       NODE    ...
 manual-schedule   0/1     Pending   0          14s   <none>   <none>  ...
 ```
 
-### Step 3 — Manually Schedule the Pod
+### Step 3 — Manually Schedule the *Pod*
 
 Let's play the scheduler now:
 
 ```bash
-k get pod manual-schedule -o yaml > 9.yaml
+kubectl get pod manual-schedule -o yaml > 9.yaml
 ```
 
 ```yaml
@@ -103,30 +105,31 @@ spec:
 ...
 ```
 
-The scheduler sets the `nodeName` for a Pod declaration. How it finds the correct node to schedule on, that's a very much complicated matter and takes many variables into account.
+The scheduler sets the `nodeName` for a *Pod* declaration. How it finds the correct *Node* to schedule on, that's a very much complicated matter and takes many variables into account.
 
 As we cannot `kubectl apply` or `kubectl edit`, in this case we need to delete and create or replace:
 
 ```bash
-k -f 9.yaml replace --force
+kubectl replace --force -f 9.yaml
 ```
 
 How does it look?
 
 ```bash
-k get pod manual-schedule -o wide
+kubectl get pod manual-schedule -o wide
 NAME              READY   STATUS    ...   NODE                          
 manual-schedule   1/1     Running   ...   cka-lab-control-plane
 ```
 
-It looks like our Pod is running on the controlplane now as requested, although no tolerations were specified. Only the scheduler takes taints/tolerations/affinity into account when finding the correct node name. That's why it's still possible to assign Pods manually directly to a controlplane node and skip the scheduler.
+It looks like our *Pod* is running on the controlplane now as requested, although no tolerations were specified. Only the scheduler takes taints/tolerations/affinity into account when finding the correct *Node* name. That's why it's still possible to assign *Pods* manually directly to a controlplane *Node* and skip the scheduler.
 
 ### Step 4 — Start the Scheduler Again
 
 Move the manifest back:
 
 ```bash
-docker exec -it cka-lab-control-plane mv /etc/kubernetes/kube-scheduler.yaml /etc/kubernetes/manifests/
+# Run this inside the control-plane node container
+mv /etc/kubernetes/kube-scheduler.yaml /etc/kubernetes/manifests/
 ```
 
 Check it's running:
@@ -136,12 +139,12 @@ kubectl -n kube-system get pod | grep schedule
 kube-scheduler-cka-lab-control-plane            1/1     Running   0               13s
 ```
 
-Schedule a second test Pod:
+Schedule a second test *Pod*:
 
 ```bash
-k run manual-schedule2 --image=httpd:2-alpine
+kubectl run manual-schedule2 --image=httpd:2-alpine
 
-k get pod -o wide | grep schedule
+kubectl get pod -o wide | grep schedule
 manual-schedule    1/1     Running   0          95s   10.32.0.2   cka-lab-control-plane
 manual-schedule2   1/1     Running   0          9s    10.44.0.3   cka-lab-worker
 ```

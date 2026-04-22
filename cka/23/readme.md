@@ -1,6 +1,6 @@
 # Question 6 | Fix Kubelet
 
-There seems to be an issue with the kubelet on controlplane node `cka1024`, it's not running.
+There seems to be an issue with the kubelet on controlplane node `cka-lab-control-plane`, it's not running.
 
 Fix the kubelet and confirm that the node is available in `Ready` state.
 
@@ -23,7 +23,7 @@ The procedure on scenarios like these is to first check if the kubelet is runnin
 Check node status:
 
 ```bash
-k get node
+kubectl get node
 ```
 
 ```
@@ -128,13 +128,13 @@ cat /var/log/syslog | grep kubelet
 ```
 
 ```
-2025-03-23T08:13:26.775366+00:00 ubuntu systemd[1]: Started kubelet.service - kubelet: The Kubernetes Node Agent.
-2025-03-23T08:13:26.782571+00:00 ubuntu (kubelet)[6826]: kubelet.service: Referenced but unset environment variable evaluates to an empty string: KUBELET_KUBEADM_ARGS
+2025-03-23T08:13:26.775366+00:00 cka-lab-control-plane systemd[1]: Started kubelet.service - kubelet: The Kubernetes Node Agent.
+2025-03-23T08:13:26.782571+00:00 cka-lab-control-plane (kubelet)[6826]: kubelet.service: Referenced but unset environment variable evaluates to an empty string: KUBELET_KUBEADM_ARGS
 ...
-2025-04-23T12:31:48.264234+00:00 ubuntu systemd[1]: kubelet.service: Scheduled restart job, restart counter is at 5.
-2025-04-23T12:31:48.272108+00:00 ubuntu systemd[1]: Started kubelet.service - kubelet: The Kubernetes Node Agent.
-2025-04-23T12:31:48.284966+00:00 ubuntu systemd[1]: kubelet.service: Main process exited, code=exited, status=203/EXEC
-2025-04-23T12:31:48.285487+00:00 ubuntu systemd[1]: kubelet.service: Failed with result 'exit-code'.
+2025-04-23T12:31:48.264234+00:00 cka-lab-control-plane systemd[1]: kubelet.service: Scheduled restart job, restart counter is at 5.
+2025-04-23T12:31:48.272108+00:00 cka-lab-control-plane systemd[1]: Started kubelet.service - kubelet: The Kubernetes Node Agent.
+2025-04-23T12:31:48.284966+00:00 cka-lab-control-plane systemd[1]: kubelet.service: Main process exited, code=exited, status=203/EXEC
+2025-04-23T12:31:48.285487+00:00 cka-lab-control-plane systemd[1]: kubelet.service: Failed with result 'exit-code'.
 ```
 
 If we check logs we should always look at the time, we probably only want the latest ones. Here we see:
@@ -226,7 +226,7 @@ f5de1f6e11d5c  ...  26 seconds ago    Running     etcd                      ...
 Also the node should be available, give it a bit of time though:
 
 ```bash
-k get node
+kubectl get node
 ```
 
 ```
@@ -235,15 +235,15 @@ cka-lab-control-plane   Ready    control-plane   31d   v1.33.1
 ```
 
 > [!NOTE]
-> It might take some time till `k get node` doesn't throw any errors after fixing the issue
+> It might take some time till `kubectl get node` doesn't throw any errors after fixing the issue
 
 Finally we create the requested *Pod*:
 
 ```bash
-k run success --image nginx:1-alpine
+kubectl run success --image nginx:1-alpine
 pod/success created
 
-k get pod success -o wide
+kubectl get pod success -o wide
 ```
 
 ```

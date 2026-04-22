@@ -1,5 +1,7 @@
 # Question 12 | Deployment on all Nodes
 
+> **Solve this question on:** the `cka-lab` kind cluster
+
 Implement the following in *Namespace* `project-tiger`:
 
 - Create a *Deployment* named `deploy-important` with `3` replicas
@@ -116,7 +118,7 @@ status: {}
 Let's run it:
 
 ```bash
-k -f 12.yaml create
+k create -f 12.yaml
 deployment.apps/deploy-important created
 ```
 

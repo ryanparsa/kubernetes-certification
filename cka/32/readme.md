@@ -1,5 +1,7 @@
 # Question 15 | Cluster Event Logging
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 1. Write a `kubectl` command into `cka/32/course/cluster_events.sh` which shows the latest events in the whole cluster, ordered by time (`metadata.creationTimestamp`)
 2. Delete the kube-proxy *Pod* and write the events this caused into `cka/32/course/pod_kill.log`
 3. Manually kill the containerd container of the kube-proxy *Pod* and write the events into `cka/32/course/container_kill.log`
@@ -37,14 +39,14 @@ default       19m         Normal    Started             pod/team-york-board-7d74
 
 ### Step 2
 
-We delete the kube-proxy Pod:
+We delete the kube-proxy *Pod*:
 
 ```bash
-k -n kube-system get pod -l k8s-app=kube-proxy -owide
+kubectl -n kube-system get pod -l k8s-app=kube-proxy -owide
 NAME               READY   ...     NODE                        NOMINATED NODE   READINESS GATES
 kube-proxy-lf2fs   1/1     ...     cka-lab-control-plane       <none>           <none>
 
-k -n kube-system delete pod kube-proxy-lf2fs
+kubectl -n kube-system delete pod kube-proxy-lf2fs
 pod "kube-proxy-lf2fs" deleted
 ```
 
@@ -69,13 +71,11 @@ default       10s         Normal    Starting            node/cka-lab-control-pla
 
 ### Step 3
 
-> ℹ️ The control-plane is the only node of the cluster. In kind, exec into the control-plane container to run crictl commands:
-> `docker exec -it cka-lab-control-plane bash`
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 
-Finally we will try to provoke events by killing the container belonging to the container of a kube-proxy Pod:
+Finally we will try to provoke events by killing the container belonging to the container of a kube-proxy *Pod*:
 
 ```bash
-# docker exec -it cka-lab-control-plane bash
 crictl ps | grep kube-proxy
 2fd052f1fcf78       505d571f5fd56       57 seconds ago      Running             kube-proxy            0                   3455856e0970c       kube-proxy-wb4tb
 
