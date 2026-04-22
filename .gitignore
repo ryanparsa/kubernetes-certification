@@ -75,29 +75,7 @@ secrets/
 *.pem
 
 # CKA lab output directories
-cka/1/course/
-cka/2/course/
-cka/3/course/
-cka/4/course/
-cka/27/course/
-cka/28/course/
-cka/30/course/
-cka/31/course/
-
-cka/32/course/
-cka/33/course/
-cka/34/course/
-cka/35/course/
-cka/36/course/
-cka/7/course/
-cka/9/course/
-cka/5/course/
-cka/16/course/
-cka/17/course/
-cka/20/course/
-cka/21/course/
-cka/26/course/
-cka/22/course/
+cka/[0-9]*/course/
 
 # Documentation build artifacts
 _build/
