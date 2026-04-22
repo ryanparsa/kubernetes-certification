@@ -25,7 +25,7 @@ kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
   -n kube-system deployment/metrics-server --timeout=120s
 
 # Create the course/ output directory for the user's scripts
-mkdir -p "$SCRIPT_DIR/../course/7"
+mkdir -p "$SCRIPT_DIR/../course"
 
 echo ""
 echo "Lab ready!"
