@@ -2,10 +2,12 @@
 
 Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and create the *Tenant* CRD:
 
+> **Solve this question on:** the "cka-lab" kind cluster
+
 1. Create *Namespace* `minio`
 2. Install Helm chart `minio/operator` into the new *Namespace*. The Helm Release should be called `minio-operator`
-3. Update the `Tenant` resource in `cka/2/course/minio-tenant.yaml` to include `enableSFTP: true` under `features`
-4. Create the `Tenant` resource from `cka/2/course/minio-tenant.yaml`
+3. Update the *Tenant* resource in `cka/2/course/minio-tenant.yaml` to include `enableSFTP: true` under `features`
+4. Create the *Tenant* resource from `cka/2/course/minio-tenant.yaml`
 
 > [!NOTE]
 > It is not required for MinIO to run properly. Installing the Helm Chart and the *Tenant* resource as requested is enough
@@ -27,7 +29,7 @@ Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and
 First we create the requested *Namespace* `minio`:
 
 ```bash
-k create ns minio
+kubectl create ns minio
 namespace/minio created
 ```
 
@@ -56,16 +58,16 @@ helm -n minio ls
 NAME            NAMESPACE   REVISION  ...  STATUS     CHART           APP VERSION
 minio-operator  minio       1         ...  deployed   operator-6.0.4  v6.0.4
 
-k -n minio get pod
+kubectl -n minio get pod
 NAME                                READY   STATUS    RESTARTS   AGE
 minio-operator-7b595f559d-5hrj5     1/1     Running   0          24s
 minio-operator-7b595f559d-sl22g     1/1     Running   0          25s
 ```
 
-Because we installed the Helm chart there are now some *CRDs* available:
+Because we installed the Helm chart there are now some *CustomResourceDefinitions* (*CRDs*) available:
 
 ```bash
-k get crd
+kubectl get crd
 NAME                        CREATED AT
 miniojobs.job.min.io        2024-12-22T17:04:38Z
 policybindings.sts.min.io   2024-12-22T17:04:38Z
@@ -75,7 +77,7 @@ tenants.minio.min.io        2024-12-22T17:04:38Z
 Just like we can create a *Pod*, we can now create a *Tenant*, *MinIOJob* or *PolicyBinding*. We can also list all available fields for the *Tenant* *CRD* like this:
 
 ```bash
-k describe crd tenant
+kubectl describe crd tenant
 Name:         tenants.minio.min.io
 Namespace:
 Labels:       app.kubernetes.io/managed-by=Helm
@@ -142,7 +144,7 @@ spec:
 We can see available fields for `features` like this:
 
 ```bash
-k describe crd tenant | grep -i feature -A 20
+kubectl describe crd tenant | grep -i feature -A 20
             Features:
               Properties:
                 Bucket DNS:
@@ -171,10 +173,10 @@ k describe crd tenant | grep -i feature -A 20
 Finally we can create the *Tenant* resource:
 
 ```bash
-k -f cka/2/course/minio-tenant.yaml apply
+kubectl apply -f cka/2/course/minio-tenant.yaml
 tenant.minio.min.io/tenant created
 
-k -n minio get tenant
+kubectl -n minio get tenant
 NAME     STATE                      HEALTH   AGE
 tenant   empty tenant credentials            21s
 ```
