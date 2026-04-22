@@ -36,13 +36,11 @@ spec:
 ```
 
 ```bash
-➜ candidate@cka7968:~$ k -f 6_pv.yaml apply
+➜ candidate@cka7968:~$ k -f 6_pv.yaml create
 persistentvolume/safari-pv created
-
-➜ candidate@cka7968:~$ k get pv
-NAME        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
-safari-pv   2Gi        RWO            Retain           Available                                   4s
 ```
+
+> ℹ️ Using the `hostPath` volume type presents many security risks, avoid if possible. Be aware that data stored in the hostPath directory will not be shared across nodes. The data available for a Pod depends on which node the Pod is scheduled.
 
 Next we create the *PersistentVolumeClaim*:
 
@@ -66,19 +64,22 @@ spec:
 ```
 
 ```bash
-➜ candidate@cka7968:~$ k -f 6_pvc.yaml apply
+➜ candidate@cka7968:~$ k -f 6_pvc.yaml create
 persistentvolumeclaim/safari-pvc created
-
-➜ candidate@cka7968:~$ k -n project-t230 get pvc
-NAME         STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-safari-pvc   Bound    safari-pv  2Gi        RWO                           2s
-
-➜ candidate@cka7968:~$ k get pv
-NAME        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                      STORAGECLASS   REASON   AGE
-safari-pv   2Gi        RWO            Retain           Bound    project-t230/safari-pvc                            22s
 ```
 
-Great! The *PVC* is Bound to our *PV*. Finally we create the *Deployment* and mount the volume:
+And check that both have the status Bound:
+
+```bash
+➜ candidate@cka7968:~$ k -n project-t230 get pv,pvc
+NAME                         CAPACITY  ... STATUS   CLAIM                    ...
+persistentvolume/safari-pv   2Gi       ... Bound    project-t230/safari-pvc ...
+
+NAME                               STATUS   VOLUME      CAPACITY ...
+persistentvolumeclaim/safari-pvc   Bound    safari-pv   2Gi      ...
+```
+
+Next we create a *Deployment* and mount that volume:
 
 ```bash
 ➜ candidate@cka7968:~$ k -n project-t230 create deployment safari --image=httpd:2-alpine --dry-run=client -o yaml > 6_dep.yaml
@@ -114,7 +115,7 @@ spec:
           claimName: safari-pvc                     # add
       containers:
       - image: httpd:2-alpine
-        name: httpd
+        name: container
         volumeMounts:                               # add
         - name: data                                # add
           mountPath: /tmp/safari-data              # add
@@ -123,22 +124,15 @@ status: {}
 ```
 
 ```bash
-➜ candidate@cka7968:~$ k -f 6_dep.yaml apply
+➜ candidate@cka7968:~$ k -f 6_dep.yaml create
 deployment.apps/safari created
-
-➜ candidate@cka7968:~$ k -n project-t230 get pod
-NAME                      READY   STATUS    RESTARTS   AGE
-safari-57cbdfc69b-9p8z8   1/1     Running   0          33s
 ```
 
-Let's check if the mounting works:
+We can confirm it's mounting correctly:
 
 ```bash
-➜ candidate@cka7968:~$ k -n project-t230 exec safari-57cbdfc69b-9p8z8 -- df -h | grep safari
-/dev/vdb                  2.0G   24K  1.9G   1% /tmp/safari-data
-
-➜ candidate@cka7968:~$ k -n project-t230 exec safari-57cbdfc69b-9p8z8 -- mount | grep safari
-/dev/vdb on /tmp/safari-data type ext4 (rw,relatime)
+➜ candidate@cka7968:~$ k -n project-t230 describe pod safari-b499cc5b9-x7d7h | grep -A2 Mounts:
+    Mounts:
+      /tmp/safari-data from data (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-xght8 (ro)
 ```
-
-The volume is mounted! When using `hostPath`, it's very important to know that the directory `/Volumes/Data` has to exist on every Node where a *Pod* could be scheduled. Otherwise the *Pod* will stay in a `Pending` state. In a real world setup this could be implemented by a NFS mount for example.
