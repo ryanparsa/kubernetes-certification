@@ -1,0 +1,28 @@
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: tenant
+  namespace: minio
+  labels:
+    app: minio
+spec:
+  features:
+    bucketDNS: false
+  image: quay.io/minio/minio:latest
+  pools:
+  - servers: 1
+    name: pool-0
+    volumesPerServer: 0
+    volumeClaimTemplate:
+      apiVersion: v1
+      kind: persistentvolumeclaims
+      metadata: { }
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+        storageClassName: standard
+      status: { }
+  requestAutoCert: true

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-gateway
+---
+apiVersion: v1
+data:
+  horizontal-scaling: "70"
+kind: ConfigMap
+metadata:
+  name: horizontal-scaling-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      id: api-gateway
+  template:
+    metadata:
+      labels:
+        id: api-gateway
+    spec:
+      containers:
+      - image: httpd:2-alpine
+        name: httpd
+      serviceAccountName: api-gateway

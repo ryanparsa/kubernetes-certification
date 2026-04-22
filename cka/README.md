@@ -4,11 +4,11 @@ Here is the mapping for the mock exam questions to their corresponding directori
 
 | Question Source     | Question Number | Directory | Status | Lab |
 |---------------------|-----------------|-----------|--------|-----|
-| Simulator A         | Question 1      | `1`       | Done   |     |
-| Simulator A         | Question 2      | `2`       | Done   |     |
-| Simulator A         | Question 3      | `3`       | Done   |     |
+| Simulator A         | Question 1      | `1`       | Done   | Ready |
+| Simulator A         | Question 2      | `2`       | Done   | Ready |
+| Simulator A         | Question 3      | `3`       | Done   | Ready |
 | Simulator A         | Question 4      | `4`       | Done   | Ready |
-| Simulator A         | Question 5      | `5`       | Done   |     |
+| Simulator A         | Question 5      | `5`       | Done   | Ready |
 | Simulator A         | Question 6      | `6`       | Done   |     |
 | Simulator A         | Question 7      | `7`       | Done   |     |
 | Simulator A         | Question 8      | `8`       | Done   |     |
