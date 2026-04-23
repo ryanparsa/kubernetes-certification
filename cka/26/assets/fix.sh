@@ -22,6 +22,12 @@ kubectl get pod manual-schedule -o json | jq '.spec.nodeName="cka-lab-26-control
 docker exec "$CLUSTER_NAME-control-plane" mv /etc/kubernetes/kube-scheduler.yaml /etc/kubernetes/manifests/
 
 # 5. Create manual-schedule2 pod
+# Wait for Kubelet to recreate the scheduler pod
+echo "Waiting for scheduler pod to be recreated..."
+until kubectl get pod -l component=kube-scheduler -n kube-system 2>/dev/null | grep -q "kube-scheduler"; do
+  sleep 1
+done
+
 # Wait for scheduler to be ready
 kubectl wait --for=condition=Ready pod -l component=kube-scheduler -n kube-system --timeout=60s
 kubectl run manual-schedule2 --image=httpd:2-alpine
