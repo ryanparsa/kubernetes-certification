@@ -1,6 +1,6 @@
-# Question 12 | Schedule Pod on Controlplane Nodes
+# Question 29 | Schedule Pod on Controlplane Nodes
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-29" kind cluster
 
 Create a *Pod* of image `httpd:2-alpine` in *Namespace* `default`.
 
@@ -16,31 +16,31 @@ First we find the *Controlplane Node(s)* and their taints:
 
 ```bash
 kubectl get node
-NAME                        STATUS   ROLES           AGE   VERSION
-cka-lab-control-plane       Ready    control-plane   90m   v1.33.1
-cka-lab-worker              Ready    <none>          85m   v1.33.1
+NAME                           STATUS   ROLES           AGE   VERSION
+cka-lab-29-control-plane       Ready    control-plane   90m   v1.33.1
+cka-lab-29-worker              Ready    <none>          85m   v1.33.1
 
-kubectl describe node cka-lab-control-plane | grep Taint -A1
+kubectl describe node cka-lab-29-control-plane | grep Taint -A1
 Taints:             node-role.kubernetes.io/control-plane:NoSchedule
 Unschedulable:      false
 
-kubectl get node cka-lab-control-plane --show-labels
-NAME                    STATUS   ROLES           AGE   VERSION   LABELS
-cka-lab-control-plane   Ready    control-plane   91m   v1.33.1   beta.kubernetes.io/arch=amd64,...,node-role.kubernetes.io/control-plane=,...
+kubectl get node cka-lab-29-control-plane --show-labels
+NAME                       STATUS   ROLES           AGE   VERSION   LABELS
+cka-lab-29-control-plane   Ready    control-plane   91m   v1.33.1   beta.kubernetes.io/arch=amd64,...,node-role.kubernetes.io/control-plane=,...
 ```
 
 Next we create the *Pod* yaml:
 
 ```bash
-kubectl run pod1 --image=httpd:2-alpine --dry-run=client -o yaml > cka/29/course/12.yaml
+kubectl run pod1 --image=httpd:2-alpine --dry-run=client -o yaml > cka/29/course/29.yaml
 ```
 
 ### Solution using NodeSelector
 
-Use the K8s docs and search for tolerations and nodeSelector to find examples, then update:
+Use the *Kubernetes* docs and search for tolerations and `nodeSelector` to find examples, then update:
 
 ```yaml
-# cka/29/course/12.yaml
+# cka/29/course/29.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -73,7 +73,7 @@ Important here to add the toleration for running on *Controlplane Nodes*, but al
 We could also use `nodeAffinity` instead of `nodeSelector`, although in this case it is more complex and not really suggested:
 
 ```yaml
-# cka/29/course/12.yaml
+# cka/29/course/29.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -108,22 +108,22 @@ Using `nodeAffinity` still requires the toleration.
 Now we create the *Pod* and and check if is scheduled:
 
 ```bash
-kubectl create -f cka/29/course/12.yaml
+kubectl create -f cka/29/course/29.yaml
 pod/pod1 created
 
 kubectl get pod pod1 -o wide
-NAME   READY   STATUS    ...   NODE                          NOMINATED NODE   READINESS GATES
-pod1   1/1     Running   ...   cka-lab-control-plane         <none>           <none>
+NAME   READY   STATUS    ...   NODE                             NOMINATED NODE   READINESS GATES
+pod1   1/1     Running   ...   cka-lab-29-control-plane         <none>           <none>
 ```
 
 We can see the *Pod* is scheduled on the *Controlplane Node*.
 
 
-## Killer.sh Checklist (Score: 0/6)
+## Checklist (Score: 0/6)
 
-- [ ] Pod is running
-- [ ] Pod has single container
-- [ ] Container has correct name
-- [ ] Container has correct image
-- [ ] Pod is scheduled on controlplane
-- [ ] Pod will only be scheduled on controlplane nodes
+- [ ] *Pod* is running
+- [ ] *Pod* has single *Container*
+- [ ] *Container* has correct name
+- [ ] *Container* has correct image
+- [ ] *Pod* is scheduled on *Controlplane*
+- [ ] *Pod* will only be scheduled on *Controlplane Nodes*
