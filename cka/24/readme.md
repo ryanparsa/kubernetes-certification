@@ -46,8 +46,8 @@ kubectl -n kube-system exec etcd-cka-lab-24-control-plane -- etcd --version
 ```
 
 ```
-etcd Version: 3.6.4
-Git SHA: 5400cdc
+etcd Version: 3.5.16
+Git SHA: 343b1ca
 Go Version: go1.23.11
 Go OS/Arch: linux/amd64
 ```
