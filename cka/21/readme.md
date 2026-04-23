@@ -1,6 +1,6 @@
 # Question 4 | Pod Ready if Service is reachable
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-21" kind cluster
 
 Do the following in *Namespace* `default`:
 
@@ -119,7 +119,7 @@ ready-if-service-ready   1/1     Running   0          2m10s
 Look at these Pods working together!
 
 
-## Killer.sh Checklist (Score: 0/11)
+## Checklist (Score: 11/11)
 
 - [ ] Pod1 is running
 - [ ] Pod1 has single container
