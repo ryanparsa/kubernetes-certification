@@ -1,6 +1,12 @@
-# CKA Mock Exam Directory Mapping
+# CKA Labs
 
-Here is the mapping for the mock exam questions to their corresponding directories:
+Practice labs for the Certified Kubernetes Administrator exam, organized by simulator question number.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file templates, and conventions.
+
+---
+
+## Lab Index
 
 | Question Source     | Question Number | Directory | Status | Lab   | Check |
 |---------------------|-----------------|-----------|--------|-------|-------|
@@ -42,10 +48,3 @@ Here is the mapping for the mock exam questions to their corresponding directori
 | Simulator A Preview | Question 2      | `36`      | Done   | Ready |       |
 | Simulator A Preview | Question 3      | `37`      | Done   | Ready |       |
 
-## Extra Ref to get new tasks
-
-- https://github.com/SeongjinDaniel/TIL/blob/63879d422962214c0a965544779cd9ad68af9ffc/Kubernetes/%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC/CKA%20Simulator%20Kubernetes%201.22%20%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC.md
-
-- https://github.com/polosesy/polosesy.github.io/blob/06ebe21d5b3186fcf08a8923564b8a4a10653e88/test/toasts.md
-
-- https://github.com/mafeifan/vitepress-blog/blob/97afa7f91ae4ad677a4f55b02f4dfbbb36695d81/docs/DevOps/K8s/CKA/CKA-%E6%A8%A1%E6%8B%9F%E8%80%83%E8%AF%95.md
