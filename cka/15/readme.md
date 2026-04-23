@@ -1,6 +1,6 @@
 # Question 15 | NetworkPolicy
 
-> **Solve this question on:** `controlplane`
+> **Solve this question on:** the `cka-lab-15` kind cluster
 
 There was a security incident where an intruder was able to access the whole cluster from a single hacked backend Pod.
 
@@ -166,3 +166,11 @@ kubectl -n project-snake exec backend-0 -- curl --connect-timeout 2 -s 10.44.0.2
 ```
 
 Also helpful to use `kubectl describe` on the NP to see how K8s has interpreted the policy.
+
+## Killer.sh Checklist (Score: 0/5)
+
+- [ ] NetworkPolicy `np-backend` exists in namespace `project-snake`
+- [ ] Policy selects pods with label `app=backend`
+- [ ] Policy type is `Egress` only
+- [ ] Egress rule allows traffic to pods with `app=db1` on port `1111`
+- [ ] Egress rule allows traffic to pods with `app=db2` on port `2222`

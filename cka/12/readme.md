@@ -1,6 +1,6 @@
 # Question 12 | Deployment on all Nodes
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the `cka-lab-12` kind cluster
 
 Implement the following in *Namespace* `project-tiger`:
 
@@ -136,8 +136,8 @@ And running the following we see one *Pod* on each worker node and one not sched
 k -n project-tiger get pod -o wide -l id=very-important
 NAME                                  READY   STATUS    ...   IP           NODE
 deploy-important-78f98b75f9-5s6js   0/2     Pending  ...   <none>       <none>
-deploy-important-78f98b75f9-657hx   2/2     Running  ...   10.244.1.x   cka-lab-worker
-deploy-important-78f98b75f9-9bz8q   2/2     Running  ...   10.244.2.x   cka-lab-worker2
+deploy-important-78f98b75f9-657hx   2/2     Running  ...   10.244.1.x   cka-lab-12-worker
+deploy-important-78f98b75f9-9bz8q   2/2     Running  ...   10.244.2.x   cka-lab-12-worker2
 ```
 
 If we kubectl describe the not scheduled *Pod* it will show us the reason `didn't match pod anti-affinity rules`:
@@ -151,3 +151,16 @@ Or our topologySpreadConstraints reason `didn't match pod topology spread constr
 ```text
 Warning  FailedScheduling  20s (x2 over 22s)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) didn't match pod topology spread constraints. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
 ```
+
+## Killer.sh Checklist (Score: 0/10)
+
+- [ ] Deployment `deploy-important` exists in namespace `project-tiger`
+- [ ] Deployment has label `id=very-important`
+- [ ] Pod template has label `id=very-important`
+- [ ] Deployment has 3 replicas
+- [ ] First container is named `container1`
+- [ ] First container uses image `nginx:1-alpine`
+- [ ] Second container is named `container2`
+- [ ] Second container uses image `google/pause`
+- [ ] Pod has `podAntiAffinity` or `topologySpreadConstraints`
+- [ ] Scheduling constraint uses `topologyKey: kubernetes.io/hostname`

@@ -2,7 +2,7 @@
 
 The team from Project r500 wants to replace their *Ingress* (networking.k8s.io) with a *Gateway API* (gateway.networking.k8s.io) solution. The old *Ingress* is available at `cka/13/course/ingress.yaml`.
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the `cka-lab-13` kind cluster
 
 Perform the following in *Namespace* `project-r500` and for the already existing *Gateway*:
 
@@ -307,3 +307,12 @@ Web Desktop App
 ```
 
 Great, *Gateway API* ftw!
+
+## Killer.sh Checklist (Score: 0/6)
+
+- [ ] HTTPRoute `traffic-director` exists in namespace `project-r500`
+- [ ] HTTPRoute references parent Gateway `main`
+- [ ] Path `/desktop` forwards to `web-desktop:80`
+- [ ] Path `/mobile` forwards to `web-mobile:80`
+- [ ] Path `/auto` with `User-Agent: mobile` forwards to `web-mobile:80`
+- [ ] Path `/auto` (default, no header match) forwards to `web-desktop:80`
