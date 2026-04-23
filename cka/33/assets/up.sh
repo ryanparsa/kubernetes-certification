@@ -10,7 +10,7 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/namespaces.yaml"
@@ -69,9 +69,10 @@ EOF
   done
 } | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
 
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
-# 4. Print summary
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
