@@ -2,13 +2,15 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+CLUSTER_NAME="cka-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # Install Calico CNI for NetworkPolicy support
 echo "Installing Calico..."
@@ -25,6 +27,8 @@ echo "Waiting for pods in project-snake..."
 kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
   -n project-snake pod/backend-0 pod/db1-0 pod/db2-0 pod/vault-0 \
   --for=condition=Ready --timeout=120s
+
+mkdir -p "$SCRIPT_DIR/../course"
 
 echo ""
 echo "Lab ready!"

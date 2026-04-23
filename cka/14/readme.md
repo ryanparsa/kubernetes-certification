@@ -2,7 +2,7 @@
 
 Perform some tasks on cluster certificates:
 
-> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
+> **Solve this question on:** `docker exec -it cka-lab-14-control-plane bash`
 
 1. Check how long the kube-apiserver server certificate is valid using openssl or cfssl. Write the expiration date into `cka/14/course/expiration`. Run the `kubeadm` command to list the expiration dates and confirm both methods show the same one
 2. Write the `kubeadm` command that would renew the kube-apiserver certificate into `cka/14/course/kubeadm-renew-certs.sh`
@@ -11,7 +11,7 @@ Perform some tasks on cluster certificates:
 
 > **Local lab note:** The Kubernetes PKI certificates live inside the kind control-plane container. Exec into it first:
 > ```bash
-> docker exec -it cka-lab-control-plane bash
+> docker exec -it cka-lab-14-control-plane bash
 > ```
 > All commands below are run inside that container.
 
@@ -60,3 +60,10 @@ And finally we write the command that would renew the kube-apiserver certificate
 # cka/14/course/kubeadm-renew-certs.sh
 kubeadm certs renew apiserver
 ```
+
+## Killer.sh Checklist (Score: 0/4)
+
+- [ ] File `cka/14/course/expiration` exists and contains the apiserver certificate expiration date
+- [ ] Expiration date in the file matches the `kubeadm certs check-expiration` output for `apiserver`
+- [ ] File `cka/14/course/kubeadm-renew-certs.sh` exists
+- [ ] File contains the command `kubeadm certs renew apiserver`
