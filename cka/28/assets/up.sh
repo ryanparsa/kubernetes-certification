@@ -1,22 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
-
 # 1. Check dependencies
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
-# 2. Create cluster
-kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
+KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
-# 3. Create the course/ directory and place the starting secret1.yaml there
+# 2. Create cluster
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+
+# 3. Apply pre-existing workloads
+# (None for this lab, but keeping the placeholder)
+
+# 4. Wait for deployments
+# (None for this lab, but keeping the placeholder)
+
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
+
+# 6. Copy task assets
 cp "$SCRIPT_DIR/task-secret1.yaml" "$SCRIPT_DIR/../course/secret1.yaml"
 
-# 4. Print summary
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
