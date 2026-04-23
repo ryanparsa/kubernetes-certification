@@ -1,7 +1,7 @@
-# Question 7 | Etcd Operations
+# Question 24 | Etcd Operations
 
-> **Solve this question on:** the "cka-lab" kind cluster
-> **For tasks requiring direct access to the control plane node (e.g. etcd snapshot):** `docker exec -it cka-lab-control-plane bash`
+> **Solve this question on:** the "cka-lab-24" kind cluster
+> **For tasks requiring direct access to the control plane node (e.g. etcd snapshot):** `docker exec -it cka-lab-24-control-plane bash`
 
 You have been tasked to perform the following etcd operations:
 
@@ -31,18 +31,18 @@ kubectl -n kube-system get pod
 ```
 
 ```
-NAME                                            READY   STATUS    RESTARTS      AGE
-coredns-78c4c75bb8-fgkfv                        1/1     Running   0             15d
-coredns-78c4c75bb8-l7mmh                        1/1     Running   0             15d
-etcd-cka-lab-control-plane                      1/1     Running   0             13m
-kube-apiserver-cka-lab-control-plane            1/1     Running   0             15d
-kube-controller-manager-cka-lab-control-plane   1/1     Running   0             15d
-kube-proxy-f56td                                1/1     Running   0             15d
-kube-scheduler-cka-lab-control-plane            1/1     Running   0             15d
+NAME                                               READY   STATUS    RESTARTS      AGE
+coredns-78c4c75bb8-fgkfv                           1/1     Running   0             15d
+coredns-78c4c75bb8-l7mmh                           1/1     Running   0             15d
+etcd-cka-lab-24-control-plane                      1/1     Running   0             13m
+kube-apiserver-cka-lab-24-control-plane            1/1     Running   0             15d
+kube-controller-manager-cka-lab-24-control-plane   1/1     Running   0             15d
+kube-proxy-f56td                                   1/1     Running   0             15d
+kube-scheduler-cka-lab-24-control-plane            1/1     Running   0             15d
 ```
 
 ```bash
-kubectl -n kube-system exec etcd-cka-lab-control-plane -- etcd --version
+kubectl -n kube-system exec etcd-cka-lab-24-control-plane -- etcd --version
 ```
 
 ```
@@ -53,23 +53,23 @@ Go OS/Arch: linux/amd64
 ```
 
 ```bash
-kubectl -n kube-system exec etcd-cka-lab-control-plane -- etcd --version > cka/24/course/etcd-version
+kubectl -n kube-system exec etcd-cka-lab-24-control-plane -- etcd --version > cka/24/course/etcd-version
 ```
 
 ### Step 2: Etcd Snapshot
 
 > [!NOTE]
-> For the snapshot, exec into the control plane node first: `docker exec -it cka-lab-control-plane bash`
-> Inside the node, `cka/24/course/` on your host is mounted at `/opt/course/7/`.
+> For the snapshot, exec into the control plane node first: `docker exec -it cka-lab-24-control-plane bash`
+> Inside the node, `cka/24/course/` on your host is mounted at `/opt/course/24/`.
 
 First we try to create a snapshot of etcd:
 
 ```bash
-ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db
+ETCDCTL_API=3 etcdctl snapshot save /opt/course/24/etcd-snapshot.db
 ```
 
 ```
-{"level":"info","ts":"2024-11-07T14:02:17.746254Z","caller":"snapshot/v3_snapshot.go:65","msg":"created temporary db file","path":"/opt/course/7/etcd-snapshot.db.part"}
+{"level":"info","ts":"2024-11-07T14:02:17.746254Z","caller":"snapshot/v3_snapshot.go:65","msg":"created temporary db file","path":"/opt/course/24/etcd-snapshot.db.part"}
 ^C
 ```
 
@@ -101,12 +101,12 @@ spec:
     - --client-cert-auth=true
     - --data-dir=/var/lib/etcd
     - --initial-advertise-peer-urls=https://192.168.100.31:2380
-    - --initial-cluster=cka-lab-control-plane=https://192.168.100.31:2380
+    - --initial-cluster=cka-lab-24-control-plane=https://192.168.100.31:2380
     - --key-file=/etc/kubernetes/pki/etcd/server.key                            # use
     - --listen-client-urls=https://127.0.0.1:2379,https://192.168.100.31:2379   # use
     - --listen-metrics-urls=http://127.0.0.1:2381
     - --listen-peer-urls=https://192.168.100.31:2380
-    - --name=cka-lab-control-plane
+    - --name=cka-lab-24-control-plane
     - --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
     - --peer-client-cert-auth=true
     - --peer-key-file=/etc/kubernetes/pki/etcd/peer.key
@@ -161,7 +161,7 @@ cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep etcd
 We use the authentication information and pass it to etcdctl:
 
 ```bash
-ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
+ETCDCTL_API=3 etcdctl snapshot save /opt/course/24/etcd-snapshot.db \
 --cacert /etc/kubernetes/pki/etcd/ca.crt \
 --cert /etc/kubernetes/pki/etcd/server.crt \
 --key /etc/kubernetes/pki/etcd/server.key
@@ -170,13 +170,13 @@ ETCDCTL_API=3 etcdctl snapshot save /opt/course/7/etcd-snapshot.db \
 Which should provide successful output:
 
 ```
-{"level":"info","ts":"2025-03-02T13:35:48.806437Z","caller":"snapshot/v3_snapshot.go:65","msg":"created temporary db file","path":"/opt/course/7/etcd-snapshot.db.part"}
+{"level":"info","ts":"2025-03-02T13:35:48.806437Z","caller":"snapshot/v3_snapshot.go:65","msg":"created temporary db file","path":"/opt/course/24/etcd-snapshot.db.part"}
 {"level":"info","ts":"2025-03-02T13:35:48.929550Z","logger":"client","caller":"v3@v3.5.16/maintenance.go:212","msg":"opened snapshot stream; downloading"}
 {"level":"info","ts":"2025-03-02T13:35:48.929975Z","caller":"snapshot/v3_snapshot.go:73","msg":"fetching snapshot","endpoint":"127.0.0.1:2379"}
 {"level":"info","ts":"2025-03-02T13:35:49.110620Z","logger":"client","caller":"v3@v3.5.16/maintenance.go:220","msg":"completed snapshot read; closing"}
 {"level":"info","ts":"2025-03-02T13:35:49.155626Z","caller":"snapshot/v3_snapshot.go:88","msg":"fetched snapshot","endpoint":"127.0.0.1:2379","size":"2.4 MB","took":"now"}
-{"level":"info","ts":"2025-03-02T13:35:49.155886Z","caller":"snapshot/v3_snapshot.go:97","msg":"saved","path":"/opt/course/7/etcd-snapshot.db"}
-Snapshot saved at /opt/course/7/etcd-snapshot.db
+{"level":"info","ts":"2025-03-02T13:35:49.155886Z","caller":"snapshot/v3_snapshot.go:97","msg":"saved","path":"/opt/course/24/etcd-snapshot.db"}
+Snapshot saved at /opt/course/24/etcd-snapshot.db
 ```
 
 ### (Optional) Etcd Restore
@@ -226,14 +226,14 @@ Now we restore the snapshot into a specific directory. Since etcd 3.6, `etcdctl 
 The restore is an offline operation (it doesn't need to connect to etcd), so no certificates are needed:
 
 ```bash
-etcdutl snapshot restore /opt/course/7/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
+etcdutl snapshot restore /opt/course/24/etcd-snapshot.db --data-dir /var/lib/etcd-snapshot
 ```
 
 ```
-2025-03-02T13:38:07Z    info    snapshot/v3_snapshot.go:265     restoring snapshot      {"path": "/opt/course/7/etcd-snapshot.db", "wal-dir": "/var/lib/etcd-snapshot/member/wal", "data-dir": "/var/lib/etcd-snapshot", "snap-dir": "/var/lib/etcd-snapshot/member/snap", "initial-memory-map-size": 0}
+2025-03-02T13:38:07Z    info    snapshot/v3_snapshot.go:265     restoring snapshot      {"path": "/opt/course/24/etcd-snapshot.db", "wal-dir": "/var/lib/etcd-snapshot/member/wal", "data-dir": "/var/lib/etcd-snapshot", "snap-dir": "/var/lib/etcd-snapshot/member/snap", "initial-memory-map-size": 0}
 2025-03-02T13:38:07Z    info    membership/store.go:141 Trimming membership information from the backend...
 2025-03-02T13:38:07Z    info    membership/cluster.go:421       added member    {"cluster-id": "cdf818194e3a8c32", "local-member-id": "0", "added-peer-id": "8e9e05c52164694d", "added-peer-peer-urls": ["http://localhost:2380"]}
-2025-03-02T13:38:08Z    info    snapshot/v3_snapshot.go:293     restored snapshot       {"path": "/opt/course/7/etcd-snapshot.db", "wal-dir": "/var/lib/etcd-snapshot/member/wal", "data-dir": "/var/lib/etcd-snapshot", "snap-dir": "/var/lib/etcd-snapshot/member/snap", "initial-memory-map-size": 0}
+2025-03-02T13:38:08Z    info    snapshot/v3_snapshot.go:293     restored snapshot       {"path": "/opt/course/24/etcd-snapshot.db", "wal-dir": "/var/lib/etcd-snapshot/member/wal", "data-dir": "/var/lib/etcd-snapshot", "snap-dir": "/var/lib/etcd-snapshot/member/snap", "initial-memory-map-size": 0}
 ```
 
 We could specify another host to make the backup from by using `etcdctl --endpoints http://IP`, but here we just use the default value which is: `http://127.0.0.1:2379`.
@@ -294,7 +294,7 @@ No resources found in default namespace.
 Awesome, snapshot and restore worked as our *Pod* is gone.
 
 
-## Killer.sh Checklist (Score: 0/2)
+## Checklist (Score: 0/2)
 
 - [ ] Version info correct
 - [ ] Snapshot created
