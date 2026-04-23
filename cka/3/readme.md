@@ -1,6 +1,6 @@
 # Question 3 | Scale down StatefulSet
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the "cka-lab-3" kind cluster
 
 There are two *Pods* named `o3db-*` in *Namespace* `project-h800`. The Project H800 management asked you to scale these down to one replica to save resources.
 
@@ -41,3 +41,8 @@ o3db   1/1     6d19h
 ```
 
 The Project H800 management is happy again.
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] StatefulSet `o3db` in namespace `project-h800` has `replicas: 1`
+- [ ] StatefulSet `o3db` in namespace `project-h800` has 1 ready replica

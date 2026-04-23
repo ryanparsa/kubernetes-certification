@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-kind delete cluster --name cka-lab
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+
+kind delete cluster --name "cka-lab-$LAB_ID"
+
 rm -rf "$SCRIPT_DIR/../course"
 
 echo "Lab torn down."

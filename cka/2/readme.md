@@ -2,7 +2,7 @@
 
 Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and create the *Tenant* CRD:
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-2" kind cluster
 
 1. Create *Namespace* `minio`
 2. Install Helm chart `minio/operator` into the new *Namespace*. The Helm Release should be called `minio-operator`
@@ -182,3 +182,10 @@ tenant   empty tenant credentials            21s
 ```
 
 In this scenario we installed an operator using Helm and created a *CRD* with which that operator works. This is a common pattern in Kubernetes.
+
+## Killer.sh Checklist (Score: 0/4)
+
+- [ ] Namespace `minio` exists
+- [ ] Helm release `minio-operator` is deployed in namespace `minio`
+- [ ] Tenant `tenant` exists in namespace `minio`
+- [ ] Tenant `tenant` has `enableSFTP: true` under `spec.features`

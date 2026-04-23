@@ -1,5 +1,7 @@
 # Question 1 | Contexts
 
+> **Solve this question on:** the "cka-lab-1" kind cluster
+
 You're asked to extract the following information out of kubeconfig file `cka/1/course/kubeconfig`:
 
 1. Write all kubeconfig context names into `cka/1/course/contexts`, one per line
@@ -138,3 +140,10 @@ SfsYRy6L1RKxjwh74KnhKJz+09JqXpr7MVdQgjh0Rdw=
 ```
 
 Task completed.
+
+## Killer.sh Checklist (Score: 0/4)
+
+- [ ] `course/contexts` contains all 3 context names (one per line)
+- [ ] `course/contexts` lists: `cluster-admin`, `cluster-w100`, `cluster-w200`
+- [ ] `course/current-context` contains: `cluster-w200`
+- [ ] `course/cert` is the base64-decoded PEM certificate for user `account-0027@internal`
