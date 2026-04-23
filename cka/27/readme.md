@@ -1,6 +1,6 @@
-# Question 10 | PV PVC Dynamic Provisioning
+# Question 27 | PV PVC Dynamic Provisioning
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-27" kind cluster
 
 There is a backup *Job* which needs to be adjusted to use a *PVC* to store backups.
 
@@ -39,6 +39,7 @@ vim sc.yaml
 ```
 
 ```yaml
+# cka/27/course/sc.yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -51,7 +52,7 @@ volumeBindingMode: WaitForFirstConsumer
 We need to use `reclaimPolicy: Retain` because this will cause the *PV* to not get deleted even after the associated *PVC* is deleted. It's very easy to delete resources in Kubernetes which can lead to quick data loss. Especially in this case where important data, like from a backup, is in play.
 
 ```bash
-kubectl apply -f sc.yaml
+kubectl apply -f cka/27/course/sc.yaml
 storageclass.storage.k8s.io/local-backup created
 
 kubectl get sc
@@ -205,7 +206,7 @@ pvc-dbcce...  50Mi       ...  Retain          Bound   project-bern/backup-pvc   
 Because the Local Path Provisioner is used we can actually see the volume represented on the filesystem. Since kind nodes are Docker containers, we can exec into the node:
 
 ```bash
-docker exec cka-lab-control-plane find /opt/local-path-provisioner
+docker exec cka-lab-27-control-plane find /opt/local-path-provisioner
 /opt/local-path-provisioner/
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc/backup-2024-12-30-17-27-51.tar.gz
