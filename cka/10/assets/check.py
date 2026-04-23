@@ -21,7 +21,7 @@ def can_i(verb, resource, namespace="project-hamster"):
     )
     return result.stdout.strip()
 
-class TestRBACProcessor(unittest.TestCase):
+class TestRBACServiceAccountRoleRoleBinding(unittest.TestCase):
 
     def test_serviceaccount_exists(self):
         name = kubectl("get", "serviceaccount", "processor", "-n", "project-hamster",

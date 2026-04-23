@@ -5,3 +5,4 @@ networking:
   ipFamily: ipv4
 nodes:
 - role: control-plane
+- role: worker
