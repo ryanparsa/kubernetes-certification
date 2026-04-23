@@ -134,3 +134,13 @@ dns: pod coredns
 ```
 
 You should be comfortable investigating a running cluster, know different methods on how a cluster and its services can be setup and be able to troubleshoot and find error sources.
+
+
+## Killer.sh Checklist (Score: 0/6)
+
+- [ ] Kubelet info valid
+- [ ] Kube-apiserver info valid
+- [ ] Kube-scheduler info valid
+- [ ] Kube-controller-manager info valid
+- [ ] ETCD info valid
+- [ ] DNS info valid

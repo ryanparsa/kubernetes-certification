@@ -91,3 +91,18 @@ Tue Nov  5 13:41:36 UTC 2024
 Tue Nov  5 13:41:37 UTC 2024
 Tue Nov  5 13:41:38 UTC 2024
 ```
+
+
+## Killer.sh Checklist (Score: 0/11)
+
+- [ ] Pod is running
+- [ ] Pod has three containers
+- [ ] Pod has three Ready containers
+- [ ] Pod container 1 has correct name
+- [ ] Pod container 1 has correct image
+- [ ] Pod container 1 has env variable MY_NODE_NAME
+- [ ] Pod container 2 has correct name
+- [ ] Pod container 2 has correct image
+- [ ] Pod container 3 has correct name
+- [ ] Pod container 3 has correct image
+- [ ] All Pod containers have volume mounted

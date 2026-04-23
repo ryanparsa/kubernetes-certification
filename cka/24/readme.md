@@ -292,3 +292,9 @@ No resources found in default namespace.
 ```
 
 Awesome, snapshot and restore worked as our *Pod* is gone.
+
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] Version info correct
+- [ ] Snapshot created

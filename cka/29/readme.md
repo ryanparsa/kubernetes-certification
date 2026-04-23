@@ -117,3 +117,13 @@ pod1   1/1     Running   ...   cka-lab-control-plane         <none>           <n
 ```
 
 We can see the *Pod* is scheduled on the *Controlplane Node*.
+
+
+## Killer.sh Checklist (Score: 0/6)
+
+- [ ] Pod is running
+- [ ] Pod has single container
+- [ ] Container has correct name
+- [ ] Container has correct image
+- [ ] Pod is scheduled on controlplane
+- [ ] Pod will only be scheduled on controlplane nodes

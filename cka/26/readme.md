@@ -150,3 +150,17 @@ manual-schedule2   1/1     Running   0          9s    10.44.0.3   cka-lab-worker
 ```
 
 Back to normal.
+
+
+## Killer.sh Checklist (Score: 0/10)
+
+- [ ] Pod1 is running in namespace default
+- [ ] Pod1 is scheduled on cka5248
+- [ ] Pod1 has single container
+- [ ] Pod1 container has correct image
+- [ ] Pod2 is running in namespace default
+- [ ] Pod2 is scheduled on cka5248-node1
+- [ ] Pod2 has single container
+- [ ] Pod2 container has correct image
+- [ ] kube-scheduler-cka5248 is running
+- [ ] kube-scheduler-cka5248 was restarted

@@ -137,3 +137,14 @@ kubectl -n secret exec secret-pod -- cat /tmp/secret1/halt
 # Description:
 ...
 ```
+
+
+## Killer.sh Checklist (Score: 0/7)
+
+- [ ] Secret secret1 exists
+- [ ] Secret secret2 exists
+- [ ] Pod exists
+- [ ] Pod has single container
+- [ ] Pod container has correct image
+- [ ] Pod mounts secret1 readonly
+- [ ] Pod has secret2 env variables

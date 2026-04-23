@@ -108,3 +108,10 @@ default       20s     Normal    Starting    node/cka-lab-control-plane
 ```
 
 Comparing the events we see that when we deleted the whole *Pod* there were more things to be done, hence more events. For example was the *DaemonSet* in the game to re-create the missing *Pod*. Where when we manually killed the main container of the *Pod*, the *Pod* still exists but only its container needed to be re-created, hence less events.
+
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] File /opt/course/15/cluster_events.sh valid
+- [ ] File /opt/course/15/pod_kill.log contains correct logs
+- [ ] File /opt/course/15/container_kill.log contains correct logs

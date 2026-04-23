@@ -231,3 +231,12 @@ Address:        10.96.0.10:53
 Name:   1-2-3-4.kube-system.pod.cluster.local
 Address: 1.2.3.4
 ```
+
+
+## Killer.sh Checklist (Score: 0/5)
+
+- [ ] DNS_1 in ConfigMap correct
+- [ ] DNS_2 in ConfigMap correct
+- [ ] DNS_3 in ConfigMap correct
+- [ ] DNS_4 in ConfigMap correct
+- [ ] Correct values from ConfigMap available in Deployment

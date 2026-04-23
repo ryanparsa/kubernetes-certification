@@ -281,3 +281,12 @@ student4   43s
 ```
 
 Only *Student* `student4` got created, everything else stayed the same.
+
+
+## Killer.sh Checklist (Score: 0/5)
+
+- [ ] Kustomize Role updated
+- [ ] Operator has correct permissions
+- [ ] Kustomize Student added in base
+- [ ] Student created
+- [ ] Kustomize Build base and prod without error after updates

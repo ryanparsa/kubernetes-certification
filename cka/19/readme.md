@@ -125,3 +125,14 @@ Commercial support is available at
 </body>
 </html>
 ```
+
+
+## Killer.sh Checklist (Score: 5/7)
+
+- [ ] Static Pod my-static-pod-cka2560 exists
+- [ ] Pod has single container
+- [ ] Pod container has correct image
+- [ ] Pod has correct CPU resource requests
+- [ ] Pod has correct memory resource requests
+- [ ] Service is of type NodePort
+- [ ] Service selector matches Pod

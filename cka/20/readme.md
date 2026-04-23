@@ -59,3 +59,11 @@ X509v3 Extended Key Usage: TLS Web Client Authentication
 Issuer: CN = cka-lab-worker-ca@1730211854
 X509v3 Extended Key Usage: TLS Web Server Authentication
 ```
+
+
+## Killer.sh Checklist (Score: 4/4)
+
+- [ ] Kubelet Client Certificate Issuer is correct
+- [ ] Kubelet Client Certificate Extended Key Usage is correct
+- [ ] Kubelet Server Certificate Issuer is correct
+- [ ] Kubelet Server Certificate Extended Key Usage is correct

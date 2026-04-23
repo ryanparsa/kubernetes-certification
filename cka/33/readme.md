@@ -88,3 +88,9 @@ Finally we write the name and amount into the file:
 # cka/33/course/crowded-namespace.txt
 project-miami with 300 roles
 ```
+
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] File /opt/course/16/resources.txt contains namespaced resources
+- [ ] File /opt/course/16/crowded-namespace.txt correct content

@@ -244,3 +244,12 @@ pvc-dbcce...  50Mi       ...  Retain           Released   project-bern/backup-pv
 ```
 
 We can no longer see the *PVC*, but the *PV* is in status `Released`. This is because we set the `reclaimPolicy: Retain` in the *StorageClass*. Now we could manually export/rescue the data in the volume and afterwards delete the *PV* manually.
+
+
+## Killer.sh Checklist (Score: 0/5)
+
+- [ ] StorageClass created
+- [ ] Job uses PVC
+- [ ] PVC uses StorageClass
+- [ ] PVC requests required storage
+- [ ] Job created backups on the PVC

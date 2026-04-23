@@ -69,3 +69,9 @@ kube-system   kube-apiserver-cka-lab-control-plane       1/1
 kube-system   etcd-cka-lab-control-plane                 1/1
 kube-system   coredns-6f8b9d9f4b-fg7bt                   1/1
 ```
+
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] File /opt/course/5/find_pods.sh valid
+- [ ] File /opt/course/5/find_pods_uid.sh valid

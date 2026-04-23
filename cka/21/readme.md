@@ -117,3 +117,18 @@ ready-if-service-ready   1/1     Running   0          2m10s
 ```
 
 Look at these Pods working together!
+
+
+## Killer.sh Checklist (Score: 0/11)
+
+- [ ] Pod1 is running
+- [ ] Pod1 has single container
+- [ ] Pod1 container is Ready
+- [ ] Pod1 container has correct image
+- [ ] Pod1 container has LivenessProbe
+- [ ] Pod1 container has ReadinessProbe
+- [ ] Pod2 is running
+- [ ] Pod2 has correct label
+- [ ] Pod2 has single container
+- [ ] Pod2 container is Ready
+- [ ] Pod2 container has correct image

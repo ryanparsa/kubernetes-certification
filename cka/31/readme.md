@@ -81,3 +81,12 @@ The resulting `cka/31/course/cluster-info` could look like:
 # Which suffix will static *Pods* have that run on cka-lab-control-plane?
 5: -cka-lab-control-plane
 ```
+
+
+## Killer.sh Checklist (Score: 0/5)
+
+- [ ] Answer 1 valid
+- [ ] Answer 2 valid
+- [ ] Answer 3 valid
+- [ ] Answer 4 valid
+- [ ] Answer 5 valid

@@ -250,3 +250,9 @@ kubectl get pod success -o wide
 NAME      READY   STATUS    ...   NODE      NOMINATED NODE   READINESS GATES
 success   1/1     Running   ...   cka-lab-control-plane   <none>           <none>
 ```
+
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] Node is Ready
+- [ ] Pod is created and running
