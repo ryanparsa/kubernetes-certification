@@ -1,6 +1,6 @@
-# Question 14 | Find out Cluster Information
+# Question 31 | Find out Cluster Information
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-31" kind cluster
 
 You're ask to find out following information about the cluster:
 
@@ -8,7 +8,7 @@ You're ask to find out following information about the cluster:
 2. How many worker *Nodes* (non controlplane *Nodes*) are available?
 3. What is the *Service* CIDR?
 4. Which Networking (or CNI Plugin) is configured and where is its config file?
-5. Which suffix will static *Pods* have that run on `cka-lab-control-plane`?
+5. Which suffix will static *Pods* have that run on `cka-lab-31-control-plane`?
 
 Write your answers into file `cka/31/course/cluster-info`, structured like this:
 
@@ -27,8 +27,8 @@ Write your answers into file `cka/31/course/cluster-info`, structured like this:
 
 ```bash
 kubectl get node
-NAME                    STATUS   ROLES           AGE   VERSION
-cka-lab-control-plane   Ready    control-plane   71m   v1.33.1
+NAME                       STATUS   ROLES           AGE   VERSION
+cka-lab-31-control-plane   Ready    control-plane   71m   v1.33.1
 ```
 
 We see one controlplane and no worker *Nodes*.
@@ -38,14 +38,14 @@ We see one controlplane and no worker *Nodes*.
 Access the control-plane *Node* to inspect the *kube-apiserver* manifest:
 
 ```bash
-docker exec cka-lab-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep range
+docker exec cka-lab-31-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep range
     - --service-cluster-ip-range=10.96.0.0/12
 ```
 
 ### Which Networking (or CNI Plugin) is configured and where is its config file?
 
 ```bash
-docker exec cka-lab-control-plane find /etc/cni/net.d/
+docker exec cka-lab-31-control-plane find /etc/cni/net.d/
 /etc/cni/net.d/
 /etc/cni/net.d/10-kindnet.conflist
 ```
@@ -55,7 +55,7 @@ In kind clusters, the default CNI plugin is **kindnet**. The config file is at `
 > [!NOTE]
 > In the real exam environment, a different CNI (such as Weave or Flannel) may be configured. The approach is the same: look in `/etc/cni/net.d/` on the node.
 
-### Which suffix will static *Pods* have that run on cka-lab-control-plane?
+### Which suffix will static *Pods* have that run on cka-lab-31-control-plane?
 
 The suffix is the *Node* hostname with a leading hyphen.
 
@@ -78,8 +78,8 @@ The resulting `cka/31/course/cluster-info` could look like:
 # Which Networking (or CNI Plugin) is configured and where is its config file?
 4: kindnet, /etc/cni/net.d/10-kindnet.conflist
 
-# Which suffix will static *Pods* have that run on cka-lab-control-plane?
-5: -cka-lab-control-plane
+# Which suffix will static *Pods* have that run on cka-lab-31-control-plane?
+5: -cka-lab-31-control-plane
 ```
 
 
