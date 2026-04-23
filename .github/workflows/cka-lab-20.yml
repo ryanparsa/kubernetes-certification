@@ -1,0 +1,41 @@
+name: CKA Lab 20
+
+on:
+  push:
+    paths:
+      - 'cka/20/**'
+      - '.github/workflows/cka-lab-20.yml'
+  pull_request:
+    paths:
+      - 'cka/20/**'
+      - '.github/workflows/cka-lab-20.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Start lab cluster
+        run: bash cka/20/assets/up.sh
+
+      - name: Apply solution
+        run: bash cka/20/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/20/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/20/assets/down.sh
