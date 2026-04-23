@@ -1,6 +1,8 @@
 # Question 6 | Fix Kubelet
 
-There seems to be an issue with the kubelet on controlplane node `cka-lab-control-plane`, it's not running.
+> **Solve this question on:** the "cka-lab-23" kind cluster
+
+There seems to be an issue with the kubelet on controlplane node `cka-lab-23-control-plane`, it's not running.
 
 Fix the kubelet and confirm that the node is available in `Ready` state.
 
@@ -16,7 +18,7 @@ The procedure on scenarios like these is to first check if the kubelet is runnin
 ### Investigate
 
 > [!NOTE]
-> In this local lab, access the control plane node with: `docker exec -it cka-lab-control-plane bash`
+> In this local lab, access the control plane node with: `docker exec -it cka-lab-23-control-plane bash`
 > The cluster was started before kubelet was broken, so the API server remains accessible via `kubectl`.
 > In the real exam you would `ssh` into the node and see `kubectl get node` fail with connection refused.
 
