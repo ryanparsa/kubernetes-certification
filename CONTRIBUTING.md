@@ -3,6 +3,46 @@
 This guide defines the conventions, file structure, and templates used across every lab in this repository (`cka/`,
 `ckad/`, `cks/`). Use CKA lab 29 (`cka/29/`) as the canonical reference implementation.
 
+> **Note:** The `kcna/` directory contains study material (assessment banks, checklists, and resources) and does **not**
+> follow the lab structure described here. Do not apply these conventions to `kcna/`.
+
+---
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Directory Layout](#directory-layout)
+- [Lab Numbering](#lab-numbering)
+- [Lab README (`readme.md`) Format](#lab-readme-readmemd-format)
+- [File Templates](#file-templates)
+- [Conventions](#conventions)
+- [Workflow](#workflow)
+- [Exam-Specific Notes](#exam-specific-notes)
+- [CI](#ci)
+- [Submitting a Contribution](#submitting-a-contribution)
+
+---
+
+## Prerequisites
+
+Make sure the following tools are installed and available in your `PATH` before running any lab script:
+
+| Tool       | Purpose                          | Install reference                                      |
+|------------|----------------------------------|--------------------------------------------------------|
+| `docker`   | Required by kind to run nodes    | <https://docs.docker.com/get-docker/>                  |
+| `kind`     | Creates local Kubernetes clusters | <https://kind.sigs.k8s.io/docs/user/quick-start/>     |
+| `kubectl`  | Interacts with the cluster       | <https://kubernetes.io/docs/tasks/tools/>              |
+| `python3`  | Runs `check.py` validation suite | <https://www.python.org/downloads/> (3.8+ required)    |
+
+Verify with:
+
+```bash
+docker version
+kind version
+kubectl version --client
+python3 --version
+```
+
 ---
 
 ## Directory Layout
@@ -26,7 +66,22 @@ Each lab lives under `<exam>/<N>/` and follows this structure:
 
 ---
 
-## What Is an Actual Task
+## Lab Numbering
+
+Labs are numbered sequentially within each exam directory. To find the next available number:
+
+```bash
+ls cka/   # shows existing lab directories; use the next integer
+ls ckad/
+ls cks/
+```
+
+Use that number as `<N>` throughout — in the directory name, the cluster name, and the CI workflow filename. There are no
+gaps; if the last CKA lab is `36`, the next one is `37`.
+
+---
+
+## Lab README (`readme.md`) Format
 
 The task is the `readme.md` for a lab. It mirrors a real exam question and has three parts:
 
@@ -209,8 +264,25 @@ kubectl wait pod pod1 -n default --for=condition=Ready --timeout=60s
 
 ### check.sh
 
-For simple assertions, write bash directly. For anything involving OR logic, JSON parsing, or cross-resource validation,
-delegate to `check.py`:
+**Simple assertions — write bash directly:**
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+KUBECONFIG="$(dirname "$0")/kubeconfig.yaml"
+export KUBECONFIG
+
+phase=$(kubectl get pod mypod -n default -o jsonpath='{.status.phase}')
+if [[ "$phase" != "Running" ]]; then
+  echo "FAIL: pod mypod is not Running (got: $phase)"
+  exit 1
+fi
+
+echo "OK: pod mypod is Running"
+```
+
+**Complex logic (OR conditions, JSON parsing, cross-resource checks) — delegate to `check.py`:**
 
 ```bash
 #!/usr/bin/env bash
@@ -375,16 +447,10 @@ Implement the solution based on the readme requirements:
 - Prefer declarative manifests (YAML files) over imperative one-liners for anything non-trivial
 - Work methodically — apply one change at a time and confirm it takes effect before moving on
 
-### 5. Write fix.sh
+Write `assets/fix.sh` and `assets/check.sh` alongside your solution as you work — codify each step rather than
+reconstructing them later. See the [fix.sh template](#fixsh) and [check.sh template](#checksh) above.
 
-Codify the solution into `assets/fix.sh` so it can reproduce the complete answer from a clean cluster state. See
-the [fix.sh template](#fixsh) above.
-
-### 6. Write check.sh
-
-Write `assets/check.sh` to validate every item in the checklist. See the [check.sh](#check) above.
-
-### 7. Verify
+### 5. Verify
 
 ```bash
 bash <exam>/<N>/assets/check.sh
@@ -395,7 +461,7 @@ bash <exam>/<N>/assets/check.sh
 
 Do not mark the lab as done until every check passes.
 
-### 8. Tear Down
+### 6. Tear Down
 
 ```bash
 bash <exam>/<N>/assets/down.sh
@@ -490,3 +556,41 @@ This pattern applies equally to all exams: `cka-lab-<N>.yml`, `ckad-lab-<N>.yml`
 | Tear-down step     | Always `if: always()` so the cluster is deleted even when checks fail |
 | kubectl install    | Use `azure/setup-kubectl@v4` action (picks up latest stable)          |
 | kind version       | Pin to a specific version (e.g. `v0.23.0`) and update deliberately    |
+
+---
+
+## Submitting a Contribution
+
+### Fork and branch
+
+1. Fork the repository on GitHub.
+2. Create a feature branch named after the lab you are adding or fixing:
+   ```bash
+   git checkout -b add-cka-lab-37
+   ```
+3. Make your changes, commit them with a short descriptive message:
+   ```bash
+   git commit -m "cka/37: add NetworkPolicy lab"
+   ```
+4. Push to your fork:
+   ```bash
+   git push origin add-cka-lab-37
+   ```
+
+### Open a pull request
+
+- **Title**: `<exam>/<N>: <short description>` — e.g. `cka/37: NetworkPolicy ingress/egress`.
+- **Description**: include the checklist from the lab's `readme.md` so reviewers can see the scoring criteria at a
+  glance.
+- Ensure the CI workflow for the lab passes (green) before requesting review.
+
+### PR checklist
+
+Before marking a PR ready for review, confirm:
+
+- [ ] `readme.md` follows the [format template](#lab-readme-readmemd-format)
+- [ ] `assets/kind-config.yaml`, `up.sh`, `down.sh`, `fix.sh`, `check.sh` (and `check.py` if needed) are all present
+- [ ] `fix.sh` is idempotent (`kubectl apply`, not `kubectl create`)
+- [ ] `check.sh` passes against a freshly created cluster (`up.sh` → `fix.sh` → `check.sh`)
+- [ ] CI workflow at `.github/workflows/<exam>-lab-<N>.yml` is included and passes
+- [ ] `kubeconfig.yaml` and `course/` are **not** committed (they are git-ignored)
