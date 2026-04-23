@@ -1,6 +1,8 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-name: cka-lab
+name: cka-lab-6
+networking:
+  ipFamily: ipv4
 nodes:
 - role: control-plane
   extraMounts:

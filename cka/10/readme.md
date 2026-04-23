@@ -1,5 +1,7 @@
 # Question 10 | RBAC ServiceAccount Role RoleBinding
 
+> **Solve this question on:** the "cka-lab-10" kind cluster
+
 Create a new *ServiceAccount* `processor` in *Namespace* `project-hamster`. Create a *Role* and *RoleBinding*, both named `processor` as well. These should allow the new *ServiceAccount* to only create *Secrets* and *ConfigMaps* in that *Namespace*.
 
 ## Answer
@@ -113,3 +115,12 @@ kubectl -n project-hamster auth can-i get configmap --as system:serviceaccount:p
 ```
 
 Done.
+
+## Killer.sh Checklist (Score: 0/6)
+
+- [ ] ServiceAccount `processor` exists in Namespace `project-hamster`
+- [ ] Role `processor` exists in Namespace `project-hamster`
+- [ ] RoleBinding `processor` exists and binds the Role to the ServiceAccount
+- [ ] ServiceAccount can `create` Secrets
+- [ ] ServiceAccount can `create` ConfigMaps
+- [ ] ServiceAccount cannot perform other operations (e.g. delete secrets, get configmaps, create pods)
