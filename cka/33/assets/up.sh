@@ -2,6 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
 # 1. Check dependencies
@@ -10,7 +13,7 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/namespaces.yaml"
@@ -69,9 +72,10 @@ EOF
   done
 } | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
 
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
-# 4. Print summary
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
