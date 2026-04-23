@@ -45,6 +45,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file template
 | Simulator B         | Question 16     | `33`      | Done   | Ready |       |
 | Simulator B         | Question 17     | `34`      | Done   | Ready |       |
 | Simulator A Preview | Question 1      | `35`      | Done   | Ready |       |
-| Simulator A Preview | Question 2      | `36`      | Done   | Ready |       |
+| Simulator A Preview | Question 2      | `36`      | Done   | Ready | Ready |
 | Simulator A Preview | Question 3      | `37`      | Done   | Ready |       |
 

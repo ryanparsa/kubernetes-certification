@@ -1,4 +1,4 @@
-# Preview Question 2 | Kube-Proxy iptables
+# Question 36 | Preview Kube-Proxy iptables
 
 > **Solve this question on:** the "cka-lab" kind cluster
 
@@ -87,3 +87,9 @@ docker exec cka-lab-control-plane iptables-save | grep p2-service
 ```
 
 Kubernetes *Services* are implemented using iptables rules (with default config) on all nodes. Every time a *Service* has been altered, created, deleted or *Endpoints* of a *Service* have changed, the kube-apiserver contacts every node's kube-proxy to update the iptables rules according to the current state.
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] *Pod* `p2-pod` is running in *Namespace* `project-hamster`
+- [ ] File `cka/36/course/iptables.txt` exists and contains iptables rules for `p2-service`
+- [ ] *Service* `p2-service` is deleted from *Namespace* `project-hamster`
