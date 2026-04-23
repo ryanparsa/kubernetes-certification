@@ -12,6 +12,8 @@ done
 
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
+mkdir -p "$SCRIPT_DIR/../course"
+
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
 
 echo "Waiting for StatefulSet o3db to be ready..."

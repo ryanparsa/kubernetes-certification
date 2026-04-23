@@ -1,0 +1,40 @@
+name: CKA Lab 3
+
+on:
+  push:
+    paths: ['cka/3/**', '.github/workflows/cka-lab-3.yml']
+  pull_request:
+    paths: ['cka/3/**', '.github/workflows/cka-lab-3.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/3/assets/kind-config.yaml
+          cluster_name: cka-lab-3
+
+      - name: Save kubeconfig
+        run: kind get kubeconfig --name cka-lab-3 > cka/3/assets/kubeconfig.yaml
+
+      - name: Seed cluster
+        run: |
+          kubectl --kubeconfig cka/3/assets/kubeconfig.yaml apply -f cka/3/assets/workloads.yaml
+          kubectl --kubeconfig cka/3/assets/kubeconfig.yaml rollout status \
+            -n project-h800 statefulset/o3db --timeout=120s
+
+      - name: Apply solution
+        run: bash cka/3/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/3/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/3/assets/down.sh
