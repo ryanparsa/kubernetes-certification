@@ -39,7 +39,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator B         | Question 10     | `27`      | Done   | Ready |       |
 | Simulator B         | Question 11     | `28`      | Done   | Ready |       |
 | Simulator B         | Question 12     | `29`      | Done   | Ready | Ready |
-| Simulator B         | Question 13     | `30`      | Done   | Ready |       |
+| Simulator B         | Question 13     | `30`      | Done   | Ready | Ready |
 | Simulator B         | Question 14     | `31`      | Done   | Ready |       |
 | Simulator B         | Question 15     | `32`      | Done   | Ready | Ready |
 | Simulator B         | Question 16     | `33`      | Done   | Ready |       |
