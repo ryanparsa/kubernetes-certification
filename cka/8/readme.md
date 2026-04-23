@@ -5,7 +5,7 @@ Your coworker notified you that node `cka-lab-worker` is running an older Kubern
 1. Update the node's Kubernetes to the exact version of the controlplane
 2. Add the node to the cluster using kubeadm
 
-> **Solve this question on:** `docker exec -it cka-lab-worker bash`
+> **Solve this question on:** `docker exec -it cka-lab-8-worker bash`
 
 > ⚠️ **Kind limitation:** In this local kind lab both nodes already run the same Kubernetes version and the worker is already joined. You can still practise generating a join token (`kubeadm token create --print-join-command`) and exploring the kubeadm upgrade workflow.
 
@@ -17,8 +17,8 @@ Search in the docs for [kubeadm upgrade](https://kubernetes.io/docs/tasks/admini
 
 ```bash
 kubectl get node
-NAME                    STATUS   ROLES           AGE    VERSION
-cka-lab-control-plane   Ready    control-plane   4h7m   v1.35.2
+NAME                      STATUS   ROLES           AGE    VERSION
+cka-lab-8-control-plane   Ready    control-plane   4h7m   v1.35.2
 ```
 
 The controlplane node is running Kubernetes 1.35.2.
@@ -53,6 +53,12 @@ Finally check the node status from the controlplane:
 ```bash
 kubectl get node
 NAME             STATUS   ROLES           AGE     VERSION
-cka-lab-control-plane   Ready    control-plane   4h13m   v1.35.2
-cka-lab-worker          Ready    <none>          34s     v1.35.2
+cka-lab-8-control-plane   Ready    control-plane   4h13m   v1.35.2
+cka-lab-8-worker          Ready    <none>          34s     v1.35.2
 ```
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] Worker node is joined to the cluster
+- [ ] All nodes are in Ready state
+- [ ] All nodes run the same Kubernetes version

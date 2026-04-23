@@ -1,5 +1,7 @@
 # Question 7 | Node and Pod Resource Usage
 
+> **Solve this question on:** the "cka-lab-7" kind cluster
+
 The metrics-server has been installed in the cluster. Write two bash scripts which use `kubectl`:
 
 1. Script `cka/7/course/node.sh` should show resource usage of nodes
@@ -60,3 +62,8 @@ With this we can finish this task:
 # cka/7/course/pod.sh
 kubectl top pod --containers=true
 ```
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] `course/node.sh` contains `kubectl top node`
+- [ ] `course/pod.sh` contains `kubectl top pod --containers=true`

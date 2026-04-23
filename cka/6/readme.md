@@ -1,5 +1,7 @@
 # Question 6 | Storage, PV, PVC, Pod volume
 
+> **Solve this question on:** the "cka-lab-6" kind cluster
+
 Create a new *PersistentVolume* named `safari-pv`. It should have a capacity of *2Gi*, accessMode *ReadWriteOnce*, hostPath `/Volumes/Data` and no storageClassName defined.
 
 Next create a new *PersistentVolumeClaim* in *Namespace* `project-t230` named `safari-pvc`. It should request *2Gi* storage, accessMode *ReadWriteOnce* and should not define a storageClassName. The *PVC* should bound to the *PV* correctly.
@@ -9,7 +11,7 @@ Finally create a new *Deployment* `safari` in *Namespace* `project-t230` which m
 ## Answer
 
 ```bash
-vim 6_pv.yaml
+vim cka/6/course/6_pv.yaml
 ```
 
 Find an example from https://kubernetes.io/docs and alter it:
@@ -34,14 +36,14 @@ spec:
 Then create it:
 
 ```bash
-k -f 6_pv.yaml create
+k -f cka/6/course/6_pv.yaml create
 persistentvolume/safari-pv created
 ```
 
 Next the *PersistentVolumeClaim*:
 
 ```bash
-vim 6_pvc.yaml
+vim cka/6/course/6_pvc.yaml
 ```
 
 Find an example from the K8s Docs and alter it:
@@ -64,7 +66,7 @@ spec:
 Then create:
 
 ```bash
-k -f 6_pvc.yaml create
+k -f cka/6/course/6_pvc.yaml create
 persistentvolumeclaim/safari-pvc created
 ```
 
@@ -82,9 +84,9 @@ persistentvolumeclaim/safari-pvc   Bound    safari-pv   2Gi      ...
 Next we create a *Deployment* and mount that volume:
 
 ```bash
-k -n project-t230 create deploy safari --image=httpd:2-alpine --dry-run=client -o yaml > 6_dep.yaml
+k -n project-t230 create deploy safari --image=httpd:2-alpine --dry-run=client -o yaml > cka/6/course/6_dep.yaml
 
-vim 6_dep.yaml
+vim cka/6/course/6_dep.yaml
 ```
 
 Alter the yaml to mount the volume:
@@ -123,7 +125,7 @@ spec:
 ```
 
 ```bash
-k -f 6_dep.yaml create
+k -f cka/6/course/6_dep.yaml create
 deployment.apps/safari created
 ```
 
@@ -135,3 +137,16 @@ k -n project-t230 describe pod safari-b499cc5b9-x7d7h | grep -A2 Mounts:
       /tmp/safari-data from data (rw)
       /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-xght8 (ro)
 ```
+
+## Killer.sh Checklist (Score: 0/10)
+
+- [ ] PersistentVolume `safari-pv` exists
+- [ ] PV capacity is 2Gi
+- [ ] PV accessMode is ReadWriteOnce
+- [ ] PV hostPath is `/Volumes/Data`
+- [ ] PV has no storageClassName
+- [ ] PVC `safari-pvc` exists in Namespace `project-t230`
+- [ ] PVC is Bound to the PV
+- [ ] Deployment `safari` exists in Namespace `project-t230`
+- [ ] Deployment uses image `httpd:2-alpine`
+- [ ] Volume is mounted at `/tmp/safari-data`
