@@ -4,5 +4,48 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 
-# Apply the kustomize config changes to prod
+# 1. Adjust RBAC in base/rbac.yaml
+cat <<EOF > "$SCRIPT_DIR/../course/operator/base/rbac.yaml"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: operator-role
+  namespace: default
+rules:
+- apiGroups:
+  - education.killer.sh
+  resources:
+  - students
+  - classes
+  verbs:
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: operator-rolebinding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: operator
+    namespace: default
+roleRef:
+  kind: Role
+  name: operator-role
+  apiGroup: rbac.authorization.k8s.io
+EOF
+
+# 2. Add new Student resource in base/students.yaml
+cat <<EOF >> "$SCRIPT_DIR/../course/operator/base/students.yaml"
+---
+apiVersion: education.killer.sh/v1
+kind: Student
+metadata:
+  name: student4
+spec:
+  name: Some Name
+  description: Some Description
+EOF
+
+# 3. Apply the kustomize config changes to prod
 kubectl kustomize "$SCRIPT_DIR/../course/operator/prod" | kubectl apply -f -

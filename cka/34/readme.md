@@ -1,6 +1,6 @@
-# Question 17 | Operator, CRDs, RBAC, Kustomize
+# Question 34 | Operator, CRDs, RBAC, Kustomize
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-34" kind cluster
 
 There is Kustomize config available at `cka/34/course/operator`. It installs an operator which works with different *CRDs*. It has been deployed like this:
 
@@ -31,7 +31,7 @@ base  prod
 Let's investigate the base first for better understanding:
 
 ```bash
-kubectl kustomize base
+kubectl kustomize cka/34/course/operator/base
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -65,7 +65,7 @@ But for debugging it can be useful to build the base Yaml.
 ### Investigate Prod
 
 ```bash
-kubectl kustomize prod
+kubectl kustomize cka/34/course/operator/prod
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -164,7 +164,7 @@ rules:
 Now we copy&paste it into `rbac.yaml`:
 
 ```bash
-vim base/rbac.yaml
+vim cka/34/course/operator/base/rbac.yaml
 ```
 
 ```yaml
@@ -233,7 +233,7 @@ advanced   20m
 Finally we need to create a new *Student* resource. Here we can simply copy an existing one in `students.yaml`:
 
 ```bash
-vim base/students.yaml
+vim cka/34/course/operator/base/students.yaml
 ```
 
 ```yaml
