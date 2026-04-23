@@ -39,11 +39,11 @@ class TestChangeServiceCIDR(unittest.TestCase):
         self.assertIn(ipaddress.ip_address(ip), network)
 
     def test_apiserver_config(self):
-        manifest = docker_exec_cat("cka-lab-control-plane", "/etc/kubernetes/manifests/kube-apiserver.yaml")
+        manifest = docker_exec_cat("cka-lab-37-control-plane", "/etc/kubernetes/manifests/kube-apiserver.yaml")
         self.assertIn("--service-cluster-ip-range=11.96.0.0/12", manifest)
 
     def test_controller_manager_config(self):
-        manifest = docker_exec_cat("cka-lab-control-plane", "/etc/kubernetes/manifests/kube-controller-manager.yaml")
+        manifest = docker_exec_cat("cka-lab-37-control-plane", "/etc/kubernetes/manifests/kube-controller-manager.yaml")
         self.assertIn("--service-cluster-ip-range=11.96.0.0/12", manifest)
 
     def test_servicecidr_new_exists(self):

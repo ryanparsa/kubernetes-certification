@@ -10,10 +10,10 @@ kubectl expose pod check-ip --name check-ip-service --port 80
 
 # 2. Change Service CIDR
 # Update kube-apiserver
-docker exec cka-lab-control-plane sed -i 's/--service-cluster-ip-range=[^ ]*/--service-cluster-ip-range=11.96.0.0\/12/' /etc/kubernetes/manifests/kube-apiserver.yaml
+docker exec cka-lab-37-control-plane sed -i 's/--service-cluster-ip-range=[^ ]*/--service-cluster-ip-range=11.96.0.0\/12/' /etc/kubernetes/manifests/kube-apiserver.yaml
 
 # Update kube-controller-manager
-docker exec cka-lab-control-plane sed -i 's/--service-cluster-ip-range=[^ ]*/--service-cluster-ip-range=11.96.0.0\/12/' /etc/kubernetes/manifests/kube-controller-manager.yaml
+docker exec cka-lab-37-control-plane sed -i 's/--service-cluster-ip-range=[^ ]*/--service-cluster-ip-range=11.96.0.0\/12/' /etc/kubernetes/manifests/kube-controller-manager.yaml
 
 # Wait for components to restart
 # Usually we would wait for the pods to be ready, but here we'll just wait a bit or use a more robust check

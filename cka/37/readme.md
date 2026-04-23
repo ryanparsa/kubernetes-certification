@@ -1,6 +1,6 @@
-# Question 37 | Change Service CIDR
+# Preview Question 3 | Change Service CIDR
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-37" kind cluster
 
 1.  Create a *Pod* named `check-ip` in *Namespace* `default` using image `httpd:2-alpine`
 2.  Expose it on port `80` as a ClusterIP *Service* named `check-ip-service`. Remember/output the IP of that *Service*
@@ -29,7 +29,7 @@ kubectl get svc check-ip-service
 Connect to the control-plane *Node*:
 
 ```bash
-docker exec -it cka-lab-control-plane bash
+docker exec -it cka-lab-37-control-plane bash
 ```
 
 Edit the `kube-apiserver` manifest:
