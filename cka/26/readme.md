@@ -1,14 +1,16 @@
-# Question 9 | Kill Scheduler, Manual Scheduling
+# Question 26 | Kill Scheduler, Manual Scheduling
+
+> **Solve this question on:** the "cka-lab-26" kind cluster
 
 Temporarily stop the kube-scheduler, this means in a way that you can start it again afterwards.
 
 Create a single *Pod* named `manual-schedule` of image `httpd:2-alpine`, confirm it's created but not scheduled on any *Node*.
 
-Now you're the scheduler and have all its power, manually schedule that *Pod* on *Node* `cka-lab-control-plane`. Make sure it's running.
+Now you're the scheduler and have all its power, manually schedule that *Pod* on *Node* `cka-lab-26-control-plane`. Make sure it's running.
 
-Start the kube-scheduler again and confirm it's running correctly by creating a second *Pod* named `manual-schedule2` of image `httpd:2-alpine` and check if it's running on `cka-lab-worker`.
+Start the kube-scheduler again and confirm it's running correctly by creating a second *Pod* named `manual-schedule2` of image `httpd:2-alpine` and check if it's running on `cka-lab-26-worker`.
 
-> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
+> **Solve this question on:** `docker exec -it cka-lab-26-control-plane bash`
 
 ## Answer
 
@@ -19,15 +21,15 @@ First we find the controlplane *Node*:
 ```bash
 kubectl get node
 NAME                        STATUS   ROLES           AGE     VERSION
-cka-lab-control-plane       Ready    control-plane   6d22h   v1.33.1
-cka-lab-worker              Ready    <none>          6d22h   v1.33.1
+cka-lab-26-control-plane    Ready    control-plane   6d22h   v1.33.1
+cka-lab-26-worker           Ready    <none>          6d22h   v1.33.1
 ```
 
 Then we check if the scheduler is running:
 
 ```bash
 kubectl -n kube-system get pod | grep schedule
-kube-scheduler-cka-lab-control-plane            1/1     Running   0               6d22h
+kube-scheduler-cka-lab-26-control-plane            1/1     Running   0               6d22h
 ```
 
 Kill the Scheduler (temporarily) by moving the static *Pod* manifest out of the manifests directory:
@@ -68,10 +70,11 @@ manual-schedule   0/1     Pending   0          14s   <none>   <none>  ...
 Let's play the scheduler now:
 
 ```bash
-kubectl get pod manual-schedule -o yaml > 9.yaml
+kubectl get pod manual-schedule -o yaml > 26.yaml
 ```
 
 ```yaml
+# cka/26/course/26.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -89,7 +92,7 @@ metadata:
   selfLink: /api/v1/namespaces/default/pods/manual-schedule
   uid: 8e9d2532-4779-4e63-b5af-feb82c74a935
 spec:
-  nodeName: cka-lab-control-plane       # ADD the controlplane node name
+  nodeName: cka-lab-26-control-plane       # ADD the controlplane node name
   containers:
   - image: httpd:2-alpine
     imagePullPolicy: IfNotPresent
@@ -110,7 +113,7 @@ The scheduler sets the `nodeName` for a *Pod* declaration. How it finds the corr
 As we cannot `kubectl apply` or `kubectl edit`, in this case we need to delete and create or replace:
 
 ```bash
-kubectl replace --force -f 9.yaml
+kubectl replace --force -f 26.yaml
 ```
 
 How does it look?
@@ -118,7 +121,7 @@ How does it look?
 ```bash
 kubectl get pod manual-schedule -o wide
 NAME              READY   STATUS    ...   NODE                          
-manual-schedule   1/1     Running   ...   cka-lab-control-plane
+manual-schedule   1/1     Running   ...   cka-lab-26-control-plane
 ```
 
 It looks like our *Pod* is running on the controlplane now as requested, although no tolerations were specified. Only the scheduler takes taints/tolerations/affinity into account when finding the correct *Node* name. That's why it's still possible to assign *Pods* manually directly to a controlplane *Node* and skip the scheduler.
@@ -136,7 +139,7 @@ Check it's running:
 
 ```bash
 kubectl -n kube-system get pod | grep schedule
-kube-scheduler-cka-lab-control-plane            1/1     Running   0               13s
+kube-scheduler-cka-lab-26-control-plane            1/1     Running   0               13s
 ```
 
 Schedule a second test *Pod*:
@@ -145,22 +148,22 @@ Schedule a second test *Pod*:
 kubectl run manual-schedule2 --image=httpd:2-alpine
 
 kubectl get pod -o wide | grep schedule
-manual-schedule    1/1     Running   0          95s   10.32.0.2   cka-lab-control-plane
-manual-schedule2   1/1     Running   0          9s    10.44.0.3   cka-lab-worker
+manual-schedule    1/1     Running   0          95s   10.32.0.2   cka-lab-26-control-plane
+manual-schedule2   1/1     Running   0          9s    10.44.0.3   cka-lab-26-worker
 ```
 
 Back to normal.
 
 
-## Killer.sh Checklist (Score: 0/10)
+## Checklist
 
-- [ ] Pod1 is running in namespace default
-- [ ] Pod1 is scheduled on cka5248
-- [ ] Pod1 has single container
-- [ ] Pod1 container has correct image
-- [ ] Pod2 is running in namespace default
-- [ ] Pod2 is scheduled on cka5248-node1
-- [ ] Pod2 has single container
-- [ ] Pod2 container has correct image
-- [ ] kube-scheduler-cka5248 is running
-- [ ] kube-scheduler-cka5248 was restarted
+- [ ] Pod `manual-schedule` is running in namespace `default`
+- [ ] Pod `manual-schedule` is scheduled on `cka-lab-26-control-plane`
+- [ ] Pod `manual-schedule` has single container
+- [ ] Pod `manual-schedule` container has correct image
+- [ ] Pod `manual-schedule2` is running in namespace `default`
+- [ ] Pod `manual-schedule2` is scheduled on `cka-lab-26-worker`
+- [ ] Pod `manual-schedule2` has single container
+- [ ] Pod `manual-schedule2` container has correct image
+- [ ] `kube-scheduler-cka-lab-26-control-plane` is running
+- [ ] `kube-scheduler-cka-lab-26-control-plane` was restarted
