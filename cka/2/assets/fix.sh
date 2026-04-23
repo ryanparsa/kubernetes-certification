@@ -8,6 +8,8 @@ export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 kubectl create namespace minio --dry-run=client -o yaml | kubectl apply -f -
 
 # Step 2: Install MinIO Operator via Helm
+helm repo add minio https://operator.min.io
+helm repo update
 helm -n minio upgrade --install minio-operator minio/operator
 
 # Step 3+4: Apply the Tenant resource with enableSFTP: true
