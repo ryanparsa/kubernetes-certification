@@ -6,7 +6,7 @@ There is *ServiceAccount* `secret-reader` in *Namespace* `project-swan`. Create 
 
 Exec into the *Pod* and use `curl` to manually query all *Secrets* from the Kubernetes Api.
 
-Write the result into file `cka/9/course/9/result.json`.
+Write the result into file `cka/9/course/result.json`.
 
 ## Answer
 
@@ -27,6 +27,7 @@ vim 9.yaml
 Add the serviceAccountName and *Namespace*:
 
 ```yaml
+# cka/9/course/9.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -34,9 +35,9 @@ metadata:
   labels:
     run: api-contact
   name: api-contact
-  namespace: project-swan             # add
+  namespace: project-swan
 spec:
-  serviceAccountName: secret-reader   # add
+  serviceAccountName: secret-reader
   containers:
   - image: nginx:1-alpine
     name: api-contact
@@ -49,8 +50,7 @@ status: {}
 Create it:
 
 ```bash
-kubectl -f 9.yaml apply
-pod/api-contact created
+kubectl apply -f cka/9/course/9.yaml
 ```
 
 ### Contact K8s Api from inside Pod
@@ -138,9 +138,9 @@ yes
 
 ### Store result at requested location
 
-We write the full result into `cka/9/course/9/result.json`:
+We write the full result into `cka/9/course/result.json`:
 
-```
+```json
 {
   "kind": "SecretList",
   "apiVersion": "v1",
@@ -163,7 +163,6 @@ We write the full result into `cka/9/course/9/result.json`:
     }
   ]
 }
-...
 ```
 
 The easiest way would probably be to copy and paste the result manually. But if it's too long or not possible we could also do:
@@ -173,7 +172,7 @@ curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TO
 
 exit
 
-kubectl -n project-swan exec api-contact -it -- cat result.json > cka/9/course/9/result.json
+kubectl -n project-swan exec api-contact -it -- cat result.json > cka/9/course/result.json
 ```
 
 ### Connect via HTTPS with correct CA
@@ -191,4 +190,4 @@ curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorizat
 - [ ] Pod `api-contact` exists in Namespace `project-swan`
 - [ ] Pod uses ServiceAccount `secret-reader`
 - [ ] Pod is Running
-- [ ] `course/9/result.json` exists and contains a `SecretList`
+- [ ] `cka/9/course/result.json` exists and contains a `SecretList`
