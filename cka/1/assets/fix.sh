@@ -4,6 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TASK_KUBECONFIG="$SCRIPT_DIR/../course/kubeconfig"
 
+# Set up course/ directory with the task kubeconfig
+mkdir -p "$SCRIPT_DIR/../course"
+cp "$SCRIPT_DIR/task-kubeconfig.yaml" "$TASK_KUBECONFIG"
+
 # Step 1: Write all context names (one per line)
 kubectl config get-contexts -o name --kubeconfig "$TASK_KUBECONFIG" \
   > "$SCRIPT_DIR/../course/contexts"
