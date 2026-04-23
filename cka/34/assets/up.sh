@@ -2,6 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
 # 1. Check dependencies
@@ -10,13 +13,16 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
 # Create the operator-prod namespace before applying kustomize
 kubectl --kubeconfig "$KUBECONFIG_FILE" create namespace operator-prod
 
-# Copy the kustomize operator structure into the course directory
+# 4. Wait for deployments
+# (Empty in this case, will wait after applying workloads)
+
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 cp -r "$SCRIPT_DIR/operator" "$SCRIPT_DIR/../course/operator"
 
@@ -27,7 +33,10 @@ kubectl kustomize "$SCRIPT_DIR/../course/operator/prod" | kubectl --kubeconfig "
 kubectl --kubeconfig "$KUBECONFIG_FILE" -n operator-prod \
   rollout status deployment/operator --timeout=120s
 
-# 4. Print summary
+# 6. Copy task kubeconfig
+# (Kubeconfig is already in assets/kubeconfig.yaml)
+
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
