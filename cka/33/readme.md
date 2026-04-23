@@ -1,14 +1,14 @@
-# Question 16 | Namespaces and Api Resources
+# Question 33 | Namespaces and Api Resources
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-33" kind cluster
 
-Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/33/course/resources.txt`.
+Write the names of all namespaced *Kubernetes* resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/33/course/resources.txt`.
 
 Find the `project-*` *Namespace* with the highest number of *Roles* defined in it and write its name and amount of *Roles* into `cka/33/course/crowded-namespace.txt`.
 
 ## Answer
 
-### Namespace and Namespaces Resources
+### Namespace and Namespaced Resources
 
 We can get a list of all resources:
 
@@ -65,21 +65,19 @@ csistoragecapacities.storage.k8s.io
 
 ```bash
 kubectl -n project-jinan get role --no-headers | wc -l
-No resources found in project-jinan namespace.
-0
+# 0
 
 kubectl -n project-miami get role --no-headers | wc -l
-300
+# 300
 
 kubectl -n project-melbourne get role --no-headers | wc -l
-2
+# 2
 
 kubectl -n project-seoul get role --no-headers | wc -l
-10
+# 10
 
 kubectl -n project-toronto get role --no-headers | wc -l
-No resources found in project-toronto namespace.
-0
+# 0
 ```
 
 Finally we write the name and amount into the file:
@@ -89,8 +87,7 @@ Finally we write the name and amount into the file:
 project-miami with 300 roles
 ```
 
+## Checklist
 
-## Killer.sh Checklist (Score: 0/2)
-
-- [ ] File /opt/course/16/resources.txt contains namespaced resources
-- [ ] File /opt/course/16/crowded-namespace.txt correct content
+- [ ] File `cka/33/course/resources.txt` contains namespaced resources
+- [ ] File `cka/33/course/crowded-namespace.txt` contains the correct *Namespace* and amount of *Roles*
