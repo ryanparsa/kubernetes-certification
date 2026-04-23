@@ -46,7 +46,7 @@ class TestDaemonSetOnAllNodes(unittest.TestCase):
 
     def test_controlplane_toleration(self):
         tolerations = kubectl("get", "ds", "ds-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.tolerations}")
-        self.assertIn("control-plane", tolerations)
+        self.assertIn("node-role.kubernetes.io/control-plane", tolerations)
 
     def test_runs_on_all_nodes(self):
         desired = kubectl("get", "ds", "ds-important", "-n", "project-tiger", "-o", "jsonpath={.status.desiredNumberScheduled}")
