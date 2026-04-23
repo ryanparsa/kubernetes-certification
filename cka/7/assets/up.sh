@@ -6,10 +6,12 @@ LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 CLUSTER_NAME="cka-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
+# 1. Check dependencies
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
+# 2. Create cluster
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # Install metrics-server with kubelet-insecure-tls (required for kind)
@@ -26,9 +28,10 @@ echo "Waiting for metrics-server to be ready..."
 kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
   -n kube-system deployment/metrics-server --timeout=120s
 
-# Create the course/ output directory for the user's scripts
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""

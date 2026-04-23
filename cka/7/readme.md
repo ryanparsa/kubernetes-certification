@@ -2,10 +2,10 @@
 
 > **Solve this question on:** the "cka-lab-7" kind cluster
 
-The metrics-server has been installed in the cluster. Write two bash scripts which use `kubectl`:
+The *Metrics Server* has been installed in the cluster. Write two bash scripts which use `kubectl`:
 
-1. Script `cka/7/course/node.sh` should show resource usage of nodes
-2. Script `cka/7/course/pod.sh` should show resource usage of Pods and their containers
+1. Script `cka/7/course/node.sh` should show resource usage of *Nodes*
+2. Script `cka/7/course/pod.sh` should show resource usage of *Pods* and their *Containers*
 
 ## Answer
 
@@ -34,8 +34,8 @@ We see that the metrics server provides information about resource usage:
 
 ```bash
 kubectl top node
-NAME                    CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
-cka-lab-control-plane   104m         10%    1121Mi          60%
+NAME                      CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+cka-lab-7-control-plane   104m         10%    1121Mi          60%
 ```
 
 We create the first file, ensure to **not** use aliases but instead the full command names:
