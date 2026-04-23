@@ -2,24 +2,24 @@
 
 > **Solve this question on:** the "cka-lab-4" kind cluster
 
-Check all available *Pods* in the *Namespace* `project-c13` and find the names of those that would probably be terminated first if the nodes run out of resources (cpu or memory).
+Check all available *Pods* in the *Namespace* `project-c13` and find the names of those that would probably be terminated first if the *Nodes* run out of resources (cpu or memory).
 
 Write the *Pod* names into `cka/4/course/pods-terminated-first.txt`.
 
 ## Answer
 
-When available cpu or memory resources on the nodes reach their limit, Kubernetes will look for *Pods* that are using more resources than they requested. These will be the first candidates for termination. If some *Pods* containers have no resource requests/limits set, then by default those are considered to use more than requested. Kubernetes assigns Quality of Service classes to *Pods* based on the defined resources and limits.
+When available cpu or memory resources on the *Nodes* reach their limit, *Kubernetes* will look for *Pods* that are using more resources than they requested. These will be the first candidates for termination. If some *Pods* containers have no resource requests/limits set, then by default those are considered to use more than requested. *Kubernetes* assigns Quality of Service classes to *Pods* based on the defined resources and limits.
 
 Hence we should look for *Pods* without resource requests defined, we can do this with a manual approach:
 
 ```bash
-k -n project-c13 describe pod | less -p Requests
+kubectl -n project-c13 describe pod | less -p Requests
 ```
 
 Or:
 
 ```bash
-k -n project-c13 describe pod | grep -A 3 -E 'Requests|^Name:'
+kubectl -n project-c13 describe pod | grep -A 3 -E 'Requests|^Name:'
 ```
 
 We see that the *Pods* of *Deployment* `c13-3cc-runner-heavy` don't have any resource requests specified. Hence our answer would be:
@@ -36,7 +36,7 @@ c13-3cc-runner-heavy-65588d7d6-wwpb4map
 Not necessary and probably too slow for this task, but to automate this process you could use jsonpath:
 
 ```bash
-k -n project-c13 get pod -o jsonpath="{range .items[*]} {.metadata.name}{.spec.containers[*].resources}{'\n'}"
+kubectl -n project-c13 get pod -o jsonpath="{range .items[*]} {.metadata.name}{.spec.containers[*].resources}{'\n'}"
  c13-2x3-api-c848b775d-7nggw{"requests":{"cpu":"50m","memory":"20Mi"}}
  c13-2x3-api-c848b775d-qrrlp{"requests":{"cpu":"50m","memory":"20Mi"}}
  c13-2x3-api-c848b775d-qtrs7{"requests":{"cpu":"50m","memory":"20Mi"}}
@@ -63,7 +63,7 @@ This lists all *Pod* names and their requests/limits, hence we see the three *Po
 Or we look for the Quality of Service classes:
 
 ```bash
-k get pods -n project-c13 -o jsonpath="{range .items[*]}{.metadata.name} {.status.qosClass}{'\n'}"
+kubectl get pods -n project-c13 -o jsonpath="{range .items[*]}{.metadata.name} {.status.qosClass}{'\n'}"
 c13-2x3-api-c848b775d-7nggw Burstable
 c13-2x3-api-c848b775d-qrrlp Burstable
 c13-2x3-api-c848b775d-qtrs7 Burstable
@@ -91,6 +91,6 @@ A good practice is to always set resource requests and limits. If you don't know
 
 ## Killer.sh Checklist (Score: 0/3)
 
-- [ ] File `course/pods-terminated-first.txt` exists
-- [ ] All pods listed in the file have QoS class `BestEffort`
-- [ ] All `BestEffort` pods in namespace `project-c13` are listed in the file
+- [ ] File `cka/4/course/pods-terminated-first.txt` exists
+- [ ] All *Pods* listed in the file have QoS class `BestEffort`
+- [ ] All `BestEffort` *Pods* in *Namespace* `project-c13` are listed in the file
