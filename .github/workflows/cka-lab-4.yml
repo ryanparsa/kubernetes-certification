@@ -1,0 +1,41 @@
+name: CKA Lab 4
+
+on:
+  push:
+    paths: ['cka/4/**', '.github/workflows/cka-lab-4.yml']
+  pull_request:
+    paths: ['cka/4/**', '.github/workflows/cka-lab-4.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/4/assets/kind-config.yaml
+          cluster_name: cka-lab-4
+
+      - name: Export kubeconfig
+        run: kind get kubeconfig --name cka-lab-4 > cka/4/assets/kubeconfig.yaml
+
+      - name: Seed workloads
+        run: |
+          kubectl apply -f cka/4/assets/workloads.yaml
+          for deploy in c13-2x3-api c13-2x3-web c13-3cc-data c13-3cc-runner-heavy c13-3cc-web; do
+            kubectl rollout status -n project-c13 deployment/"$deploy" --timeout=120s
+          done
+
+      - name: Apply solution
+        run: bash cka/4/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/4/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/4/assets/down.sh
