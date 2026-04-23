@@ -589,6 +589,7 @@ This pattern applies equally to all exams: `cka-lab-<N>.yml`, `ckad-lab-<N>.yml`
 Before marking a PR ready for review, confirm:
 
 - [ ] `readme.md` follows the [format template](#lab-readme-readmemd-format)
+- [ ] `readme.md` was only modified if the change fixes a factual error, improves the question wording, or adds a missing answer step — do **not** edit it just to reformat, reword, or clean up style
 - [ ] `assets/kind-config.yaml`, `up.sh`, `down.sh`, `fix.sh`, `check.sh` (and `check.py` if needed) are all present
 - [ ] `fix.sh` is idempotent (`kubectl apply`, not `kubectl create`)
 - [ ] `check.sh` passes against a freshly created cluster (`up.sh` → `fix.sh` → `check.sh`)
