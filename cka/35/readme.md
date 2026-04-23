@@ -1,4 +1,6 @@
-# Preview Question 1 | ETCD Information
+# Question 35 | ETCD Information
+
+> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 
 The cluster admin asked you to find out the following information about etcd running on the control-plane *Node*:
 
@@ -22,8 +24,6 @@ cka-lab-control-plane       Ready    control-plane   9d    v1.35.2
 
 First we check how etcd is setup in this cluster.
 
-> **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
-
 ```bash
 kubectl -n kube-system get pod
 NAME                                          READY   STATUS    RESTARTS   AGE
@@ -39,7 +39,6 @@ kube-scheduler-cka-lab-control-plane          1/1     Running   0          9d
 We see it's running as a *Pod*, more specific a static *Pod*. So we check for the default kubelet directory for static manifests:
 
 ```bash
-docker exec -it cka-lab-control-plane bash
 find /etc/kubernetes/manifests/
 /etc/kubernetes/manifests/
 /etc/kubernetes/manifests/kube-controller-manager.yaml
@@ -96,7 +95,6 @@ spec:
 We see that client authentication is enabled and also the requested path to the server private key, now let's find out the expiration of the server certificate:
 
 ```bash
-docker exec -it cka-lab-control-plane bash
 openssl x509  -noout -text -in /etc/kubernetes/pki/etcd/server.crt | grep Validity -A2
         Validity
             Not Before: Oct 29 14:14:27 2024 GMT
@@ -111,3 +109,9 @@ Server private key location: /etc/kubernetes/pki/etcd/server.key
 Server certificate expiration date: Oct 29 14:19:29 2025 GMT
 Is client certificate authentication enabled: yes
 ```
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] Server private key location correctly identified
+- [ ] Server certificate expiration date correctly identified
+- [ ] Client certificate authentication status correctly identified

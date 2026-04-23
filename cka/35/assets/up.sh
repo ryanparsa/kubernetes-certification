@@ -10,7 +10,7 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
