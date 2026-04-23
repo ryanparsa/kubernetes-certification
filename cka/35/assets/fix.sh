@@ -2,9 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 
-CONTROL_PLANE_NODE="cka-lab-control-plane"
+CONTROL_PLANE_NODE="$CLUSTER_NAME-control-plane"
 ETCD_MANIFEST="/etc/kubernetes/manifests/etcd.yaml"
 
 # Extract information from the cluster

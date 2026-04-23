@@ -7,7 +7,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 COURSE_DIR = os.path.join(SCRIPT_DIR, "..", "course")
 ETCD_INFO_FILE = os.path.join(COURSE_DIR, "etcd-info.txt")
 
-CONTROL_PLANE_NODE = "cka-lab-control-plane"
+LAB_ID = os.path.basename(os.path.dirname(SCRIPT_DIR))
+EXAM = os.path.basename(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
+CONTROL_PLANE_NODE = f"{EXAM}-lab-{LAB_ID}-control-plane"
 ETCD_MANIFEST = "/etc/kubernetes/manifests/etcd.yaml"
 
 def run_command(command):
