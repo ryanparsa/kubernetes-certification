@@ -14,7 +14,7 @@ def kubectl(*args):
     return result.stdout.strip()
 
 
-class TestUpdateKubernetesVersion(unittest.TestCase):
+class TestUpdateKubernetesVersionAndJoinCluster(unittest.TestCase):
 
     def test_all_nodes_ready(self):
         not_ready = kubectl(
