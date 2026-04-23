@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-echo "TODO: add checks"
+python3 "$(dirname "$0")/check.py"

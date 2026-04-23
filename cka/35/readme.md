@@ -111,3 +111,9 @@ Server private key location: /etc/kubernetes/pki/etcd/server.key
 Server certificate expiration date: Oct 29 14:19:29 2025 GMT
 Is client certificate authentication enabled: yes
 ```
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] Find and write correct server private key location
+- [ ] Find and write correct server certificate expiration date
+- [ ] Find and write if client certificate authentication is enabled
