@@ -1,0 +1,40 @@
+name: CKA Lab 34
+
+on:
+  push:
+    paths: ['cka/34/**', '.github/workflows/cka-lab-34.yml']
+  pull_request:
+    paths: ['cka/34/**', '.github/workflows/cka-lab-34.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/34/assets/kind-config.yaml
+          cluster_name: cka-lab-34
+
+      - name: Set up initial state
+        run: |
+          kind export kubeconfig --name cka-lab-34 --kubeconfig cka/34/assets/kubeconfig.yaml
+          kubectl --kubeconfig cka/34/assets/kubeconfig.yaml create namespace operator-prod
+          mkdir -p cka/34/course
+          cp -r cka/34/assets/operator cka/34/course/operator
+          kubectl kustomize cka/34/course/operator/prod | kubectl --kubeconfig cka/34/assets/kubeconfig.yaml apply -f -
+          kubectl --kubeconfig cka/34/assets/kubeconfig.yaml -n operator-prod rollout status deployment/operator --timeout=120s
+
+      - name: Apply solution
+        run: bash cka/34/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/34/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/34/assets/down.sh
