@@ -1,15 +1,16 @@
-# Contributing a CKA Lab
+# Contributing a Lab
 
-This guide defines the conventions, file structure, and templates used across every lab in this directory. Use lab 29 (`cka/29/`) as the canonical reference implementation.
+This guide defines the conventions, file structure, and templates used across every lab in this repository (`cka/`,
+`ckad/`, `cks/`). Use CKA lab 29 (`cka/29/`) as the canonical reference implementation.
 
 ---
 
 ## Directory Layout
 
-Each lab lives under `cka/<N>/` and follows this structure:
+Each lab lives under `<exam>/<N>/` and follows this structure:
 
 ```
-cka/<N>/
+<exam>/<N>/
 ├── readme.md          # The task — question + answer + checklist
 ├── assets/
 │   ├── kind-config.yaml   # kind cluster topology
@@ -27,18 +28,18 @@ cka/<N>/
 
 ## What Is an Actual Task
 
-The task is the `readme.md` for a lab. It mirrors a real CKA exam question and has three parts:
+The task is the `readme.md` for a lab. It mirrors a real exam question and has three parts:
 
 1. **Question block** — the prompt you'd see on the exam (cluster name, resource names, constraints)
 2. **Answer section** — a worked solution with commands and YAML
-3. **Killer.sh Checklist** — the automated scoring criteria, one line per point
+3. **Checklist** — the automated scoring criteria, one line per point
 
 ### readme.md Format
 
 ````markdown
 # Question <N> | <Short Title>
 
-> **Solve this question on:** the "cka-lab-<N>" kind cluster
+> **Solve this question on:** the "<exam>-lab-<N>" kind cluster
 
 <Task description — 2–5 sentences exactly as the exam would phrase it.>
 
@@ -56,7 +57,7 @@ kubectl get node
 <Explanation of the approach, then the manifest or commands.>
 
 ```yaml
-# cka/<N>/course/<filename>.yaml
+# <exam>/<N>/course/<filename>.yaml
 apiVersion: v1
 kind: <Kind>
 ...
@@ -65,23 +66,25 @@ kind: <Kind>
 ### Verify
 
 ```bash
-kubectl create -f cka/<N>/course/<filename>.yaml
+kubectl create -f <exam>/<N>/course/<filename>.yaml
 kubectl get <resource> -o wide
 ```
 
-## Killer.sh Checklist (Score: 0/<total>)
+## Checklist
 
 - [ ] <Requirement 1>
 - [ ] <Requirement 2>
-...
+  ...
 ````
 
 ### Lab 29 Example
 
 `cka/29/readme.md` is "Schedule Pod on Controlplane Nodes":
 
-- **Question block**: create Pod `pod1` with container `pod1-container` (image `httpd:2-alpine`) that runs only on controlplane nodes, without adding labels.
-- **Answer**: explore taints/labels → generate YAML → add toleration + nodeSelector (or nodeAffinity) → verify with `kubectl get pod -o wide`.
+- **Question block**: create Pod `pod1` with container `pod1-container` (image `httpd:2-alpine`) that runs only on
+  controlplane nodes, without adding labels.
+- **Answer**: explore taints/labels → generate YAML → add toleration + nodeSelector (or nodeAffinity) → verify with
+  `kubectl get pod -o wide`.
 - **Checklist**: 6 points covering running state, container count/name/image, scheduled node, and scheduling constraint.
 
 ---
@@ -90,17 +93,18 @@ kubectl get <resource> -o wide
 
 ### kind-config.yaml
 
-Minimal two-node cluster (1 control-plane + 1 worker) is the default. Add more nodes or extra config only when the task requires it.
+Minimal two-node cluster (1 control-plane + 1 worker) is the default. Add more nodes or extra config only when the task
+requires it.
 
 ```yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-name: cka-lab-<N>
+name: <exam>-lab-<N>
 networking:
   ipFamily: ipv4
 nodes:
-- role: control-plane
-- role: worker
+  - role: control-plane
+  - role: worker
 ```
 
 ### up.sh
@@ -111,7 +115,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
-CLUSTER_NAME="cka-lab-$LAB_ID"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
 for cmd in kind kubectl docker; do
@@ -129,7 +134,8 @@ echo "Run this to set your kubeconfig:"
 echo "  export KUBECONFIG=$KUBECONFIG_FILE"
 ```
 
-Add any pre-seeded resources (namespaces, broken objects the task asks you to fix) between `kind create cluster` and the summary echo.
+Add any pre-seeded resources (namespaces, broken objects the task asks you to fix) between `kind create cluster` and the
+summary echo.
 
 ### down.sh
 
@@ -139,8 +145,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 
-kind delete cluster --name "cka-lab-$LAB_ID"
+kind delete cluster --name "$EXAM-lab-$LAB_ID"
 
 rm -rf "$SCRIPT_DIR/../course"
 
@@ -202,7 +209,8 @@ kubectl wait pod pod1 -n default --for=condition=Ready --timeout=60s
 
 ### check.sh
 
-For simple assertions, write bash directly. For anything involving OR logic, JSON parsing, or cross-resource validation, delegate to `check.py`:
+For simple assertions, write bash directly. For anything involving OR logic, JSON parsing, or cross-resource validation,
+delegate to `check.py`:
 
 ```bash
 #!/usr/bin/env bash
@@ -211,7 +219,8 @@ python3 "$(dirname "$0")/check.py"
 
 ### check.py
 
-One `TestCase` class, one `test_` method per checklist item. Use `jsonpath` to extract values from the live cluster — avoid parsing text output.
+One `TestCase` class, one `test_` method per checklist item. Use `jsonpath` to extract values from the live cluster —
+avoid parsing text output.
 
 ```python
 #!/usr/bin/env python3
@@ -309,15 +318,15 @@ if __name__ == "__main__":
 
 ## Conventions
 
-| Convention | Rule |
-|---|---|
-| Cluster name | `cka-lab-<N>` where `<N>` is the lab directory number (e.g. `cka-lab-29` for `cka/29/`) |
-| Kubeconfig path | `assets/kubeconfig.yaml` (generated, git-ignored) |
-| Manifests | Written to `course/` while solving; `course/` is git-ignored |
-| fix.sh | Idempotent — uses `kubectl apply`, not `kubectl create` |
-| check.py class name | `Test<DescriptiveLabName>` matching the question title |
-| Checklist score | Start at `0/<N>` — update to `<N>/<N>` once all checks pass |
-| Multiple approaches | Document all valid approaches in the readme (e.g. nodeSelector vs nodeAffinity), pick the simpler one for fix.sh |
+| Convention          | Rule                                                                                                                             |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| Cluster name        | `<exam>-lab-<N>` where `<exam>` is the directory name (e.g. `cka`) and `<N>` is the lab number (e.g. `cka-lab-29` for `cka/29/`) |
+| Kubeconfig path     | `assets/kubeconfig.yaml` (generated, git-ignored)                                                                                |
+| Manifests           | Written to `course/` while solving; `course/` is git-ignored                                                                     |
+| fix.sh              | Idempotent — uses `kubectl apply`, not `kubectl create`                                                                          |
+| check.py class name | `Test<DescriptiveLabName>` matching the question title                                                                           |
+| Checklist score     | Start at `0/<N>` — update to `<N>/<N>` once all checks pass                                                                      |
+| Multiple approaches | Document all valid approaches in the readme (e.g. nodeSelector vs nodeAffinity), pick the simpler one for fix.sh                 |
 
 ---
 
@@ -326,8 +335,8 @@ if __name__ == "__main__":
 ### 1. Set Up the Lab
 
 ```bash
-bash cka/<N>/assets/up.sh
-export KUBECONFIG="$(pwd)/cka/<N>/assets/kubeconfig.yaml"
+bash <exam>/<N>/assets/up.sh
+export KUBECONFIG="$(pwd)/<exam>/<N>/assets/kubeconfig.yaml"
 kubectl cluster-info
 kubectl get nodes
 ```
@@ -337,10 +346,11 @@ Wait for `up.sh` to finish before exporting the kubeconfig. Confirm both nodes a
 ### 2. Read the Lab
 
 ```bash
-cat cka/<N>/readme.md
+cat <exam>/<N>/readme.md
 ```
 
 Before touching the cluster, identify:
+
 - What Kubernetes resources need to be created, modified, or deleted
 - Which namespace(s) are involved
 - Any specific constraints (names, labels, images, counts, etc.)
@@ -360,23 +370,24 @@ Use this to understand what is already present and what is missing or misconfigu
 Implement the solution based on the readme requirements:
 
 - Use `kubectl apply`, `kubectl create`, or `kubectl edit` as appropriate
-- Save any manifests you create under `cka/<N>/course/`
+- Save any manifests you create under `<exam>/<N>/course/`
 - Do not use `--force` or delete resources unless the task explicitly requires it
 - Prefer declarative manifests (YAML files) over imperative one-liners for anything non-trivial
 - Work methodically — apply one change at a time and confirm it takes effect before moving on
 
 ### 5. Write fix.sh
 
-Codify the solution into `assets/fix.sh` so it can reproduce the complete answer from a clean cluster state. See the [fix.sh template](#fixsh) above.
+Codify the solution into `assets/fix.sh` so it can reproduce the complete answer from a clean cluster state. See
+the [fix.sh template](#fixsh) above.
 
 ### 6. Write check.sh
 
-Write `assets/check.sh` to validate every item in the Killer.sh checklist. See the [check.sh / check.py templates](#checksh) above.
+Write `assets/check.sh` to validate every item in the checklist. See the [check.sh](#check) above.
 
 ### 7. Verify
 
 ```bash
-bash cka/<N>/assets/check.sh
+bash <exam>/<N>/assets/check.sh
 ```
 
 - All checks pass → the lab is complete
@@ -387,5 +398,95 @@ Do not mark the lab as done until every check passes.
 ### 8. Tear Down
 
 ```bash
-bash cka/<N>/assets/down.sh
+bash <exam>/<N>/assets/down.sh
 ```
+
+---
+
+## Exam-Specific Notes
+
+Most labs follow the default two-node kind cluster. The exceptions are exam-specific:
+
+| Exam     | Typical extras                                                                                                                                                                                                                           |
+|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **CKA**  | Multi-node topologies (e.g. extra workers, taints) when the task involves scheduling or node management                                                                                                                                  |
+| **CKAD** | Rarely needs more than the default; may pre-seed namespaces, resource quotas, or broken workloads in `up.sh`                                                                                                                             |
+| **CKS**  | May require extra `kind-config.yaml` mounts (e.g. audit policy file, encryption config) and additional cluster configuration in `up.sh` (enabling audit logging, configuring the API server with extra flags via `kubeadmConfigPatches`) |
+
+For CKS labs that need audit logging or encryption at rest, configure these in `kind-config.yaml` using
+`kubeadmConfigPatches` and mount the required host paths via `extraMounts`. Pre-seed any security-relevant resources (
+PSA labels, NetworkPolicies, RBAC) in `up.sh` between `kind create cluster` and the summary echo.
+
+---
+
+## CI
+
+Every lab must have a GitHub Actions workflow at `.github/workflows/<exam>-lab-<N>.yml` that spins up the cluster,
+applies the solution, runs the checks, and tears down — all on every push or PR that touches the lab.
+
+### Workflow file path
+
+```
+.github/workflows/<exam>-lab-<N>.yml
+```
+
+### Template
+
+```yaml
+name: <EXAM> Lab <N>
+
+on:
+  push:
+    paths:
+      - '<exam>/<N>/**'
+      - '.github/workflows/<exam>-lab-<N>.yml'
+  pull_request:
+    paths:
+      - '<exam>/<N>/**'
+      - '.github/workflows/<exam>-lab-<N>.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Start lab cluster
+        run: bash <exam>/<N>/assets/up.sh
+
+      - name: Apply solution
+        run: bash <exam>/<N>/assets/fix.sh
+
+      - name: Run checks
+        run: bash <exam>/<N>/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash <exam>/<N>/assets/down.sh
+```
+
+### Lab 29 example
+
+`.github/workflows/cka-lab-29.yml` — triggers on changes to `cka/29/**`, runs `up.sh` → `fix.sh` → `check.sh` →
+`down.sh`.
+
+This pattern applies equally to all exams: `cka-lab-<N>.yml`, `ckad-lab-<N>.yml`, `cks-lab-<N>.yml`.
+
+### Conventions
+
+| Convention         | Rule                                                                  |
+|--------------------|-----------------------------------------------------------------------|
+| Workflow file name | `.github/workflows/<exam>-lab-<N>.yml`                                |
+| Path triggers      | `<exam>/<N>/**` and the workflow file itself                          |
+| Tear-down step     | Always `if: always()` so the cluster is deleted even when checks fail |
+| kubectl install    | Use `azure/setup-kubectl@v4` action (picks up latest stable)          |
+| kind version       | Pin to a specific version (e.g. `v0.23.0`) and update deliberately    |

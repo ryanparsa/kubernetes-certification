@@ -2,7 +2,7 @@
 
 Practice labs for the Certified Kubernetes Administrator exam, organized by simulator question number.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file templates, and conventions.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templates, and conventions.
 
 ---
 
