@@ -12,10 +12,10 @@ done
 # 2. Create cluster
 kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# 3. Apply workloads
-# (No pre-existing workloads for this task)
+# 5. Create the course/ output directory
+mkdir -p "$SCRIPT_DIR/../course"
 
-# 4. Print summary
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
