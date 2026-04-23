@@ -42,6 +42,7 @@ kubectl -n project-hamster create role processor --verb=create --resource=secret
 Which will create a *Role* like:
 
 ```yaml
+# cka/10/course/10.yaml
 # kubectl -n project-hamster create role processor --verb=create --resource=secret --resource=configmap
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -73,6 +74,7 @@ kubectl -n project-hamster create rolebinding processor --role processor --servi
 This will create a *RoleBinding* like:
 
 ```yaml
+# cka/10/course/10.yaml
 # kubectl -n project-hamster create rolebinding processor --role processor --serviceaccount project-hamster:processor
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -88,6 +90,8 @@ subjects:
   name: processor
   namespace: project-hamster
 ```
+
+### Verify
 
 To test our RBAC setup we can use `kubectl auth can-i`:
 
@@ -118,9 +122,9 @@ Done.
 
 ## Killer.sh Checklist (Score: 0/6)
 
-- [ ] ServiceAccount `processor` exists in Namespace `project-hamster`
-- [ ] Role `processor` exists in Namespace `project-hamster`
-- [ ] RoleBinding `processor` exists and binds the Role to the ServiceAccount
-- [ ] ServiceAccount can `create` Secrets
-- [ ] ServiceAccount can `create` ConfigMaps
-- [ ] ServiceAccount cannot perform other operations (e.g. delete secrets, get configmaps, create pods)
+- [ ] *ServiceAccount* `processor` exists in *Namespace* `project-hamster`
+- [ ] *Role* `processor` exists in *Namespace* `project-hamster`
+- [ ] *RoleBinding* `processor` exists and binds the *Role* to the *ServiceAccount*
+- [ ] *ServiceAccount* can `create` *Secrets*
+- [ ] *ServiceAccount* can `create` *ConfigMaps*
+- [ ] *ServiceAccount* cannot perform other operations (e.g. delete *Secrets*, get *ConfigMaps*, create *Pods*)
