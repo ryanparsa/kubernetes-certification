@@ -1,6 +1,6 @@
 # Question 5 | Kustomize configure HPA Autoscaler
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-5" kind cluster
 
 Previously the application `api-gateway` used some external autoscaler which should now be replaced with a *HorizontalPodAutoscaler* (*HPA*). The application has been deployed to *Namespaces* `api-gateway-staging` and `api-gateway-prod` like this:
 
@@ -474,3 +474,12 @@ Both approaches have pros and cons:
 
 - Kustomize is less complex by not having to manage state, but might need more manual work cleaning up
 - Helm can keep better track of remote resources, but things can get complex and messy if there is a state error or mismatch. State changes (Helm actions) at the same time need to be prevented or accounted for
+
+## Killer.sh Checklist (Score: 0/6)
+
+- [ ] HPA `api-gateway` exists in namespace `api-gateway-staging` with `minReplicas: 2`
+- [ ] HPA `api-gateway` in namespace `api-gateway-staging` has `maxReplicas: 4`
+- [ ] HPA `api-gateway` in namespace `api-gateway-staging` targets 50% average CPU utilisation
+- [ ] HPA `api-gateway` exists in namespace `api-gateway-prod` with `maxReplicas: 6`
+- [ ] ConfigMap `horizontal-scaling-config` does not exist in namespace `api-gateway-staging`
+- [ ] ConfigMap `horizontal-scaling-config` does not exist in namespace `api-gateway-prod`

@@ -1,6 +1,6 @@
 # Question 4 | Find Pods first to be terminated
 
-> **Solve this question on:** the `cka-lab` kind cluster
+> **Solve this question on:** the "cka-lab-4" kind cluster
 
 Check all available *Pods* in the *Namespace* `project-c13` and find the names of those that would probably be terminated first if the nodes run out of resources (cpu or memory).
 
@@ -88,3 +88,9 @@ c13-3cc-web-767b98dd48-pb67p Burstable
 Here we see three with BestEffort, which *Pods* get that don't have any memory or cpu limits or requests defined.
 
 A good practice is to always set resource requests and limits. If you don't know the values your containers should have you can find this out using metric tools like Prometheus. You can also use `kubectl top pod` or even `kubectl exec` into the container and use `top` and similar tools.
+
+## Killer.sh Checklist (Score: 0/3)
+
+- [ ] File `course/pods-terminated-first.txt` exists
+- [ ] All pods listed in the file have QoS class `BestEffort`
+- [ ] All `BestEffort` pods in namespace `project-c13` are listed in the file
