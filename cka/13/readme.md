@@ -2,7 +2,7 @@
 
 The team from Project r500 wants to replace their *Ingress* (networking.k8s.io) with a *Gateway API* (gateway.networking.k8s.io) solution. The old *Ingress* is available at `cka/13/course/ingress.yaml`.
 
-> **Solve this question on:** the `cka-lab-13` kind cluster
+> **Solve this question on:** the "cka-lab-13" kind cluster
 
 Perform the following in *Namespace* `project-r500` and for the already existing *Gateway*:
 
@@ -137,6 +137,7 @@ spec:
 We can see two paths `/desktop` and `/mobile` which point to the K8s *Services* `web-desktop` and `web-mobile`. Based on this we create a *HTTPRoute* which replicates the behaviour and in which we reference the existing *Gateway*:
 
 ```yaml
+# cka/13/course/13.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -194,6 +195,7 @@ This looks like what we want!
 Now things get more interesting and we need to add new path `/auto` which redirects depending on the User-Agent. The User-Agent is handled as a HTTP header and we only have to check for the exact value, hence we can extend our *HTTPRoute* like this:
 
 ```yaml
+# cka/13/course/13.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -308,8 +310,9 @@ Web Desktop App
 
 Great, *Gateway API* ftw!
 
-## Killer.sh Checklist (Score: 0/6)
+## Checklist
 
+(Score: 0/6)
 - [ ] HTTPRoute `traffic-director` exists in namespace `project-r500`
 - [ ] HTTPRoute references parent Gateway `main`
 - [ ] Path `/desktop` forwards to `web-desktop:80`
