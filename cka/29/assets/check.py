@@ -4,18 +4,24 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+# Try local kubeconfig first (for local dev), then fallback to default (for CI)
+LOCAL_KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+KUBECONFIG = LOCAL_KUBECONFIG if os.path.exists(LOCAL_KUBECONFIG) else os.environ.get("KUBECONFIG")
 
 
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if KUBECONFIG:
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        cmd,
         capture_output=True, text=True,
     )
     return result.stdout.strip()
 
 
-class TestSchedulePodOnControlplane(unittest.TestCase):
+class TestSchedulePodOnControlplaneNodes(unittest.TestCase):
 
     def test_pod_is_running(self):
         phase = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.status.phase}")
