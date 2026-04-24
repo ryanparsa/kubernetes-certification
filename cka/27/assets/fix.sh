@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 
+mkdir -p "$SCRIPT_DIR/../course"
+
 # Step 1: Create StorageClass
 kubectl apply -f - <<EOF
 apiVersion: storage.k8s.io/v1
