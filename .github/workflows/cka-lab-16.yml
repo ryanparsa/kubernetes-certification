@@ -1,0 +1,31 @@
+name: CKA Lab 16
+
+on:
+  push:
+    paths: ['cka/16/**', '.github/workflows/cka-lab-16.yml']
+  pull_request:
+    paths: ['cka/16/**', '.github/workflows/cka-lab-16.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/16/assets/kind-config.yaml
+          cluster_name: cka-lab-16
+
+      - name: Apply solution
+        run: bash cka/16/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/16/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: kind delete cluster --name cka-lab-16
