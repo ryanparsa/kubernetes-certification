@@ -21,6 +21,11 @@ jobs:
           config: cka/11/assets/kind-config.yaml
           cluster_name: cka-lab-11
 
+      - name: Provision environment
+        run: |
+          kind get kubeconfig --name cka-lab-11 > cka/11/assets/kubeconfig.yaml
+          bash cka/11/assets/up.sh
+
       - name: Apply solution
         run: bash cka/11/assets/fix.sh
 
