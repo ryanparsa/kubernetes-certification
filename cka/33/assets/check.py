@@ -1,40 +1,54 @@
 #!/usr/bin/env python3
 import os
+import subprocess
 import unittest
+import time
 
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
 COURSE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "course")
 
+def kubectl(*args):
+    cmd = ["kubectl"]
+    if os.path.exists(KUBECONFIG):
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result.stdout.strip()
 
-class TestNamespacesAndApiResources(unittest.TestCase):
+class TestUpdateCoreDNSConfiguration(unittest.TestCase):
+    def test_backup_exists(self):
+        filepath = os.path.join(COURSE_DIR, "coredns_backup.yaml")
+        self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
-    def test_resources_txt_exists(self):
-        filepath = os.path.join(COURSE_DIR, "resources.txt")
-        self.assertTrue(os.path.exists(filepath), "resources.txt does not exist")
-
-    def test_resources_txt_contains_namespaced_resources(self):
-        filepath = os.path.join(COURSE_DIR, "resources.txt")
-        with open(filepath, "r") as f:
+        with open(filepath, 'r') as f:
             content = f.read()
-        for resource in ["pods", "configmaps", "secrets", "services"]:
-            self.assertIn(resource, content, f"resources.txt missing expected resource: {resource}")
+        self.assertIn("kind: ConfigMap", content)
+        self.assertIn("name: coredns", content)
 
-    def test_crowded_namespace_txt_exists(self):
-        filepath = os.path.join(COURSE_DIR, "crowded-namespace.txt")
-        self.assertTrue(os.path.exists(filepath), "crowded-namespace.txt does not exist")
+    def test_dns_resolution(self):
+        # Run a temporary pod to test DNS resolution
+        pod_name = "dns-test-pod"
+        kubectl("run", pod_name, "--image=busybox:1", "--restart=Never", "--", "sleep", "3600")
 
-    def test_crowded_namespace_txt_content(self):
-        filepath = os.path.join(COURSE_DIR, "crowded-namespace.txt")
-        with open(filepath, "r") as f:
-            content = f.read().strip()
-        self.assertIn("project-miami", content, "crowded-namespace.txt should identify project-miami")
-        self.assertIn("300", content, "crowded-namespace.txt should contain role count 300")
+        # Wait for pod to be ready
+        for _ in range(30):
+            status = kubectl("get", "pod", pod_name, "-o", "jsonpath={.status.phase}")
+            if status == "Running":
+                break
+            time.sleep(2)
+        else:
+            self.fail("Test pod did not become ready in time")
 
+        try:
+            # Test internal resolution
+            out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.cluster.local")
+            self.assertIn("Address: 10.96.0.1", out)
 
-class QuietResult(unittest.TextTestResult):
-    def printErrors(self):
-        pass
-
+            # Test custom-domain resolution
+            out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.custom-domain")
+            self.assertIn("Address: 10.96.0.1", out)
+        finally:
+            kubectl("delete", "pod", pod_name, "--now")
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)
-    unittest.main(testRunner=runner)
+    unittest.main(verbosity=2)

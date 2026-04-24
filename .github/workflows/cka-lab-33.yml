@@ -9,8 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -18,7 +16,7 @@ jobs:
         uses: helm/kind-action@v1
         with:
           config: cka/33/assets/kind-config.yaml
-          cluster_name: cka-lab
+          cluster_name: cka-lab-33
 
       - name: Apply solution
         run: bash cka/33/assets/fix.sh

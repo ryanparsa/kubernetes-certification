@@ -7,45 +7,50 @@ if [ -f "$KUBECONFIG_FILE" ]; then
   export KUBECONFIG="$KUBECONFIG_FILE"
 fi
 
-mkdir -p "$SCRIPT_DIR/../course"
+COURSE_DIR="$SCRIPT_DIR/../course"
+mkdir -p "$COURSE_DIR"
 
-# Seed: ensure project-* namespaces exist (idempotent)
-kubectl apply -f "$SCRIPT_DIR/namespaces.yaml"
+# 1. Make a backup of the existing configuration YAML
+kubectl -n kube-system get cm coredns -o yaml > "$COURSE_DIR/coredns_backup.yaml"
 
-# Seed: create Roles in project-miami (300), project-melbourne (2), project-seoul (10)
-for ns_count in "project-miami:300" "project-melbourne:2" "project-seoul:10"; do
-  ns="${ns_count%%:*}"
-  count="${ns_count##*:}"
-  {
-    for i in $(seq 1 "$count"); do
-      cat <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: role-$i
-  namespace: $ns
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
----
+# 2. Update the CoreDNS configuration
+# We use a python script to safely modify the ConfigMap data
+python3 - <<EOF
+import sys
+import json
+import subprocess
+import os
+
+def kubectl(*args):
+    cmd = ["kubectl"]
+    kconfig = os.environ.get("KUBECONFIG")
+    if kconfig and os.path.exists(kconfig):
+        cmd.extend(["--kubeconfig", kconfig])
+    cmd.extend(args)
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result.stdout
+
+# Get current config
+cm_json = kubectl("-n", "kube-system", "get", "cm", "coredns", "-o", "json")
+cm = json.loads(cm_json)
+
+# Modify Corefile
+corefile = cm["data"]["Corefile"]
+if "custom-domain" not in corefile:
+    corefile = corefile.replace("cluster.local", "custom-domain cluster.local")
+    cm["data"]["Corefile"] = corefile
+
+# Apply updated config
+cmd = ["kubectl", "apply", "-f", "-"]
+kconfig = os.environ.get("KUBECONFIG")
+if kconfig and os.path.exists(kconfig):
+    cmd.insert(1, "--kubeconfig")
+    cmd.insert(2, kconfig)
+
+process = subprocess.Popen(cmd, stdin=subprocess.PIPE, text=True)
+process.communicate(json.dumps(cm))
 EOF
-    done
-  } | kubectl apply -f -
-done
 
-# Solution 1: write all namespaced resource names to resources.txt
-kubectl api-resources --namespaced -o name > "$SCRIPT_DIR/../course/resources.txt"
-
-# Solution 2: find the project-* namespace with the most Roles
-max_count=0
-max_ns=""
-for ns in $(kubectl get namespace -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep '^project-'); do
-  count=$(kubectl get role -n "$ns" --no-headers 2>/dev/null | wc -l | tr -d ' ')
-  if [ "$count" -gt "$max_count" ]; then
-    max_count=$count
-    max_ns=$ns
-  fi
-done
-
-echo "$max_ns with $max_count roles" > "$SCRIPT_DIR/../course/crowded-namespace.txt"
+# Restart CoreDNS deployment to pick up changes
+kubectl -n kube-system rollout restart deploy coredns
+kubectl -n kube-system rollout status deploy coredns --timeout=60s
