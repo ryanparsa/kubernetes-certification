@@ -1,12 +1,12 @@
-# Question 10 | PV PVC Dynamic Provisioning
+# Question 27 | PV PVC Dynamic Provisioning
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-27" kind cluster
 
 There is a backup *Job* which needs to be adjusted to use a *PVC* to store backups.
 
 Create a *StorageClass* named `local-backup` which uses `provisioner: rancher.io/local-path` and `volumeBindingMode: WaitForFirstConsumer`. To prevent possible data loss the *StorageClass* should keep a *PV* retained even if a bound *PVC* is deleted.
 
-Adjust the *Job* at `cka/27/course/backup.yaml` to use a *PVC* which request `50Mi` storage and uses the new *StorageClass*.
+Adjust the *Job* at `cka/27/course/27.yaml` to use a *PVC* which request `50Mi` storage and uses the new *StorageClass*.
 
 Deploy your changes, verify the *Job* completed once and the *PVC* was bound to a newly created *PV*.
 
@@ -48,7 +48,7 @@ reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer
 ```
 
-We need to use `reclaimPolicy: Retain` because this will cause the *PV* to not get deleted even after the associated *PVC* is deleted. It's very easy to delete resources in Kubernetes which can lead to quick data loss. Especially in this case where important data, like from a backup, is in play.
+We need to use `reclaimPolicy: Retain` because this will cause the *PV* to not get deleted even after the associated *PVC* is deleted. It's very easy to delete resources in *Kubernetes* which can lead to quick data loss. Especially in this case where important data, like from a backup, is in play.
 
 ```bash
 kubectl apply -f sc.yaml
@@ -67,7 +67,7 @@ This looks like what we want. Now we have the choice between two *StorageClasses
 Let's have a look at the existing *Job*:
 
 ```yaml
-# cka/27/course/backup.yaml
+# cka/27/course/27.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -101,7 +101,7 @@ Currently it uses an `emptyDir` volume which means in only stores data in the te
 We could go ahead and create it now to see if everything else works:
 
 ```bash
-kubectl apply -f cka/27/course/backup.yaml
+kubectl apply -f cka/27/course/27.yaml
 job.batch/backup created
 
 kubectl -n project-bern get job,pod
@@ -119,13 +119,13 @@ Looks like it completed without errors.
 For this we first need to create a *PVC* and then use in the *Job* template:
 
 ```bash
-cp cka/27/course/backup.yaml cka/27/course/backup.yaml_ori
+cp cka/27/course/27.yaml cka/27/course/27.yaml_ori
 
-vim cka/27/course/backup.yaml
+vim cka/27/course/27.yaml
 ```
 
 ```yaml
-# cka/27/course/backup.yaml
+# cka/27/course/27.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -175,10 +175,10 @@ We first made a backup of the provided file, which is always a good idea. Then w
 First we delete the existing *Job* because we did create it once before without any changes. And then we deploy:
 
 ```bash
-kubectl delete -f cka/27/course/backup.yaml
+kubectl delete -f cka/27/course/27.yaml
 job.batch "backup" deleted
 
-kubectl apply -f cka/27/course/backup.yaml
+kubectl apply -f cka/27/course/27.yaml
 persistentvolumeclaim/backup-pvc created
 job.batch/backup created
 ```
@@ -205,7 +205,7 @@ pvc-dbcce...  50Mi       ...  Retain          Bound   project-bern/backup-pvc   
 Because the Local Path Provisioner is used we can actually see the volume represented on the filesystem. Since kind nodes are Docker containers, we can exec into the node:
 
 ```bash
-docker exec cka-lab-control-plane find /opt/local-path-provisioner
+docker exec cka-lab-27-control-plane find /opt/local-path-provisioner
 /opt/local-path-provisioner/
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc
 /opt/local-path-provisioner/pvc-dbccec94-cc31-4e30-b5fe-7cb42a85fe7a_project-bern_backup-pvc/backup-2024-12-30-17-27-51.tar.gz
@@ -217,7 +217,7 @@ If we run the *Job* again we should see another backup file:
 kubectl -n project-bern delete job backup
 job.batch "backup" deleted
 
-kubectl apply -f cka/27/course/backup.yaml
+kubectl apply -f cka/27/course/27.yaml
 persistentvolumeclaim/backup-pvc unchanged
 job.batch/backup created
 
@@ -246,10 +246,10 @@ pvc-dbcce...  50Mi       ...  Retain           Released   project-bern/backup-pv
 We can no longer see the *PVC*, but the *PV* is in status `Released`. This is because we set the `reclaimPolicy: Retain` in the *StorageClass*. Now we could manually export/rescue the data in the volume and afterwards delete the *PV* manually.
 
 
-## Killer.sh Checklist (Score: 0/5)
+## Checklist (Score: 0/5)
 
-- [ ] StorageClass created
-- [ ] Job uses PVC
-- [ ] PVC uses StorageClass
-- [ ] PVC requests required storage
-- [ ] Job created backups on the PVC
+- [ ] *StorageClass* created
+- [ ] *Job* uses *PVC*
+- [ ] *PVC* uses *StorageClass*
+- [ ] *PVC* requests required storage
+- [ ] *Job* created backups on the *PVC*
