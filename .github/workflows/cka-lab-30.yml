@@ -18,6 +18,9 @@ jobs:
           config: cka/30/assets/kind-config.yaml
           cluster_name: cka-lab-30
 
+      - name: Export kubeconfig
+        run: kind get kubeconfig --name cka-lab-30 > cka/30/assets/kubeconfig.yaml
+
       - name: Apply solution
         run: bash cka/30/assets/fix.sh
 
