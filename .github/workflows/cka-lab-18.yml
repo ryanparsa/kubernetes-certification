@@ -18,6 +18,9 @@ jobs:
           config: cka/18/assets/kind-config.yaml
           cluster_name: cka-lab-18
 
+      - name: Export kubeconfig
+        run: kind get kubeconfig --name cka-lab-18 > cka/18/assets/kubeconfig.yaml
+
       - name: Apply pre-existing workloads
         run: |
           kubectl apply -f cka/18/assets/workloads.yaml
