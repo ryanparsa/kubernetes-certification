@@ -13,17 +13,22 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+if ! kind get clusters | grep -q "^$CLUSTER_NAME$"; then
+  kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+fi
 
 # 3. Apply pre-existing workloads
-kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
+if [[ -f "$KUBECONFIG_FILE" && -z "${KUBECONFIG:-}" ]]; then export KUBECONFIG="$KUBECONFIG_FILE"; fi
+kubectl apply -f "$SCRIPT_DIR/workloads.yaml"
 
 # 4. Wait for deployments
+# N/A
 
 # 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
 # 6. Copy task assets
+# N/A
 
 # 7. Print summary
 echo ""

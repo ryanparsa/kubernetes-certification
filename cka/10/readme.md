@@ -42,7 +42,7 @@ kubectl -n project-hamster create role processor --verb=create --resource=secret
 Which will create a *Role* like:
 
 ```yaml
-# cka/10/course/10.yaml
+# cka/27/course/27.yaml
 # kubectl -n project-hamster create role processor --verb=create --resource=secret --resource=configmap
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -74,7 +74,7 @@ kubectl -n project-hamster create rolebinding processor --role processor --servi
 This will create a *RoleBinding* like:
 
 ```yaml
-# cka/10/course/10.yaml
+# cka/27/course/27.yaml
 # kubectl -n project-hamster create rolebinding processor --role processor --serviceaccount project-hamster:processor
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -120,7 +120,7 @@ kubectl -n project-hamster auth can-i get configmap --as system:serviceaccount:p
 
 Done.
 
-## Killer.sh Checklist (Score: 0/6)
+## Checklist (Score: 0/6)
 
 - [ ] *ServiceAccount* `processor` exists in *Namespace* `project-hamster`
 - [ ] *Role* `processor` exists in *Namespace* `project-hamster`

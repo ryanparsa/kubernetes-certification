@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+if [[ -f "$SCRIPT_DIR/kubeconfig.yaml" && -z "${KUBECONFIG:-}" ]]; then export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"; fi
 
 kubectl apply -f - <<EOF
 apiVersion: v1

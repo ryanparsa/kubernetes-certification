@@ -1,0 +1,36 @@
+name: CKA Lab 27
+
+on:
+  push:
+    paths: ['cka/27/**', '.github/workflows/cka-lab-27.yml']
+  pull_request:
+    paths: ['cka/27/**', '.github/workflows/cka-lab-27.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/27/assets/kind-config.yaml
+          cluster_name: cka-lab-27
+
+      - name: Setup environment
+        run: |
+          kind get kubeconfig --name cka-lab-27 > cka/27/assets/kubeconfig.yaml
+          bash cka/27/assets/up.sh
+
+      - name: Apply solution
+        run: bash cka/27/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/27/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/27/assets/down.sh
