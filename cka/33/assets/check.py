@@ -27,7 +27,7 @@ class TestUpdateCoreDNSConfiguration(unittest.TestCase):
 
     def test_dns_resolution(self):
         # Run a temporary pod to test DNS resolution
-        pod_name = "dns-test-pod"
+        pod_name = f"dns-test-pod-{time.time_ns()}"
         kubectl("run", pod_name, "--image=busybox:1", "--restart=Never", "--", "sleep", "3600")
 
         # Wait for pod to be ready
@@ -39,14 +39,17 @@ class TestUpdateCoreDNSConfiguration(unittest.TestCase):
         else:
             self.fail("Test pod did not become ready in time")
 
+        expected_ip = kubectl("get", "service", "kubernetes", "-o", "jsonpath={.spec.clusterIP}")
+        self.assertTrue(expected_ip, "Could not determine kubernetes service clusterIP")
+
         try:
             # Test internal resolution
             out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.cluster.local")
-            self.assertIn("Address: 10.96.0.1", out)
+            self.assertIn(f"Address: {expected_ip}", out)
 
             # Test custom-domain resolution
             out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.custom-domain")
-            self.assertIn("Address: 10.96.0.1", out)
+            self.assertIn(f"Address: {expected_ip}", out)
         finally:
             kubectl("delete", "pod", pod_name, "--now")
 

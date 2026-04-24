@@ -36,9 +36,23 @@ cm = json.loads(cm_json)
 
 # Modify Corefile
 corefile = cm["data"]["Corefile"]
-if "custom-domain" not in corefile:
-    corefile = corefile.replace("cluster.local", "custom-domain cluster.local")
-    cm["data"]["Corefile"] = corefile
+lines = corefile.splitlines(keepends=True)
+updated = False
+
+for i, line in enumerate(lines):
+    stripped = line.lstrip()
+    if not stripped.startswith("kubernetes "):
+        continue
+    if "custom-domain" in stripped:
+        continue
+    if "cluster.local" not in stripped:
+        continue
+    lines[i] = line.replace("cluster.local", "custom-domain cluster.local", 1)
+    updated = True
+    break
+
+if updated:
+    cm["data"]["Corefile"] = "".join(lines)
 
 # Apply updated config
 cmd = ["kubectl", "apply", "-f", "-"]
@@ -47,8 +61,16 @@ if kconfig and os.path.exists(kconfig):
     cmd.insert(1, "--kubeconfig")
     cmd.insert(2, kconfig)
 
-process = subprocess.Popen(cmd, stdin=subprocess.PIPE, text=True)
-process.communicate(json.dumps(cm))
+result = subprocess.run(
+    cmd,
+    input=json.dumps(cm),
+    capture_output=True,
+    text=True,
+)
+if result.returncode != 0:
+    if result.stderr:
+        sys.stderr.write(result.stderr)
+    sys.exit(result.returncode)
 EOF
 
 # Restart CoreDNS deployment to pick up changes
