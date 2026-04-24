@@ -2,7 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
+
+# Use local kubeconfig if it exists, otherwise assume it's already set (e.g. in CI)
+if [[ -f "$SCRIPT_DIR/kubeconfig.yaml" ]]; then
+  export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+fi
 
 # 1. Create cluster_events.sh
 mkdir -p "$SCRIPT_DIR/../course"
@@ -29,9 +36,9 @@ kubectl wait --for=condition=Ready pods -l k8s-app=kube-proxy -n kube-system --t
 
 # Get the container ID from the node
 # We use docker exec because crictl is inside the node
-CONTAINER_ID=$(docker exec cka-lab-32-control-plane crictl ps --name kube-proxy -q | head -n 1)
+CONTAINER_ID=$(docker exec "$CLUSTER_NAME-control-plane" crictl ps --name kube-proxy -q | head -n 1)
 
-docker exec cka-lab-32-control-plane crictl rm --force "$CONTAINER_ID"
+docker exec "$CLUSTER_NAME-control-plane" crictl rm --force "$CONTAINER_ID"
 
 # Give it some time to generate events
 sleep 5

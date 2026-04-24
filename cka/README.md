@@ -22,10 +22,10 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator A         | Question 10     | `10`      | Done   | Ready | Ready |
 | Simulator A         | Question 11     | `11`      | Done   | Ready |       |
 | Simulator A         | Question 12     | `12`      | Done   | Ready |       |
-| Simulator A         | Question 13     | `13`      | Done   | Ready |       |
+| Simulator A         | Question 13     | `13`      | Done   | Ready | Ready |
 | Simulator A         | Question 14     | `14`      | Done   | Ready |       |
 | Simulator A         | Question 15     | `15`      | Done   | Ready |       |
-| Simulator A         | Question 16     | `16`      | Done   | Ready |       |
+| Simulator A         | Question 16     | `16`      | Done   | Ready | Ready |
 | Simulator A         | Question 17     | `17`      | Done   | Ready | Ready |
 | Simulator B         | Question 1      | `18`      | Done   | Ready |       |
 | Simulator B         | Question 2      | `19`      | Done   | Ready |       |
@@ -34,12 +34,12 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator B         | Question 5      | `22`      | Done   | Ready |       |
 | Simulator B         | Question 6      | `23`      | Done   | Ready |       |
 | Simulator B         | Question 7      | `24`      | Done   | Ready |       |
-| Simulator B         | Question 8      | `25`      | Done   | Ready |       |
+| Simulator B         | Question 8      | `25`      | Done   | Ready | Ready |
 | Simulator B         | Question 9      | `26`      | Done   | Ready |       |
 | Simulator B         | Question 10     | `27`      | Done   | Ready |       |
-| Simulator B         | Question 11     | `28`      | Done   | Ready |       |
+| Simulator B         | Question 11     | `28`      | Done   | Ready | Ready |
 | Simulator B         | Question 12     | `29`      | Done   | Ready | Ready |
-| Simulator B         | Question 13     | `30`      | Done   | Ready |       |
+| Simulator B         | Question 13     | `30`      | Done   | Ready | Ready |
 | Simulator B         | Question 14     | `31`      | Done   | Ready |       |
 | Simulator B         | Question 15     | `32`      | Done   | Ready | Ready |
 | Simulator B         | Question 16     | `33`      | Done   | Ready | Ready |

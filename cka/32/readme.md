@@ -3,8 +3,8 @@
 > **Solve this question on:** the "cka-lab-32" kind cluster
 
 1. Write a `kubectl` command into `cka/32/course/cluster_events.sh` which shows the latest events in the whole cluster, ordered by time (`metadata.creationTimestamp`)
-2. Delete the kube-proxy *Pod* and write the events this caused into `cka/32/course/pod_kill.log`
-3. Manually kill the containerd container of the kube-proxy *Pod* and write the events into `cka/32/course/container_kill.log`
+2. Delete the *kube-proxy* *Pod* and write the events this caused into `cka/32/course/pod_kill.log`
+3. Manually kill the *containerd* container of the *kube-proxy* *Pod* and write the events into `cka/32/course/container_kill.log`
 
 ## Answer
 
@@ -39,7 +39,7 @@ default       19m         Normal    Started             pod/team-york-board-7d74
 
 ### Step 2
 
-We delete the kube-proxy *Pod*:
+We delete the *kube-proxy* *Pod*:
 
 ```bash
 kubectl -n kube-system get pod -l k8s-app=kube-proxy -owide
@@ -73,7 +73,7 @@ default       10s         Normal    Starting            node/cka-lab-32-control-
 
 > **Solve this question on:** `docker exec -it cka-lab-32-control-plane bash`
 
-Finally we will try to provoke events by killing the container belonging to the container of a kube-proxy *Pod*:
+Finally we will try to provoke events by killing the container belonging to the container of a *kube-proxy* *Pod*:
 
 ```bash
 crictl ps | grep kube-proxy
@@ -87,9 +87,10 @@ crictl ps | grep kube-proxy
 6bee4f36f8410       505d571f5fd56       5 seconds ago       Running             kube-proxy            0                   3455856e0970c       kube-proxy-wb4tb
 ```
 
-> ℹ️ In this environment `crictl` can be used for container management. In the real exam this could also be `docker`. Both commands can be used with the same arguments.
+> [!NOTE]
+> In this environment `crictl` can be used for container management. In the real exam this could also be `docker`. Both commands can be used with the same arguments.
 
-We killed the container (2fd052f1fcf78), but also noticed that a new container (6bee4f36f8410) was directly created again. Thanks Kubernetes!
+We killed the container (2fd052f1fcf78), but also noticed that a new container (6bee4f36f8410) was directly created again. Thanks *Kubernetes*!
 
 Now we see if this caused events again and we write those into the second file:
 
@@ -110,8 +111,8 @@ default       20s     Normal    Starting    node/cka-lab-32-control-plane
 Comparing the events we see that when we deleted the whole *Pod* there were more things to be done, hence more events. For example was the *DaemonSet* in the game to re-create the missing *Pod*. Where when we manually killed the main container of the *Pod*, the *Pod* still exists but only its container needed to be re-created, hence less events.
 
 
-## Killer.sh Checklist (Score: 0/3)
+## Checklist (Score: 0/3)
 
-- [ ] File cka/32/course/cluster_events.sh valid
-- [ ] File cka/32/course/pod_kill.log contains correct logs
-- [ ] File cka/32/course/container_kill.log contains correct logs
+- [ ] File `cka/32/course/cluster_events.sh` valid
+- [ ] File `cka/32/course/pod_kill.log` contains correct logs
+- [ ] File `cka/32/course/container_kill.log` contains correct logs

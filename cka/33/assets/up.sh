@@ -2,6 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
 # 1. Check dependencies
@@ -10,68 +13,16 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# 3. Apply pre-existing workloads
-kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/namespaces.yaml"
+# 4. Wait for deployments
+echo "Waiting for CoreDNS to be ready..."
+kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n kube-system deployment/coredns --timeout=120s
 
-echo "Creating Roles in project-miami (300)..."
-{
-  for i in $(seq 1 300); do
-    cat <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: role-$i
-  namespace: project-miami
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
----
-EOF
-  done
-} | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
-
-echo "Creating Roles in project-melbourne (2)..."
-{
-  for i in $(seq 1 2); do
-    cat <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: role-$i
-  namespace: project-melbourne
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
----
-EOF
-  done
-} | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
-
-echo "Creating Roles in project-seoul (10)..."
-{
-  for i in $(seq 1 10); do
-    cat <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: role-$i
-  namespace: project-seoul
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
----
-EOF
-  done
-} | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
-
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
-# 4. Print summary
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
