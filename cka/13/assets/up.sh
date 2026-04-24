@@ -3,16 +3,21 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
-CLUSTER_NAME="cka-lab-$LAB_ID"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
+KUBECONFIG_FILE="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
 
+# 1. Check dependencies
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
-# Create cluster with port 30080 mapped
-kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+# 2. Create cluster (only if it doesn't exist and we're not in CI)
+if ! kind get clusters | grep -q "^$CLUSTER_NAME$"; then
+  kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+fi
 
+# 3. Apply pre-existing workloads
 # Install Gateway API standard CRDs
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" \
   -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
@@ -23,26 +28,29 @@ kubectl apply --kubeconfig "$KUBECONFIG_FILE" \
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" \
   -f https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v1.5.0/deploy/nodeport/deploy.yaml
 
-# Wait for nginx-gateway-fabric controller to be ready
-echo "Waiting for nginx-gateway-fabric to be ready..."
-kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
-  -n nginx-gateway deployment/nginx-gateway --timeout=180s
-
 # Apply namespaces and backend workloads
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
-
-# Wait for backend pods
-kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
-  -n project-r500 pod/web-desktop pod/web-mobile \
-  --for=condition=Ready --timeout=60s
 
 # Apply the Gateway resource (requires CRDs to be installed first)
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/gateway.yaml"
 
-# Create the course/ directory and put the old ingress yaml there
+# 4. Wait for deployments
+echo "Waiting for nginx-gateway-fabric to be ready..."
+kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
+  -n nginx-gateway deployment/nginx-gateway --timeout=180s
+
+echo "Waiting for backend pods..."
+kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
+  -n project-r500 pod/web-desktop pod/web-mobile \
+  --for=condition=Ready --timeout=60s
+
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
+
+# 6. Copy task assets
 cp "$SCRIPT_DIR/task-ingress.yaml" "$SCRIPT_DIR/../course/ingress.yaml"
 
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""

@@ -1,0 +1,39 @@
+name: CKA Lab 13
+
+on:
+  push:
+    paths: ['cka/13/**', '.github/workflows/cka-lab-13.yml']
+  pull_request:
+    paths: ['cka/13/**', '.github/workflows/cka-lab-13.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/13/assets/kind-config.yaml
+          cluster_name: cka-lab-13
+
+      - name: Provision lab
+        run: |
+          # Use the kubeconfig provided by the action
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash cka/13/assets/up.sh
+
+      - name: Apply solution
+        run: |
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash cka/13/assets/fix.sh
+
+      - name: Run checks
+        run: |
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash cka/13/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/13/assets/down.sh
