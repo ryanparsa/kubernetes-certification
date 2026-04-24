@@ -5,14 +5,16 @@ import unittest
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
 
-
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if os.path.exists(KUBECONFIG):
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        [*cmd, *args],
         capture_output=True, text=True,
     )
     return result.stdout.strip()
-
 
 class TestDaemonSetOnAllNodes(unittest.TestCase):
 
@@ -45,8 +47,8 @@ class TestDaemonSetOnAllNodes(unittest.TestCase):
         self.assertEqual(mem, "10Mi")
 
     def test_controlplane_toleration(self):
-        tolerations = kubectl("get", "ds", "ds-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.tolerations}")
-        self.assertIn("control-plane", tolerations)
+        tolerations = kubectl("get", "ds", "ds-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.tolerations[*]}")
+        self.assertIn("node-role.kubernetes.io/control-plane", tolerations)
 
     def test_runs_on_all_nodes(self):
         desired = kubectl("get", "ds", "ds-important", "-n", "project-tiger", "-o", "jsonpath={.status.desiredNumberScheduled}")
@@ -54,12 +56,5 @@ class TestDaemonSetOnAllNodes(unittest.TestCase):
         self.assertTrue(desired and int(desired) > 0, "DaemonSet desiredNumberScheduled is 0")
         self.assertEqual(desired, ready)
 
-
-class QuietResult(unittest.TextTestResult):
-    def printErrors(self):
-        pass
-
-
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)
-    unittest.main(testRunner=runner)
+    unittest.main(verbosity=2)

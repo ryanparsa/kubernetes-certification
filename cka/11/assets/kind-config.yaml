@@ -4,6 +4,6 @@ name: cka-lab-11
 networking:
   ipFamily: ipv4
 nodes:
-- role: control-plane
-- role: worker
-- role: worker
+  - role: control-plane
+  - role: worker
+  - role: worker

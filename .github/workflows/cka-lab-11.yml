@@ -1,0 +1,32 @@
+name: CKA Lab 11
+
+on:
+  push:
+    paths: ['cka/11/**', '.github/workflows/cka-lab-11.yml']
+  pull_request:
+    paths: ['cka/11/**', '.github/workflows/cka-lab-11.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/11/assets/kind-config.yaml
+          cluster_name: cka-lab-11
+
+      - name: Apply solution
+        run: bash cka/11/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/11/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/11/assets/down.sh
