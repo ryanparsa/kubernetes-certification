@@ -1,6 +1,6 @@
-# Question 1 | DNS / FQDN / Headless Service
+# Question 18 | DNS / FQDN / Headless Service
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-18" kind cluster
 
 The *Deployment* `controller` in *Namespace* `lima-control` communicates with various cluster internal endpoints by using their DNS FQDN values.
 
@@ -233,7 +233,7 @@ Address: 1.2.3.4
 ```
 
 
-## Killer.sh Checklist (Score: 0/5)
+## Checklist (Score: 0/5)
 
 - [ ] DNS_1 in ConfigMap correct
 - [ ] DNS_2 in ConfigMap correct
