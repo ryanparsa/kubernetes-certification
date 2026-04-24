@@ -4,7 +4,7 @@ import subprocess
 import unittest
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
-
+COURSE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "course")
 
 def kubectl(*args):
     result = subprocess.run(
@@ -13,36 +13,31 @@ def kubectl(*args):
     )
     return result.stdout.strip()
 
+class TestClusterEventLogging(unittest.TestCase):
+    def test_cluster_events_script_exists(self):
+        path = os.path.join(COURSE_DIR, "cluster_events.sh")
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
 
-class TestNetworkPolicy(unittest.TestCase):
+    def test_cluster_events_script_valid(self):
+        path = os.path.join(COURSE_DIR, "cluster_events.sh")
+        with open(path, 'r') as f:
+            content = f.read()
+        self.assertIn("kubectl get events -A", content)
+        self.assertIn("--sort-by=.metadata.creationTimestamp", content)
 
-    def test_networkpolicy_exists(self):
-        name = kubectl("get", "networkpolicy", "np-backend", "-n", "project-snake", "-o", "jsonpath={.metadata.name}")
-        self.assertEqual(name, "np-backend")
+    def test_pod_kill_log_exists(self):
+        path = os.path.join(COURSE_DIR, "pod_kill.log")
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
+        self.assertGreater(os.path.getsize(path), 0, f"{path} is empty")
 
-    def test_pod_selector(self):
-        selector = kubectl("get", "networkpolicy", "np-backend", "-n", "project-snake", "-o", "jsonpath={.spec.podSelector.matchLabels.app}")
-        self.assertEqual(selector, "backend")
-
-    def test_egress_policy_type(self):
-        policy_types = kubectl("get", "networkpolicy", "np-backend", "-n", "project-snake", "-o", "jsonpath={.spec.policyTypes}")
-        self.assertIn("Egress", policy_types)
-
-    def test_egress_to_db1_port_1111(self):
-        egress = kubectl("get", "networkpolicy", "np-backend", "-n", "project-snake", "-o", "jsonpath={.spec.egress}")
-        self.assertIn("db1", egress)
-        self.assertIn("1111", egress)
-
-    def test_egress_to_db2_port_2222(self):
-        egress = kubectl("get", "networkpolicy", "np-backend", "-n", "project-snake", "-o", "jsonpath={.spec.egress}")
-        self.assertIn("db2", egress)
-        self.assertIn("2222", egress)
-
+    def test_container_kill_log_exists(self):
+        path = os.path.join(COURSE_DIR, "container_kill.log")
+        self.assertTrue(os.path.exists(path), f"{path} does not exist")
+        self.assertGreater(os.path.getsize(path), 0, f"{path} is empty")
 
 class QuietResult(unittest.TextTestResult):
     def printErrors(self):
         pass
-
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)

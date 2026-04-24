@@ -1,176 +1,112 @@
-# Question 15 | NetworkPolicy
+# Question 15 | Cluster Event Logging
 
-> **Solve this question on:** the `cka-lab-15` kind cluster
+> **Solve this question on:** the "cka-lab-15" kind cluster
 
-There was a security incident where an intruder was able to access the whole cluster from a single hacked backend Pod.
-
-To prevent this create a NetworkPolicy called `np-backend` in Namespace `project-snake`. It should allow the `backend-*` Pods only to:
-
-- Connect to `db1-*` Pods on port 1111
-- Connect to `db2-*` Pods on port 2222
-
-Use the `app` Pod labels in your policy.
-
-> [!NOTE]
-> All Pods in the Namespace run plain Nginx images. This allows simple connectivity tests like: `kubectl -n project-snake exec POD_NAME -- curl POD_IP:PORT`
-
-> [!NOTE]
-> For example, connections from `backend-*` Pods to `vault-*` Pods on port 3333 should no longer work
+1. Write a `kubectl` command into `cka/15/course/cluster_events.sh` which shows the latest events in the whole cluster, ordered by time (`metadata.creationTimestamp`)
+2. Delete the kube-proxy *Pod* and write the events this caused into `cka/15/course/pod_kill.log`
+3. Manually kill the containerd container of the kube-proxy *Pod* and write the events into `cka/15/course/container_kill.log`
 
 ## Answer
 
-First we look at the existing Pods and their labels:
+### Step 1
 
 ```bash
-kubectl -n project-snake get pod
-NAME        READY   STATUS    RESTARTS   AGE
-backend-0   1/1     Running   0          8d
-db1-0       1/1     Running   0          8d
-db2-0       1/1     Running   0          8d
-vault-0     1/1     Running   0          8d
-
-kubectl -n project-snake get pod -L app
-NAME        READY   STATUS    RESTARTS   AGE   APP
-backend-0   1/1     Running   0          8d    backend
-db1-0       1/1     Running   0          8d    db1
-db2-0       1/1     Running   0          8d    db2
-vault-0     1/1     Running   0          8d    vault
+# cka/15/course/cluster_events.sh
+kubectl get events -A --sort-by=.metadata.creationTimestamp
 ```
 
-We test the current connection situation and see nothing is restricted:
+And we can execute it which should show recent events:
 
 ```bash
-kubectl -n project-snake get pod -o wide
-NAME        READY   STATUS    RESTARTS   AGE     IP          ...
-backend-0   1/1     Running   0          8d      10.44.0.24  ...
-db1-0       1/1     Running   0          8d      10.44.0.25  ...
-db2-0       1/1     Running   0          8d      10.44.0.23  ...
-vault-0     1/1     Running   0          8d      10.44.0.22  ...
-
-kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
-database one
-
-kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
-database two
-
-kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.22:3333
-vault secret storage
+sh cka/15/course/cluster_events.sh
+NAMESPACE     LAST SEEN   TYPE     REASON           OBJECT                       MESSAGE
+...
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-fvzw5    Successfully pulled image "httpd:2-alpine" in 4.574s (4.575s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-fvzw5    Created container httpd
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-9fg47    Successfully pulled image "httpd:2-alpine" in 425ms (4.976s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-fvzw5    Started container httpd
+default       19m         Normal    Pulled              pod/team-york-board-7d74f8f86c-xnprt    Successfully pulled image "httpd:2-alpine" in 711ms (5.685s including waiting). Image size: 22038396 bytes.
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-xnprt    Created container httpd
+default       19m         Normal    Created             pod/team-york-board-7d74f8f86c-9fg47    Created container httpd
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-9fg47    Started container httpd
+default       19m         Normal    Started             pod/team-york-board-7d74f8f86c-xnprt    Started container httpd
+...
 ```
 
-Now we create the NP by copying and changing an example from the K8s Docs:
+### Step 2
 
-```yaml
-# 15_np.yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: np-backend
-  namespace: project-snake
-spec:
-  podSelector:
-    matchLabels:
-      app: backend
-  policyTypes:
-    - Egress                    # policy is only about Egress
-  egress:
-    -                           # first rule
-      to:                           # first condition "to"
-      - podSelector:
-          matchLabels:
-            app: db1
-      ports:                        # second condition "port"
-      - protocol: TCP
-        port: 1111
-    -                           # second rule
-      to:                           # first condition "to"
-      - podSelector:
-          matchLabels:
-            app: db2
-      ports:                        # second condition "port"
-      - protocol: TCP
-        port: 2222
-```
-
-The NP above has two rules with two conditions each, it can be read as:
-
-```
-allow outgoing traffic if:
-  (destination pod has label app=db1 AND port is 1111)
-  OR
-  (destination pod has label app=db2 AND port is 2222)
-```
-
-### Wrong example
-
-Now let's shortly look at a wrong example:
-
-```yaml
-# WRONG
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: np-backend
-  namespace: project-snake
-spec:
-  podSelector:
-    matchLabels:
-      app: backend
-  policyTypes:
-    - Egress
-  egress:
-    -                           # first rule
-      to:                           # first condition "to"
-      - podSelector:                    # first "to" possibility
-          matchLabels:
-            app: db1
-      - podSelector:                    # second "to" possibility
-          matchLabels:
-            app: db2
-      ports:                        # second condition "ports"
-      - protocol: TCP                   # first "ports" possibility
-        port: 1111
-      - protocol: TCP                   # second "ports" possibility
-        port: 2222
-```
-
-The NP above has one rule with two conditions and two condition-entries each, it can be read as:
-
-```
-allow outgoing traffic if:
-  (destination pod has label app=db1 OR destination pod has label app=db2)
-  AND
-  (destination port is 1111 OR destination port is 2222)
-```
-
-Using this NP it would still be possible for `backend-*` Pods to connect to `db2-*` Pods on port 1111 for example which should be forbidden.
-
-### Create NetworkPolicy
-
-We create the correct NP:
+We delete the kube-proxy *Pod*:
 
 ```bash
-kubectl apply -f 15_np.yaml
+kubectl -n kube-system get pod -l k8s-app=kube-proxy -owide
+NAME               READY   ...     NODE                        NOMINATED NODE   READINESS GATES
+kube-proxy-lf2fs   1/1     ...     cka-lab-15-control-plane    <none>           <none>
+
+kubectl -n kube-system delete pod kube-proxy-lf2fs
+pod "kube-proxy-lf2fs" deleted
 ```
 
-And to verify:
+Now we can check the events, for example by using the command that we created before:
 
 ```bash
-kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.25:1111
-database one
-
-kubectl -n project-snake exec backend-0 -- curl -s 10.44.0.23:2222
-database two
-
-kubectl -n project-snake exec backend-0 -- curl --connect-timeout 2 -s 10.44.0.22:3333
-# (should timeout or be denied)
+sh cka/15/course/cluster_events.sh
 ```
 
-Also helpful to use `kubectl describe` on the NP to see how K8s has interpreted the policy.
+Write the events caused by the deletion into `cka/15/course/pod_kill.log`:
 
-## Killer.sh Checklist (Score: 0/5)
+```bash
+# cka/15/course/pod_kill.log
+kube-system   12s         Normal    Killing             pod/kube-proxy-lf2fs                    Stopping container kube-proxy
+kube-system   12s         Normal    SuccessfulCreate    daemonset/kube-proxy                    Created pod: kube-proxy-wb4tb
+kube-system   11s         Normal    Scheduled           pod/kube-proxy-wb4tb                    Successfully assigned kube-system/kube-proxy-wb4tb to cka-lab-15-control-plane
+kube-system   11s         Normal    Pulled              pod/kube-proxy-wb4tb                    Container image "registry.k8s.io/kube-proxy:v1.33.1" already present on machine
+kube-system   11s         Normal    Created             pod/kube-proxy-wb4tb                    Created container kube-proxy
+kube-system   11s         Normal    Started             pod/kube-proxy-wb4tb                    Started container kube-proxy
+default       10s         Normal    Starting            node/cka-lab-15-control-plane
+```
 
-- [ ] NetworkPolicy `np-backend` exists in namespace `project-snake`
-- [ ] Policy selects pods with label `app=backend`
-- [ ] Policy type is `Egress` only
-- [ ] Egress rule allows traffic to pods with `app=db1` on port `1111`
-- [ ] Egress rule allows traffic to pods with `app=db2` on port `2222`
+### Step 3
+
+> **Solve this question on:** `docker exec -it cka-lab-15-control-plane bash`
+
+Finally we will try to provoke events by killing the container belonging to the container of a kube-proxy *Pod*:
+
+```bash
+crictl ps | grep kube-proxy
+2fd052f1fcf78       505d571f5fd56       57 seconds ago      Running             kube-proxy            0                   3455856e0970c       kube-proxy-wb4tb
+
+crictl rm --force 2fd052f1fcf78
+2fd052f1fcf78
+2fd052f1fcf78
+
+crictl ps | grep kube-proxy
+6bee4f36f8410       505d571f5fd56       5 seconds ago       Running             kube-proxy            0                   3455856e0970c       kube-proxy-wb4tb
+```
+
+> ℹ️ In this environment `crictl` can be used for container management. In the real exam this could also be `docker`. Both commands can be used with the same arguments.
+
+We killed the container (2fd052f1fcf78), but also noticed that a new container (6bee4f36f8410) was directly created again. Thanks Kubernetes!
+
+Now we see if this caused events again and we write those into the second file:
+
+```bash
+sh cka/15/course/cluster_events.sh
+```
+
+Write the events caused by the killing into `cka/15/course/container_kill.log`:
+
+```bash
+# cka/15/course/container_kill.log
+kube-system   21s     Normal    Created     pod/kube-proxy-wb4tb                      Created container kube-proxy
+kube-system   21s     Normal    Started     pod/kube-proxy-wb4tb                      Started container kube-proxy
+default       90s     Normal    Starting    node/cka-lab-15-control-plane
+default       20s     Normal    Starting    node/cka-lab-15-control-plane
+```
+
+Comparing the events we see that when we deleted the whole *Pod* there were more things to be done, hence more events. For example was the *DaemonSet* in the game to re-create the missing *Pod*. Where when we manually killed the main container of the *Pod*, the *Pod* still exists but only its container needed to be re-created, hence less events.
+
+## Checklist (Score: 0/3)
+
+- [ ] File `cka/15/course/cluster_events.sh` valid
+- [ ] File `cka/15/course/pod_kill.log` contains correct logs
+- [ ] File `cka/15/course/container_kill.log` contains correct logs

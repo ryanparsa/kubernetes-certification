@@ -3,35 +3,36 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
-CLUSTER_NAME="cka-lab-$LAB_ID"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
+# 1. Check dependencies
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
+# 2. Create cluster
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# Install Calico CNI for NetworkPolicy support
-echo "Installing Calico..."
-kubectl --kubeconfig "$KUBECONFIG_FILE" apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+# 3. Apply pre-existing workloads
+# N/A
 
-# Wait for nodes to be ready (which happens after CNI is up)
-echo "Waiting for node(s) to be ready..."
-kubectl --kubeconfig "$KUBECONFIG_FILE" wait --for=condition=Ready nodes --all --timeout=300s
+# 4. Wait for deployments
+# N/A
 
-kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
-
-# Wait for all pods in project-snake to be ready
-echo "Waiting for pods in project-snake..."
-kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
-  -n project-snake pod/backend-0 pod/db1-0 pod/db2-0 pod/vault-0 \
-  --for=condition=Ready --timeout=120s
-
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
+# 6. Copy task assets
+# N/A
+
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""
 echo "Run this to set your kubeconfig:"
 echo "  export KUBECONFIG=$KUBECONFIG_FILE"
+echo ""
+echo "To access the control-plane node (for editing manifests):"
+echo "  docker exec -it $CLUSTER_NAME-control-plane bash"

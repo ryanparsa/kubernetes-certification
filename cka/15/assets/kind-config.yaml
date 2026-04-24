@@ -2,6 +2,6 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: cka-lab-15
 networking:
-  disableDefaultCNI: true
+  ipFamily: ipv4
 nodes:
-- role: control-plane
+  - role: control-plane

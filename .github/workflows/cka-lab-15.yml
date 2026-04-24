@@ -1,0 +1,35 @@
+name: CKA Lab 15
+
+on:
+  push:
+    paths: ['cka/15/**', '.github/workflows/cka-lab-15.yml']
+  pull_request:
+    paths: ['cka/15/**', '.github/workflows/cka-lab-15.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/15/assets/kind-config.yaml
+          cluster_name: cka-lab-15
+
+      - name: Apply solution
+        run: |
+          export KUBECONFIG="${HOME}/.kube/config"
+          # The action sets up kubeconfig at ${HOME}/.kube/config
+          # But our scripts expect assets/kubeconfig.yaml
+          # So we'll symlink it
+          ln -s "${HOME}/.kube/config" cka/15/assets/kubeconfig.yaml
+          bash cka/15/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/15/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/15/assets/down.sh
