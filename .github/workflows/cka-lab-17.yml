@@ -1,0 +1,34 @@
+name: CKA Lab 17
+
+on:
+  push:
+    paths: ['cka/17/**', '.github/workflows/cka-lab-17.yml']
+  pull_request:
+    paths: ['cka/17/**', '.github/workflows/cka-lab-17.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster and setup lab
+        run: |
+          # We don't use helm/kind-action here because we want to use our up.sh
+          # which handles kubeconfig and directory creation correctly.
+          # First, ensure kind and kubectl are available (they are on ubuntu-latest)
+          bash cka/17/assets/up.sh
+
+      - name: Apply solution
+        run: |
+          export KUBECONFIG="${{ github.workspace }}/cka/17/assets/kubeconfig.yaml"
+          bash cka/17/assets/fix.sh
+
+      - name: Run checks
+        run: |
+          export KUBECONFIG="${{ github.workspace }}/cka/17/assets/kubeconfig.yaml"
+          bash cka/17/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/17/assets/down.sh

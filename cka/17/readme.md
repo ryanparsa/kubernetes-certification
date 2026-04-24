@@ -1,6 +1,6 @@
 # Question 17 | Find Container of Pod and check info
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-17" kind cluster
 
 In *Namespace* `project-tiger` create a *Pod* named `tigers-reunite` of image `httpd:2-alpine` with labels `pod=container` and `container=pod`. Find out on which *Node* the *Pod* is scheduled. Connect to that *Node* and find the containerd container belonging to that *Pod*.
 
@@ -10,7 +10,7 @@ Using command `crictl`:
 - Write the logs of the container into `cka/17/course/pod-container.log`
 
 > [!NOTE]
-> You can connect to a worker node using `docker exec -it cka-lab-worker bash` from your local machine
+> You can connect to a worker node using `docker exec -it cka-lab-17-worker bash` from your local machine
 
 ## Answer
 
@@ -29,15 +29,15 @@ Next we find out the *Node* it's scheduled on:
 ```bash
 kubectl -n project-tiger get pod -o wide
 NAME                                   READY   ...   NODE
-tigers-for-rent-web-57558cfbf8-4tldr   1/1     ...   cka-lab-worker
-tigers-for-rent-web-57558cfbf8-5pz4z   1/1     ...   cka-lab-control-plane
-tigers-reunite                         1/1     ...   cka-lab-worker
+tigers-for-rent-web-57558cfbf8-4tldr   1/1     ...   cka-lab-17-worker
+tigers-for-rent-web-57558cfbf8-5pz4z   1/1     ...   cka-lab-17-control-plane
+tigers-reunite                         1/1     ...   cka-lab-17-worker
 ```
 
-Here it's `cka-lab-worker` so we exec into that *Node* and check the container info:
+Here it's `cka-lab-17-worker` so we exec into that *Node* and check the container info:
 
 ```bash
-docker exec -it cka-lab-worker bash
+docker exec -it cka-lab-17-worker bash
 
 crictl ps | grep tigers-reunite
 ba62e5d465ff0   a7ccaadd632cf   2 minutes ago   Running   tigers-reunite   ...
@@ -82,3 +82,10 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 [Mon Sep 13 13:32:18.555280 2021] [mpm_event:notice] [pid 1:tid 139929534545224] AH00489: Apache/2.4.41 (Unix) configured -- resuming normal operations
 [Mon Sep 13 13:32:18.555610 2021] [core:notice] [pid 1:tid 139929534545224] AH00094: Command line: 'httpd -D FOREGROUND'
 ```
+
+## Checklist (Score: 0/4)
+
+- [ ] Pod `tigers-reunite` created with correct image and labels in `project-tiger` namespace
+- [ ] `cka/17/course/pod-container.txt` contains correct container ID and runtimeType
+- [ ] `cka/17/course/pod-container.log` contains container logs
+- [ ] Pod is scheduled and running
