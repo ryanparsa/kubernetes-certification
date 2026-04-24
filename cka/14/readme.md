@@ -2,14 +2,14 @@
 
 Perform some tasks on cluster certificates:
 
-> **Solve this question on:** `docker exec -it cka-lab-14-control-plane bash`
+> **Solve this question on:** the "cka-lab-14" kind cluster
 
-1. Check how long the kube-apiserver server certificate is valid using openssl or cfssl. Write the expiration date into `cka/14/course/expiration`. Run the `kubeadm` command to list the expiration dates and confirm both methods show the same one
-2. Write the `kubeadm` command that would renew the kube-apiserver certificate into `cka/14/course/kubeadm-renew-certs.sh`
+1. Check how long the *kube-apiserver* server certificate is valid using `openssl` or `cfssl`. Write the expiration date into `cka/14/course/expiration`. Run the `kubeadm` command to list the expiration dates and confirm both methods show the same one
+2. Write the `kubeadm` command that would renew the *kube-apiserver* certificate into `cka/14/course/kubeadm-renew-certs.sh`
 
 ## Answer
 
-> **Local lab note:** The Kubernetes PKI certificates live inside the kind control-plane container. Exec into it first:
+> **Local lab note:** The *Kubernetes* PKI certificates live inside the kind control-plane container. Exec into it first:
 > ```bash
 > docker exec -it cka-lab-14-control-plane bash
 > ```
@@ -27,7 +27,7 @@ find /etc/kubernetes/pki | grep apiserver
 /etc/kubernetes/pki/apiserver.crt
 ```
 
-Next we use openssl to find out the expiration date:
+Next we use `openssl` to find out the expiration date:
 
 ```bash
 openssl x509 -noout -text -in /etc/kubernetes/pki/apiserver.crt | grep Validity -A2
@@ -43,7 +43,7 @@ There we have it, so we write it in the required location:
 Oct 29 14:19:27 2025 GMT
 ```
 
-And we use kubeadm to get the expiration to compare:
+And we use `kubeadm` to get the expiration to compare:
 
 ```bash
 kubeadm certs check-expiration | grep apiserver
@@ -54,14 +54,14 @@ apiserver-kubelet-client   Oct 29, 2025 14:19 UTC   356d    ca         no
 
 Looking good, both are the same.
 
-And finally we write the command that would renew the kube-apiserver certificate into the requested location:
+And finally we write the command that would renew the *kube-apiserver* certificate into the requested location:
 
 ```bash
 # cka/14/course/kubeadm-renew-certs.sh
 kubeadm certs renew apiserver
 ```
 
-## Killer.sh Checklist (Score: 0/4)
+## Checklist (Score: 0/4)
 
 - [ ] File `cka/14/course/expiration` exists and contains the apiserver certificate expiration date
 - [ ] Expiration date in the file matches the `kubeadm certs check-expiration` output for `apiserver`
