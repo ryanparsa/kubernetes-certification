@@ -1,7 +1,13 @@
 # etcd Backup and Restore Reference
 
-Reference for taking etcd snapshots, verifying them, and restoring a cluster from
-a snapshot. Covers both single-node and HA cluster scenarios.
+> **This file has been superseded.**
+> Full coverage of etcd — including architecture, PKI, etcdctl setup, health checks,
+> key inspection, backup, restore, HA membership, encryption at rest, and troubleshooting
+> — is now in **[etcd Reference.md](etcd%20Reference.md)**.
+>
+> The content below is kept for reference but the dedicated file is the authoritative source.
+
+---
 
 ---
 
