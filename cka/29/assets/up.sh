@@ -13,7 +13,14 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
-kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+if ! kind get clusters | grep -q "^$CLUSTER_NAME$"; then
+  kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+else
+  echo "Cluster $CLUSTER_NAME already exists."
+  if [[ ! -f "$KUBECONFIG_FILE" ]]; then
+    kind get kubeconfig --name "$CLUSTER_NAME" > "$KUBECONFIG_FILE"
+  fi
+fi
 
 # 3. Apply pre-existing workloads
 # N/A
@@ -29,7 +36,5 @@ mkdir -p "$SCRIPT_DIR/../course"
 
 # 7. Print summary
 echo ""
-echo "Lab ready!"
-echo ""
-echo "Run this to set your kubeconfig:"
-echo "  export KUBECONFIG=$KUBECONFIG_FILE"
+echo "Lab ready! Run: export KUBECONFIG=$KUBECONFIG_FILE"
+echo "To access the control-plane node: docker exec -it $CLUSTER_NAME-control-plane bash"

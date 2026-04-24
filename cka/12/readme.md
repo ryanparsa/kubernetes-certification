@@ -1,166 +1,128 @@
-# Question 12 | Deployment on all Nodes
+# Question 12 | Schedule Pod on Controlplane Nodes
 
-> **Solve this question on:** the `cka-lab-12` kind cluster
+> **Solve this question on:** the "cka-lab-12" kind cluster
 
-Implement the following in *Namespace* `project-tiger`:
+Create a *Pod* of image `httpd:2-alpine` in *Namespace* `default`.
 
-- Create a *Deployment* named `deploy-important` with `3` replicas
-- The *Deployment* and its *Pods* should have label `id=very-important`
-- First container named `container1` with image `nginx:1-alpine`
-- Second container named `container2` with image `google/pause`
-- There should only ever be **one** *Pod* of that *Deployment* running on **one** worker node, use `topologyKey: kubernetes.io/hostname` for this
+The *Pod* should be named `pod1` and the *Container* should be named `pod1-container`.
 
-> ℹ️ Because there are two worker nodes and the *Deployment* has three replicas the result should be that the third *Pod* won't be scheduled. In a way this scenario simulates the behaviour of a *DaemonSet*, but using a *Deployment* with a fixed number of replicas
+This *Pod* should only be scheduled on *Controlplane Nodes*.
+
+Do not add new labels to any *Nodes*.
 
 ## Answer
 
-There are two possible ways, one using `podAntiAffinity` and one using `topologySpreadConstraint`.
-
-### PodAntiAffinity
-
-The idea here is that we create a "Inter-pod anti-affinity" which allows us to say a *Pod* should only be scheduled on a node where another *Pod* of a specific label (here the same label) is not already running.
-
-Let's begin by creating the *Deployment* template:
+First we find the *Controlplane Node(s)* and their taints:
 
 ```bash
-k -n project-tiger create deployment --image=nginx:1-alpine deploy-important --dry-run=client -o yaml > 12.yaml
+kubectl get node
+NAME                           STATUS   ROLES           AGE   VERSION
+cka-lab-12-control-plane       Ready    control-plane   90m   v1.33.1
+cka-lab-12-worker              Ready    <none>          85m   v1.33.1
+
+kubectl describe node cka-lab-12-control-plane | grep Taint -A1
+Taints:             node-role.kubernetes.io/control-plane:NoSchedule
+Unschedulable:      false
+
+kubectl get node cka-lab-12-control-plane --show-labels
+NAME                       STATUS   ROLES           AGE   VERSION   LABELS
+cka-lab-12-control-plane   Ready    control-plane   91m   v1.33.1   beta.kubernetes.io/arch=amd64,...,node-role.kubernetes.io/control-plane=,...
 ```
 
-Then change the yaml to:
+Next we create the *Pod* yaml:
+
+```bash
+# kubectl run pod1 --image=httpd:2-alpine --dry-run=client -o yaml > cka/12/course/12.yaml
+```
+
+### Solution using NodeSelector
+
+Use the Kubernetes documentation and search for tolerations and `nodeSelector` to find examples, then update:
 
 ```yaml
-# 12.yaml
-apiVersion: apps/v1
-kind: Deployment
+# cka/12/course/12.yaml
+apiVersion: v1
+kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    id: very-important          # change
-  name: deploy-important
-  namespace: project-tiger      # important
+    run: pod1
+  name: pod1
 spec:
-  replicas: 3                   # change
-  selector:
-    matchLabels:
-      id: very-important        # change
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        id: very-important      # change
-    spec:
-      containers:
-      - image: nginx:1-alpine
-        name: container1        # change
-        resources: {}
-      - image: google/pause     # add
-        name: container2        # add
-      affinity:                                     # add
-        podAntiAffinity:                            # add
-          requiredDuringSchedulingIgnoredDuringExecution: # add
-          - labelSelector:                          # add
-              matchExpressions:                     # add
-              - key: id                             # add
-                operator: In                        # add
-                values:                             # add
-                - very-important                    # add
-            topologyKey: kubernetes.io/hostname     # add
+  containers:
+  - image: httpd:2-alpine
+    name: pod1-container
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
 status: {}
 ```
 
-Specify a topologyKey, which is a pre-populated Kubernetes label, you can find this by describing a node.
+> [!NOTE]
+> ℹ️ The `nodeSelector` specifies `node-role.kubernetes.io/control-plane` with no value because this is a key-only label and we want to match regardless of the value
 
-### TopologySpreadConstraints
+Important here to add the toleration for running on *Controlplane Nodes*, but also the `nodeSelector` to make sure it only runs on *Controlplane Nodes*. If we just specify a toleration the *Pod* can be scheduled on *Controlplane* or *Worker Nodes*.
 
-We can achieve the same with `topologySpreadConstraints`. Best to try out and play with both.
+### Solution using NodeAffinity
+
+We could also use `nodeAffinity` instead of `nodeSelector`, although in this case it is more complex and not really suggested:
 
 ```yaml
-# 12.yaml (topologySpreadConstraints version)
-apiVersion: apps/v1
-kind: Deployment
+# cka/12/course/12.yaml
+apiVersion: v1
+kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    id: very-important          # change
-  name: deploy-important
-  namespace: project-tiger      # important
+    run: pod1
+  name: pod1
 spec:
-  replicas: 3                   # change
-  selector:
-    matchLabels:
-      id: very-important        # change
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        id: very-important      # change
-    spec:
-      containers:
-      - image: nginx:1-alpine
-        name: container1        # change
-        resources: {}
-      - image: google/pause     # add
-        name: container2        # add
-      topologySpreadConstraints:                 # add
-      - maxSkew: 1                               # add
-        topologyKey: kubernetes.io/hostname      # add
-        whenUnsatisfiable: DoNotSchedule         # add
-        labelSelector:                           # add
-          matchLabels:                           # add
-            id: very-important                   # add
+  containers:
+  - image: httpd:2-alpine
+    name: pod1-container
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
 status: {}
 ```
 
-### Apply and Run
+Using `nodeAffinity` still requires the toleration.
 
-Let's run it:
+### Verify
 
-```bash
-k create -f 12.yaml
-deployment.apps/deploy-important created
-```
-
-Then we check the *Deployment* status where it shows 2/3 ready count:
+Now we create the *Pod* and and check if is scheduled:
 
 ```bash
-k -n project-tiger get deploy -l id=very-important
-NAME               READY   UP-TO-DATE   AVAILABLE   AGE
-deploy-important   2/3     3            2           19s
+kubectl create -f cka/12/course/12.yaml
+pod/pod1 created
+
+kubectl get pod pod1 -o wide
+NAME   READY   STATUS    ...   NODE                             NOMINATED NODE   READINESS GATES
+pod1   1/1     Running   ...   cka-lab-12-control-plane         <none>           <none>
 ```
 
-And running the following we see one *Pod* on each worker node and one not scheduled.
+We can see the *Pod* is scheduled on the *Controlplane Node*.
 
-```bash
-k -n project-tiger get pod -o wide -l id=very-important
-NAME                                  READY   STATUS    ...   IP           NODE
-deploy-important-78f98b75f9-5s6js   0/2     Pending  ...   <none>       <none>
-deploy-important-78f98b75f9-657hx   2/2     Running  ...   10.244.1.x   cka-lab-12-worker
-deploy-important-78f98b75f9-9bz8q   2/2     Running  ...   10.244.2.x   cka-lab-12-worker2
-```
+## Checklist (Score: 0/6)
 
-If we kubectl describe the not scheduled *Pod* it will show us the reason `didn't match pod anti-affinity rules`:
-
-```text
-Warning  FailedScheduling  119s (x2 over 2m1s)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) didn't match pod anti-affinity rules. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
-```
-
-Or our topologySpreadConstraints reason `didn't match pod topology spread constraints`:
-
-```text
-Warning  FailedScheduling  20s (x2 over 22s)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) didn't match pod topology spread constraints. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
-```
-
-## Killer.sh Checklist (Score: 0/10)
-
-- [ ] Deployment `deploy-important` exists in namespace `project-tiger`
-- [ ] Deployment has label `id=very-important`
-- [ ] Pod template has label `id=very-important`
-- [ ] Deployment has 3 replicas
-- [ ] First container is named `container1`
-- [ ] First container uses image `nginx:1-alpine`
-- [ ] Second container is named `container2`
-- [ ] Second container uses image `google/pause`
-- [ ] Pod has `podAntiAffinity` or `topologySpreadConstraints`
-- [ ] Scheduling constraint uses `topologyKey: kubernetes.io/hostname`
+- [ ] *Pod* `pod1` is running
+- [ ] *Pod* has single *Container*
+- [ ] *Container* has name `pod1-container`
+- [ ] *Container* has image `httpd:2-alpine`
+- [ ] *Pod* is scheduled on *Controlplane Node*
+- [ ] *Pod* will only be scheduled on *Controlplane Nodes*

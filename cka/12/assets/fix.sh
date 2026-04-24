@@ -2,44 +2,34 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
-kubectl apply -f - <<'EOF'
+if [[ -f "$KUBECONFIG_FILE" && -z "${KUBECONFIG:-}" ]]; then
+  export KUBECONFIG="$KUBECONFIG_FILE"
+fi
+
+kubectl apply -f - <<EOF
 apiVersion: v1
-kind: Namespace
+kind: Pod
 metadata:
-  name: project-tiger
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: deploy-important
-  namespace: project-tiger
+  creationTimestamp: null
   labels:
-    id: very-important
+    run: pod1
+  name: pod1
+  namespace: default
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      id: very-important
-  template:
-    metadata:
-      labels:
-        id: very-important
-    spec:
-      containers:
-      - image: nginx:1-alpine
-        name: container1
-      - image: google/pause
-        name: container2
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: id
-                operator: In
-                values:
-                - very-important
-            topologyKey: kubernetes.io/hostname
+  containers:
+  - image: httpd:2-alpine
+    name: pod1-container
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+status: {}
 EOF
+
+kubectl wait --for=condition=Ready pod/pod1 --timeout=60s

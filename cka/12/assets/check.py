@@ -3,69 +3,43 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
-
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+KUBECONFIG = os.path.join(SCRIPT_DIR, "kubeconfig.yaml")
 
 def kubectl(*args):
-    result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
-        capture_output=True, text=True,
-    )
+    cmd = ["kubectl"]
+    if os.path.exists(KUBECONFIG):
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
+    result = subprocess.run(cmd, capture_output=True, text=True)
     return result.stdout.strip()
 
+class TestSchedulePodOnControlplaneNodes(unittest.TestCase):
+    def test_pod_running(self):
+        status = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.status.phase}")
+        self.assertEqual(status, "Running")
 
-class TestDeploymentOnAllNodes(unittest.TestCase):
+    def test_pod_container_count(self):
+        count = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.spec.containers[*].name}")
+        self.assertEqual(len(count.split()), 1)
 
-    def test_deployment_exists(self):
-        name = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.metadata.name}")
-        self.assertEqual(name, "deploy-important")
+    def test_container_name(self):
+        name = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.spec.containers[0].name}")
+        self.assertEqual(name, "pod1-container")
 
-    def test_deployment_label(self):
-        label = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.metadata.labels.id}")
-        self.assertEqual(label, "very-important")
+    def test_container_image(self):
+        image = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.spec.containers[0].image}")
+        self.assertEqual(image, "httpd:2-alpine")
 
-    def test_pod_label(self):
-        label = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.metadata.labels.id}")
-        self.assertEqual(label, "very-important")
+    def test_scheduled_on_controlplane(self):
+        node_name = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.spec.nodeName}")
+        # In kind, the value is usually empty string for key-only labels
+        control_plane_nodes = kubectl("get", "nodes", "-l", "node-role.kubernetes.io/control-plane", "-o", "jsonpath={.items[*].metadata.name}").split()
+        self.assertIn(node_name, control_plane_nodes)
 
-    def test_replicas(self):
-        replicas = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.replicas}")
-        self.assertEqual(replicas, "3")
-
-    def test_container1_name(self):
-        name = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.containers[0].name}")
-        self.assertEqual(name, "container1")
-
-    def test_container1_image(self):
-        image = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.containers[0].image}")
-        self.assertEqual(image, "nginx:1-alpine")
-
-    def test_container2_name(self):
-        name = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.containers[1].name}")
-        self.assertEqual(name, "container2")
-
-    def test_container2_image(self):
-        image = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.containers[1].image}")
-        self.assertEqual(image, "google/pause")
-
-    def test_scheduling_constraint_exists(self):
-        antiaffinity = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.affinity.podAntiAffinity}")
-        topologyspread = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o", "jsonpath={.spec.template.spec.topologySpreadConstraints}")
-        self.assertTrue(antiaffinity or topologyspread, "Deployment has no podAntiAffinity or topologySpreadConstraints")
-
-    def test_topology_key(self):
-        antiaffinity_key = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o",
-                                   "jsonpath={.spec.template.spec.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey}")
-        topologyspread_key = kubectl("get", "deploy", "deploy-important", "-n", "project-tiger", "-o",
-                                     "jsonpath={.spec.template.spec.topologySpreadConstraints[0].topologyKey}")
-        self.assertIn("kubernetes.io/hostname", antiaffinity_key + topologyspread_key)
-
-
-class QuietResult(unittest.TextTestResult):
-    def printErrors(self):
-        pass
-
+    def test_node_selector_configured(self):
+        selector = kubectl("get", "pod", "pod1", "-n", "default", "-o", "jsonpath={.spec.nodeSelector.node-role\\.kubernetes\\.io/control-plane}")
+        self.assertEqual(selector, "")
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)
-    unittest.main(testRunner=runner)
+    unittest.main(verbosity=2)

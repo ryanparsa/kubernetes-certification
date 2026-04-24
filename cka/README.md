@@ -21,7 +21,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator A         | Question 9      | `9`       | Done   | Ready |       |
 | Simulator A         | Question 10     | `10`      | Done   | Ready | Ready |
 | Simulator A         | Question 11     | `11`      | Done   | Ready |       |
-| Simulator A         | Question 12     | `12`      | Done   | Ready |       |
+| Simulator A         | Question 12     | `12`      | Done   | Ready | Ready |
 | Simulator A         | Question 13     | `13`      | Done   | Ready | Ready |
 | Simulator A         | Question 14     | `14`      | Done   | Ready |       |
 | Simulator A         | Question 15     | `15`      | Done   | Ready |       |
@@ -47,4 +47,3 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator A Preview | Question 1      | `35`      | Done   | Ready | Ready |
 | Simulator A Preview | Question 2      | `36`      | Done   | Ready | Ready |
 | Simulator A Preview | Question 3      | `37`      | Done   | Ready | Ready |
-
