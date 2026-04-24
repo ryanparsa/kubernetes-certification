@@ -3,6 +3,8 @@
 import os
 import subprocess
 import unittest
+import json
+import time
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
 
@@ -32,13 +34,30 @@ class TestDNSFQDNHeadlessService(unittest.TestCase):
         self.assertEqual(val, "1-2-3-4.kube-system.pod.cluster.local")
 
     def test_deployment_env_values(self):
-        # Check if the deployment is using the updated values by checking one of the pods
-        pod_name = kubectl("get", "pod", "-n", "lima-control", "-l", "app=controller", "-o", "jsonpath={.items[0].metadata.name}")
-        if not pod_name:
-            self.fail("No controller pod found")
+        # Give it a few retries as pods might be transitioning
+        for _ in range(5):
+            res = kubectl("get", "pod", "-n", "lima-control", "-l", "app=controller", "--field-selector=status.phase=Running", "-o", "json")
+            if not res:
+                time.sleep(2)
+                continue
 
-        dns_1 = kubectl("exec", "-n", "lima-control", pod_name, "--", "sh", "-c", "echo $DNS_1")
-        self.assertEqual(dns_1, "kubernetes.default.svc.cluster.local")
+            pods_data = json.loads(res)
+            valid_pods = [p for p in pods_data.get("items", []) if not p["metadata"].get("deletionTimestamp")]
+
+            if not valid_pods:
+                time.sleep(2)
+                continue
+
+            # Check the first valid pod found
+            name = valid_pods[0]["metadata"]["name"]
+            dns_1 = kubectl("exec", "-n", "lima-control", name, "--", "sh", "-c", "echo $DNS_1")
+
+            if dns_1 == "kubernetes.default.svc.cluster.local":
+                return # Success
+
+            time.sleep(2)
+
+        self.fail("Deployment pods not using updated ConfigMap values after retries")
 
 class QuietResult(unittest.TextTestResult):
     def printErrors(self):
