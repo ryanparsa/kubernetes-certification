@@ -1,4 +1,4 @@
-# kubernetes Files
+# Kubernetes Files
 
 # Control Plane Node
 
@@ -41,8 +41,8 @@
 │   │       ├── front-proxy-ca.key                               # Private key for the front-proxy CA
 │   │       ├── front-proxy-client.crt                           # Cert API server uses when proxying to aggregated APIs
 │   │       ├── front-proxy-client.key                           # Key for front-proxy client auth
-│   │       ├── sa.key                                           # Private key used to sign ServiceAccount JWT tokens kube-controller-manager
-│   │       ├── sa.pub                                           # Public key used to verify ServiceAccount tokens kube-apiserver
+│   │       ├── sa.key                                           # Private key used to sign ServiceAccount JWT tokens — held by kube-controller-manager
+│   │       ├── sa.pub                                           # Public key used to verify ServiceAccount tokens — read by kube-apiserver
 │   │       └── etcd/                                            # etcd-specific TLS (separate CA from cluster)
 │   │           ├── ca.crt                                       # etcd's own CA (independent of cluster CA)
 │   │           ├── ca.key                                       # etcd CA private key
@@ -286,7 +286,7 @@ etcd has its own CA (`etcd/ca.crt`) separate from the main cluster CA. Security 
 | `etcd/ca.crt / ca.key` | etcd CA | Signs all etcd certs below |
 | `etcd/server.crt / server.key` | etcd server | Presented to `kube-apiserver` (only authorized client) |
 | `etcd/peer.crt / peer.key` | etcd nodes | Each other — Raft replication in HA clusters |
-| `etcd/healthcheck-client.crt / key` | kubelet liveness probe | etcd health endpoint only (Least Privilege) |
+| `etcd/healthcheck-client.crt / key` | etcd pod liveness probe | etcd health endpoint only (Least Privilege) |
 
 ---
 
