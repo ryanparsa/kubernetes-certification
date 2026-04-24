@@ -2,7 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+
+# Use local kubeconfig if it exists, otherwise rely on environment (CI)
+if [ -f "$SCRIPT_DIR/kubeconfig.yaml" ]; then
+  export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+fi
+
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
@@ -19,7 +24,7 @@ done
 kubectl run manual-schedule --image=httpd:2-alpine
 
 # 3. Manually schedule
-kubectl get pod manual-schedule -o json | jq '.spec.nodeName="cka-lab-9-control-plane"' | kubectl replace --force -f -
+kubectl get pod manual-schedule -o json | jq '.spec.nodeName="'$CLUSTER_NAME'-control-plane"' | kubectl replace --force -f -
 
 kubectl wait pod manual-schedule --for=condition=Ready --timeout=60s
 

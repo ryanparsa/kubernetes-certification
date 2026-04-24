@@ -2,10 +2,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+
+# Use local kubeconfig if it exists, otherwise rely on environment (CI)
+if [ -f "$SCRIPT_DIR/kubeconfig.yaml" ]; then
+  export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+fi
 
 RESULT_FILE="$SCRIPT_DIR/../course/26/result.json"
 mkdir -p "$(dirname "$RESULT_FILE")"
+
+# Ensure pre-requisites are applied (especially for CI where up.sh might be skipped)
+kubectl apply -f "$SCRIPT_DIR/workloads.yaml"
 
 kubectl apply -f - <<EOF
 apiVersion: v1
