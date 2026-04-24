@@ -1,96 +1,210 @@
-# Question 16 | Namespaces and Api Resources
+# Question 16 | Update CoreDNS Configuration
 
-> **Solve this question on:** the "cka-lab-16" kind cluster
+> **Solve this question on:** the `cka-lab` kind cluster
 
-Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/16/course/resources.txt`.
+The CoreDNS configuration in the cluster needs to be updated:
 
-Find the `project-*` *Namespace* with the highest number of *Roles* defined in it and write its name and amount of *Roles* into `cka/16/course/crowded-namespace.txt`.
+1. Make a backup of the existing configuration YAML and store it at `cka/16/course/coredns_backup.yaml`. You should be able to fast recover from the backup.
+2. Update the CoreDNS configuration in the cluster so that DNS resolution for `SERVICE.NAMESPACE.custom-domain` will work exactly like and in addition to `SERVICE.NAMESPACE.cluster.local`.
+
+Test your configuration for example from a *Pod* with `busybox:1` image. These commands should result in an IP address:
+
+```
+nslookup kubernetes.default.svc.cluster.local
+nslookup kubernetes.default.svc.custom-domain
+```
 
 ## Answer
 
-### Namespace and Namespaces Resources
-
-We can get a list of all resources:
+We have a look at the CoreDNS *Pods*:
 
 ```bash
-kubectl api-resources    # shows all
+kubectl -n kube-system get deploy,pod
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/coredns          2/2     2            2           42h
+...
 
-kubectl api-resources -h   # a bit of help is always good
+NAME                                  READY   STATUS    RESTARTS      AGE
+pod/coredns-74f75f8b69-c4z47          1/1     Running   0             42h
+pod/coredns-74f75f8b69-wsnfr          1/1     Running   0             42h
+...
 ```
 
-So we write them into the requested location:
+It looks like CoreDNS is running as a *Deployment* with two replicas.
+
+### Step 1
+
+CoreDNS uses a *ConfigMap* by default when installed via Kubeadm. Creating a backup is always a good idea before performing sensitive changes:
 
 ```bash
-kubectl api-resources --namespaced -o name > cka/16/course/resources.txt
+kubectl -n kube-system get cm
+NAME                                                   DATA   AGE
+coredns                                                1      42h
+...
+
+kubectl -n kube-system get cm coredns -oyaml > cka/16/course/coredns_backup.yaml
 ```
 
-Which results in the file:
+The current configuration looks like this:
+
+```yaml
+apiVersion: v1
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health {
+           lameduck 5s
+        }
+        ready
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+           pods insecure
+           fallthrough in-addr.arpa ip6.arpa
+           ttl 30
+        }
+        prometheus :9153
+        forward . /etc/resolv.conf {
+           max_concurrent 1000
+        }
+        cache 30 {
+           disable success cluster.local
+           disable denial cluster.local
+        }
+        loop
+        reload
+        loadbalance
+    }
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+...
+```
+
+### Step 2
+
+We update the config:
 
 ```bash
-# cka/16/course/resources.txt
-bindings
-configmaps
-endpoints
-events
-limitranges
-persistentvolumeclaims
-pods
-podtemplates
-replicationcontrollers
-resourcequotas
-secrets
-serviceaccounts
-services
-controllerrevisions.apps
-daemonsets.apps
-deployments.apps
-replicasets.apps
-statefulsets.apps
-localsubjectaccessreviews.authorization.k8s.io
-horizontalpodautoscalers.autoscaling
-cronjobs.batch
-jobs.batch
-leases.coordination.k8s.io
-endpointslices.discovery.k8s.io
-events.events.k8s.io
-ingresses.networking.k8s.io
-networkpolicies.networking.k8s.io
-poddisruptionbudgets.policy
-rolebindings.rbac.authorization.k8s.io
-roles.rbac.authorization.k8s.io
-csistoragecapacities.storage.k8s.io
+kubectl -n kube-system edit cm coredns
 ```
 
-### Namespace with most *Roles*
+```yaml
+apiVersion: v1
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health {
+           lameduck 5s
+        }
+        ready
+        kubernetes custom-domain cluster.local in-addr.arpa ip6.arpa {
+           pods insecure
+           fallthrough in-addr.arpa ip6.arpa
+           ttl 30
+        }
+        prometheus :9153
+        forward . /etc/resolv.conf {
+           max_concurrent 1000
+        }
+        cache 30 {
+           disable success cluster.local
+           disable denial cluster.local
+        }
+        loop
+        reload
+        loadbalance
+    }
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2024-12-26T20:35:11Z"
+  name: coredns
+  namespace: kube-system
+  resourceVersion: "262"
+  uid: c76d208f-1bc8-4c0f-a8e8-a8bfa440870e
+```
+
+Note that we added `custom-domain` in the same line where `cluster.local` is already defined.
+
+Now we need to restart the *Deployment*:
 
 ```bash
-kubectl -n project-jinan get role --no-headers | wc -l
-No resources found in project-jinan namespace.
-0
+kubectl -n kube-system rollout restart deploy coredns
+deployment.apps/coredns restarted
 
-kubectl -n project-miami get role --no-headers | wc -l
-300
-
-kubectl -n project-melbourne get role --no-headers | wc -l
-2
-
-kubectl -n project-seoul get role --no-headers | wc -l
-10
-
-kubectl -n project-toronto get role --no-headers | wc -l
-No resources found in project-toronto namespace.
-0
+kubectl -n kube-system get pod
+NAME                              READY   STATUS    RESTARTS      AGE
+coredns-77d6976b98-jkvqn          1/1     Running   0             13s
+coredns-77d6976b98-zdxw8          1/1     Running   0             13s
+...
 ```
 
-Finally we write the name and amount into the file:
+We should see both *Pods* restarted and running without errors, this is only the case if there are no syntax errors in the CoreDNS config.
+
+To test the updated configuration we create a *Pod*, image `busybox:1` contains `nslookup` already:
 
 ```bash
-# cka/16/course/crowded-namespace.txt
-project-miami with 300 roles
+kubectl run bb --image=busybox:1 -- sh -c 'sleep 1d'
+
+kubectl exec -it bb -- sh
+
+nslookup kubernetes.default.svc.custom-domain
+Server:         10.96.0.10
+Address:        10.96.0.10:53
+
+Name:   kubernetes.default.svc.custom-domain
+Address: 10.96.0.1
+
+nslookup kubernetes.default.svc.cluster.local
+Server:         10.96.0.10
+Address:        10.96.0.10:53
+
+Name:   kubernetes.default.svc.cluster.local
+Address: 10.96.0.1
 ```
 
+We see that now `kubernetes.default.svc.custom-domain` and `kubernetes.default.svc.cluster.local` resolve to IP address `10.96.0.1`. Which is the Kubernetes *Service* in the *default* *Namespace*:
 
-## Checklist (Score: 0/2)
+```bash
+kubectl -n default get svc
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   43h
+```
 
-- [ ] File cka/16/course/resources.txt contains namespaced resources
-- [ ] File cka/16/course/crowded-namespace.txt correct content
+This *Service* is often used from *Pods* that need to communicate with the Kubernetes API, like operators.
+
+### Recover from backup
+
+If we messed something up we could do:
+
+```bash
+kubectl diff -f cka/16/course/coredns_backup.yaml
+diff -u -N /tmp/LIVE-591628213/v1.ConfigMap.kube-system.coredns /tmp/MERGED-4230802928/v1.ConfigMap.kube-system.coredns
+--- /tmp/LIVE-591628213/v1.ConfigMap.kube-system.coredns        2024-12-28 16:14:03.158949709 +0000
++++ /tmp/MERGED-4230802928/v1.ConfigMap.kube-system.coredns     2024-12-28 16:14:03.159949781 +0000
+@@ -7,7 +7,7 @@
+            lameduck 5s
+         }
+         ready
+-        kubernetes custom-domain cluster.local in-addr.arpa ip6.arpa {
++        kubernetes cluster.local in-addr.arpa ip6.arpa {
+            pods insecure
+            fallthrough in-addr.arpa ip6.arpa
+            ttl 30
+            
+kubectl -n kube-system delete -f cka/16/course/coredns_backup.yaml
+configmap "coredns" deleted
+
+kubectl -n kube-system apply -f cka/16/course/coredns_backup.yaml
+configmap/coredns created
+
+kubectl -n kube-system rollout restart deploy coredns
+deployment.apps/coredns restarted
+
+kubectl -n kube-system get pod
+NAME                              READY   STATUS    RESTARTS      AGE
+coredns-79f94f8fc8-h8z7t          1/1     Running   0             11s
+coredns-79f94f8fc8-tj7hg          1/1     Running   0             10s
+...
+```
