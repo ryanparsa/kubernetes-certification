@@ -16,13 +16,16 @@ done
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
+# N/A
 
 # 4. Wait for deployments
+# N/A
 
 # 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
 
 # 6. Copy task assets
+# N/A
 
 # 7. Print summary
 echo ""

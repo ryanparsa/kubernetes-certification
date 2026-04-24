@@ -4,8 +4,8 @@
 
 You're ask to find out following information about the cluster:
 
-1. How many controlplane *Nodes* are available?
-2. How many worker *Nodes* (non controlplane *Nodes*) are available?
+1. How many *Controlplane Nodes* are available?
+2. How many *Worker Nodes* (non *Controlplane Nodes*) are available?
 3. What is the *Service* CIDR?
 4. Which Networking (or CNI Plugin) is configured and where is its config file?
 5. Which suffix will static *Pods* have that run on `cka-lab-31-control-plane`?
@@ -23,7 +23,7 @@ Write your answers into file `cka/31/course/cluster-info`, structured like this:
 
 ## Answer
 
-### How many controlplane and worker *Nodes* are available?
+### How many *Controlplane Nodes* and *Worker Nodes* are available?
 
 ```bash
 kubectl get node
@@ -31,11 +31,11 @@ NAME                     STATUS   ROLES           AGE   VERSION
 cka-lab-31-control-plane   Ready    control-plane   71m   v1.33.1
 ```
 
-We see one controlplane and no worker *Nodes*.
+We see one *Controlplane Node* and no *Worker Nodes*.
 
 ### What is the *Service* CIDR?
 
-Access the control-plane *Node* to inspect the *kube-apiserver* manifest:
+Access the *Controlplane Node* to inspect the *kube-apiserver* manifest:
 
 ```bash
 docker exec cka-lab-31-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep range
@@ -50,7 +50,7 @@ docker exec cka-lab-31-control-plane find /etc/cni/net.d/
 /etc/cni/net.d/10-kindnet.conflist
 ```
 
-In kind clusters, the default CNI plugin is **kindnet**. The config file is at `/etc/cni/net.d/10-kindnet.conflist`.
+In *Kind* clusters, the default CNI plugin is **kindnet**. The config file is at `/etc/cni/net.d/10-kindnet.conflist`.
 
 > [!NOTE]
 > In the real exam environment, a different CNI (such as Weave or Flannel) may be configured. The approach is the same: look in `/etc/cni/net.d/` on the *Node*.
@@ -66,10 +66,10 @@ The resulting `cka/31/course/cluster-info` could look like:
 ```
 # cka/31/course/cluster-info
 
-# How many controlplane *Nodes* are available?
+# How many *Controlplane Nodes* are available?
 1: 1
 
-# How many worker *Nodes* (non controlplane *Nodes*) are available?
+# How many *Worker Nodes* (non *Controlplane Nodes*) are available?
 2: 0
 
 # What is the *Service* CIDR?
@@ -83,7 +83,7 @@ The resulting `cka/31/course/cluster-info` could look like:
 ```
 
 
-## Killer.sh Checklist (Score: 0/5)
+## Checklist (Score: 0/5)
 
 - [ ] Answer 1 valid
 - [ ] Answer 2 valid
