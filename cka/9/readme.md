@@ -1,194 +1,147 @@
-# Question 9 | Contact K8s Api from inside Pod
+# Question 9 | Kill Scheduler, Manual Scheduling
 
-There is *ServiceAccount* `secret-reader` in *Namespace* `project-swan`. Create a *Pod* of image `nginx:1-alpine` named `api-contact` which uses this *ServiceAccount*.
+Temporarily stop the *kube-scheduler*, this means in a way that you can start it again afterwards.
+
+Create a single *Pod* named `manual-schedule` of image `httpd:2-alpine`, confirm it's created but not scheduled on any *Node*.
+
+Now you're the scheduler and have all its power, manually schedule that *Pod* on *Node* `cka-lab-9-control-plane`. Make sure it's running.
+
+Start the *kube-scheduler* again and confirm it's running correctly by creating a second *Pod* named `manual-schedule2` of image `httpd:2-alpine` and check if it's running on `cka-lab-9-worker`.
 
 > **Solve this question on:** the "cka-lab-9" kind cluster
 
-Exec into the *Pod* and use `curl` to manually query all *Secrets* from the Kubernetes Api.
-
-Write the result into file `cka/9/course/9/result.json`.
-
 ## Answer
 
-**Reference:** https://kubernetes.io/docs/tasks/run-application/access-api-from-pod
+### Stop the Scheduler
 
-You can find information in the K8s Docs by searching for "curl api" for example.
-
-### Create Pod which uses ServiceAccount
-
-First we create the *Pod*:
+First we find the controlplane *Node*:
 
 ```bash
-kubectl run api-contact --image=nginx:1-alpine --dry-run=client -o yaml > 9.yaml
-
-vim 9.yaml
+kubectl get node
+NAME                    STATUS   ROLES           AGE     VERSION
+cka-lab-9-control-plane Ready    control-plane   6d22h   v1.33.1
+cka-lab-9-worker        Ready    <none>          6d22h   v1.33.1
 ```
 
-Add the serviceAccountName and *Namespace*:
+Then we check if the scheduler is running:
+
+```bash
+kubectl -n kube-system get pod | grep schedule
+kube-scheduler-cka-lab-9-control-plane            1/1     Running   0               6d22h
+```
+
+Kill the Scheduler (temporarily) by moving the static *Pod* manifest out of the manifests directory:
+
+```bash
+# Run this inside the control-plane node container
+# docker exec -it cka-lab-9-control-plane bash
+mv /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/
+```
+
+And it should be stopped:
+
+```bash
+kubectl -n kube-system get pod | grep schedule
+```
+
+> ℹ️ In this environment `docker exec` is used for node access. In the real exam you would use `ssh` and `sudo -i`.
+
+### Create a *Pod*
+
+Now we create the *Pod*:
+
+```bash
+kubectl run manual-schedule --image=httpd:2-alpine
+pod/manual-schedule created
+```
+
+And confirm it has no *Node* assigned:
+
+```bash
+kubectl get pod manual-schedule -o wide
+NAME              READY   STATUS    RESTARTS   AGE   IP       NODE    ...
+manual-schedule   0/1     Pending   0          14s   <none>   <none>  ...
+```
+
+### Manually schedule the *Pod*
+
+Let's play the scheduler now:
+
+```bash
+kubectl get pod manual-schedule -o yaml > 9.yaml
+```
 
 ```yaml
+# cka/9/course/9.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  creationTimestamp: null
   labels:
-    run: api-contact
-  name: api-contact
-  namespace: project-swan             # add
+    run: manual-schedule
+  name: manual-schedule
 spec:
-  serviceAccountName: secret-reader   # add
+  nodeName: cka-lab-9-control-plane       # ADD the controlplane node name
   containers:
-  - image: nginx:1-alpine
-    name: api-contact
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
-status: {}
-```
-
-Create it:
-
-```bash
-kubectl -f 9.yaml apply
-pod/api-contact created
-```
-
-### Contact K8s Api from inside Pod
-
-Once in the container we can connect to the K8s Api using `curl`, it's usually available via the *Service* named `kubernetes` in *Namespace* `default`. Because of K8s internal DNS resolution we can use the url `kubernetes.default`.
-
-> ℹ️ Otherwise we can find the K8s Api IP via environment variables inside the *Pod*, simply run `env`
-
-So we can try to contact the K8s Api:
-
-```bash
-kubectl -n project-swan exec api-contact -it -- sh
-
-curl https://kubernetes.default
-curl: (60) SSL peer certificate or SSH remote key was not OK
-More details here: https://curl.se/docs/sslcerts.html
-
-curl failed to verify the legitimacy of the server and therefore could not
-establish a secure connection to it. To learn more about this situation and
-how to fix it, please visit the webpage mentioned above.
-
-curl -k https://kubernetes.default
-{
-  "kind": "Status",
-  "apiVersion": "v1",
-  "metadata": {},
-  "status": "Failure",
-  "message": "forbidden: User \"system:anonymous\" cannot get path \"/\"",
-  "reason": "Forbidden",
-  "details": {},
-  "code": 403
-}
-
-curl -k https://kubernetes.default/api/v1/secrets
-{
-  "kind": "Status",
-  "apiVersion": "v1",
-  "metadata": {},
-  "status": "Failure",
-  "message": "secrets is forbidden: User \"system:anonymous\" cannot list resource \"secrets\" in API group \"\" at the cluster scope",
-  "reason": "Forbidden",
-  "details": {
-    "kind": "secrets"
-  },
-  "code": 403
-}
-```
-
-The first command fails because of an untrusted certificate, but we can ignore this with `-k` for this scenario. We explain at the end how we can add the correct certificate instead of having to use the insecure `-k` option.
-
-The last command shows 403 forbidden, this is because we are not passing any authorisation information. For the K8s Api we are connecting as `system:anonymous`, which should not have permission to perform the query. We want to change this and connect using the Pod's ServiceAccount named `secret-reader`.
-
-### Use ServiceAccount Token to authenticate
-
-We find the token at `/var/run/secrets/kubernetes.io/serviceaccount`, so we do:
-
-```bash
-TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-
-curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
-{
-  "kind": "SecretList",
-  "apiVersion": "v1",
-  "metadata": {
-    "resourceVersion": "4881"
-  },
-  "items": [
-    {
-...
-    {
-      "metadata": {
-        "name": "read-me",
-        "namespace": "project-swan",
+  - image: httpd:2-alpine
+    name: manual-schedule
 ...
 ```
 
-Now we're able to list all Secrets as the Pod's ServiceAccount `secret-reader`.
+The scheduler sets the `nodeName` for a *Pod* declaration. How it finds the correct *Node* to schedule on, that's a very much complicated matter and takes many variables into account.
 
-For troubleshooting we could also check if the ServiceAccount is actually able to list Secrets:
-
-```bash
-kubectl auth can-i get secret --as system:serviceaccount:project-swan:secret-reader
-yes
-```
-
-### Store result at requested location
-
-We write the full result into `cka/9/course/9/result.json`:
-
-```
-{
-  "kind": "SecretList",
-  "apiVersion": "v1",
-  "metadata": {
-    "resourceVersion": "4881"
-  },
-  "items": [
-    {
-...
-    {
-      "metadata": {
-        "name": "read-me",
-        "namespace": "project-swan",
-        ...
-      },
-      "data": {
-        "token": "ZjMyMDEzOTYtZjVkOC00NTg0LWE2ZjEtNmYyZGZkYjM4NzVl"
-      },
-      "type": "Opaque"
-    }
-  ]
-}
-...
-```
-
-The easiest way would probably be to copy and paste the result manually. But if it's too long or not possible we could also do:
+As we cannot `kubectl apply` or `kubectl edit`, in this case we need to delete and create or replace:
 
 ```bash
-curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}" > result.json
-
-exit
-
-kubectl -n project-swan exec api-contact -it -- cat result.json > cka/9/course/9/result.json
+kubectl replace --force -f 9.yaml
 ```
 
-### Connect via HTTPS with correct CA
-
-To connect without `curl -k` we can specify the CertificateAuthority (CA):
+How does it look?
 
 ```bash
-CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
-curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
+kubectl get pod manual-schedule -o wide
+NAME              READY   STATUS    ...   NODE
+manual-schedule   1/1     Running   ...   cka-lab-9-control-plane
 ```
 
-## Killer.sh Checklist (Score: 0/4)
+It looks like our *Pod* is running on the controlplane now as requested, although no tolerations were specified. Only the scheduler takes taints/tolerations/affinity into account when finding the correct *Node* name. That's why it's still possible to assign *Pods* manually directly to a controlplane *Node* and skip the scheduler.
 
-- [ ] Pod `api-contact` exists in Namespace `project-swan`
-- [ ] Pod uses ServiceAccount `secret-reader`
-- [ ] Pod is Running
-- [ ] `course/9/result.json` exists and contains a `SecretList`
+### Start the scheduler again
+
+Move the manifest back:
+
+```bash
+# Run this inside the control-plane node container
+mv /etc/kubernetes/kube-scheduler.yaml /etc/kubernetes/manifests/
+```
+
+Checks it's running:
+
+```bash
+kubectl -n kube-system get pod | grep schedule
+kube-scheduler-cka-lab-9-control-plane            1/1     Running   0               13s
+```
+
+Schedule a second test *Pod*:
+
+```bash
+kubectl run manual-schedule2 --image=httpd:2-alpine
+
+kubectl get pod -o wide | grep schedule
+manual-schedule    1/1     Running   0          95s   10.32.0.2   cka-lab-9-control-plane
+manual-schedule2   1/1     Running   0          9s    10.44.0.3   cka-lab-9-worker
+```
+
+Back to normal.
+
+## Checklist (Score: 0/10)
+
+- [ ] Pod `manual-schedule` is running in namespace `default`
+- [ ] Pod `manual-schedule` is scheduled on `cka-lab-9-control-plane`
+- [ ] Pod `manual-schedule` has single container
+- [ ] Pod `manual-schedule` container has correct image
+- [ ] Pod `manual-schedule2` is running in namespace `default`
+- [ ] Pod `manual-schedule2` is scheduled on `cka-lab-9-worker`
+- [ ] Pod `manual-schedule2` has single container
+- [ ] Pod `manual-schedule2` container has correct image
+- [ ] `kube-scheduler-cka-lab-9-control-plane` is running
+- [ ] `kube-scheduler-cka-lab-9-control-plane` was restarted

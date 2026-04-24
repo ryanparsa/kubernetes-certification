@@ -3,28 +3,35 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 
-RESULT_FILE="$SCRIPT_DIR/../course/9/result.json"
-mkdir -p "$(dirname "$RESULT_FILE")"
+# 1. Stop scheduler
+docker exec "$CLUSTER_NAME-control-plane" mv /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/
 
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-contact
-  namespace: project-swan
-spec:
-  serviceAccountName: secret-reader
-  containers:
-  - name: api-contact
-    image: nginx:1-alpine
-EOF
+# Wait for scheduler pod to be gone
+until ! kubectl get pod -n kube-system -l component=kube-scheduler 2>/dev/null | grep -q "kube-scheduler"; do
+  sleep 2
+done
 
-kubectl wait pod api-contact -n project-swan --for=condition=Ready --timeout=60s
+# 2. Create pod
+kubectl run manual-schedule --image=httpd:2-alpine
 
-kubectl exec api-contact -n project-swan -- sh -c \
-  'curl -sk -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
-   https://kubernetes.default/api/v1/secrets' \
-  > "$RESULT_FILE"
+# 3. Manually schedule
+kubectl get pod manual-schedule -o json | jq '.spec.nodeName="cka-lab-9-control-plane"' | kubectl replace --force -f -
 
-echo "Result written to course/9/result.json"
+kubectl wait pod manual-schedule --for=condition=Ready --timeout=60s
+
+# 4. Start scheduler again
+docker exec "$CLUSTER_NAME-control-plane" mv /etc/kubernetes/kube-scheduler.yaml /etc/kubernetes/manifests/
+
+# Wait for scheduler pod to be back
+until kubectl get pod -n kube-system -l component=kube-scheduler 2>/dev/null | grep -q "Running"; do
+  sleep 2
+done
+
+# 5. Create second pod
+kubectl run manual-schedule2 --image=httpd:2-alpine
+
+kubectl wait pod manual-schedule2 --for=condition=Ready --timeout=60s
