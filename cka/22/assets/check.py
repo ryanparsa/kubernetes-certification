@@ -1,38 +1,59 @@
 #!/usr/bin/env python3
 import os
+import subprocess
 import unittest
 
-COURSE_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "course"))
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
 
 
-def read_file(path):
-    try:
-        with open(path) as f:
-            return f.read()
-    except FileNotFoundError:
-        return ""
+def kubectl(*args):
+    result = subprocess.run(
+        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        capture_output=True, text=True,
+    )
+    return result.stdout.strip()
 
 
-class TestKubectlSorting(unittest.TestCase):
+class TestKustomizeHPA(unittest.TestCase):
 
-    def test_find_pods_file_exists(self):
-        path = os.path.join(COURSE_DIR, "find_pods.sh")
-        self.assertTrue(os.path.isfile(path), f"File not found: {path}")
+    def test_staging_hpa_min_replicas(self):
+        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
+                        "-o", "jsonpath={.spec.minReplicas}")
+        self.assertEqual(value, "2")
 
-    def test_find_pods_contains_sort_by_timestamp(self):
-        path = os.path.join(COURSE_DIR, "find_pods.sh")
-        content = read_file(path)
-        self.assertIn("--sort-by=.metadata.creationTimestamp", content)
+    def test_staging_hpa_max_replicas(self):
+        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
+                        "-o", "jsonpath={.spec.maxReplicas}")
+        self.assertEqual(value, "4")
 
-    def test_find_pods_uid_file_exists(self):
-        path = os.path.join(COURSE_DIR, "find_pods_uid.sh")
-        self.assertTrue(os.path.isfile(path), f"File not found: {path}")
+    def test_staging_hpa_cpu_utilization(self):
+        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
+                        "-o", "jsonpath={.spec.metrics[0].resource.target.averageUtilization}")
+        self.assertEqual(value, "50")
 
-    def test_find_pods_uid_contains_sort_by_uid(self):
-        path = os.path.join(COURSE_DIR, "find_pods_uid.sh")
-        content = read_file(path)
-        self.assertIn("--sort-by=.metadata.uid", content)
+    def test_prod_hpa_max_replicas(self):
+        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-prod",
+                        "-o", "jsonpath={.spec.maxReplicas}")
+        self.assertEqual(value, "6")
+
+    def test_staging_configmap_deleted(self):
+        value = kubectl("get", "configmap", "horizontal-scaling-config",
+                        "-n", "api-gateway-staging", "--ignore-not-found",
+                        "-o", "jsonpath={.metadata.name}")
+        self.assertEqual(value, "")
+
+    def test_prod_configmap_deleted(self):
+        value = kubectl("get", "configmap", "horizontal-scaling-config",
+                        "-n", "api-gateway-prod", "--ignore-not-found",
+                        "-o", "jsonpath={.metadata.name}")
+        self.assertEqual(value, "")
+
+
+class QuietResult(unittest.TextTestResult):
+    def printErrors(self):
+        pass
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)
+    unittest.main(testRunner=runner)

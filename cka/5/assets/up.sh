@@ -3,50 +3,32 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
-CLUSTER_NAME="cka-lab-$LAB_ID"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
 
+# 1. Check dependencies
 for cmd in kind kubectl docker; do
   command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
 done
 
+# 2. Create cluster
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# Install metrics-server with kubelet-insecure-tls (required for kind)
-kubectl apply --kubeconfig "$KUBECONFIG_FILE" \
-  -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+# 3. Apply pre-existing workloads
+kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workload.yaml"
 
-kubectl patch deployment metrics-server \
-  --kubeconfig "$KUBECONFIG_FILE" \
-  -n kube-system \
-  --type='json' \
-  -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+# 4. Wait for deployments
+kubectl wait --kubeconfig "$KUBECONFIG_FILE" deployment/berlin-external-monitor --for=condition=Available --timeout=60s
+kubectl wait --kubeconfig "$KUBECONFIG_FILE" deployment/berlin-external-proxy --for=condition=Available --timeout=60s
 
-echo "Waiting for metrics-server to be ready..."
-kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
-  -n kube-system deployment/metrics-server --timeout=120s
-
-# Create the course/ directory and copy kustomize structure into it
+# 5. Create the course/ output directory
 mkdir -p "$SCRIPT_DIR/../course"
-cp -r "$SCRIPT_DIR/api-gateway" "$SCRIPT_DIR/../course/api-gateway"
 
-# Create the namespaces required by staging and prod overlays
-kubectl create namespace api-gateway-staging --kubeconfig "$KUBECONFIG_FILE"
-kubectl create namespace api-gateway-prod --kubeconfig "$KUBECONFIG_FILE"
+# 6. Copy task assets
+# N/A
 
-# Deploy staging and prod using kustomize
-kubectl kustomize "$SCRIPT_DIR/../course/api-gateway/staging" \
-  | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
-
-kubectl kustomize "$SCRIPT_DIR/../course/api-gateway/prod" \
-  | kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f -
-
-echo "Waiting for deployments to be ready..."
-kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n api-gateway-staging \
-  deployment/api-gateway --timeout=120s
-kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n api-gateway-prod \
-  deployment/api-gateway --timeout=120s
-
+# 7. Print summary
 echo ""
 echo "Lab ready!"
 echo ""

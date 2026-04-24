@@ -1,0 +1,45 @@
+name: CKA Lab 5
+
+on:
+  push:
+    paths: ['cka/5/**', '.github/workflows/cka-lab-5.yml']
+  pull_request:
+    paths: ['cka/5/**', '.github/workflows/cka-lab-5.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/5/assets/kind-config.yaml
+          cluster_name: cka-lab-5
+
+      - name: Set Kubeconfig
+        run: |
+          kind get kubeconfig --name cka-lab-5 > cka/5/assets/kubeconfig.yaml
+
+      - name: Setup Lab Environment
+        run: |
+          # Seed the environment with required resources (usually done by up.sh)
+          # For this lab, up.sh applies workload.yaml.
+          # We'll run up.sh steps manually or the script itself.
+          # Since up.sh tries to create cluster, we need to handle it.
+          # Actually, we can just apply the workload.yaml and create the course dir.
+          mkdir -p cka/5/course
+          kubectl apply -f cka/5/assets/workload.yaml
+
+      - name: Apply solution
+        run: bash cka/5/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/5/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/5/assets/down.sh

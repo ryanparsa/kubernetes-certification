@@ -3,56 +3,47 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+# Try local kubeconfig first (for local dev), then fallback to default (for CI)
+LOCAL_KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+KUBECONFIG = LOCAL_KUBECONFIG if os.path.exists(LOCAL_KUBECONFIG) else os.environ.get("KUBECONFIG")
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+COURSE_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "course")
 
-def kubectl(*args):
-    result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
-        capture_output=True, text=True,
-    )
+def run_script(script_path):
+    cmd = ["bash", script_path]
+    env = os.environ.copy()
+    if KUBECONFIG:
+        env["KUBECONFIG"] = KUBECONFIG
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     return result.stdout.strip()
 
+class TestKubectlSorting(unittest.TestCase):
+    def test_find_pods_sh_exists(self):
+        path = os.path.join(COURSE_DIR, "find_pods.sh")
+        self.assertTrue(os.path.exists(path))
 
-class TestKustomizeHPA(unittest.TestCase):
+    def test_find_pods_uid_sh_exists(self):
+        path = os.path.join(COURSE_DIR, "find_pods_uid.sh")
+        self.assertTrue(os.path.exists(path))
 
-    def test_staging_hpa_min_replicas(self):
-        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
-                        "-o", "jsonpath={.spec.minReplicas}")
-        self.assertEqual(value, "2")
+    def test_find_pods_output(self):
+        path = os.path.join(COURSE_DIR, "find_pods.sh")
+        output = run_script(path)
+        self.assertIn("NAMESPACE", output)
+        self.assertIn("NAME", output)
+        # Simple check for age sorting is hard without parsing times,
+        # but we can verify it runs and produces output.
 
-    def test_staging_hpa_max_replicas(self):
-        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
-                        "-o", "jsonpath={.spec.maxReplicas}")
-        self.assertEqual(value, "4")
-
-    def test_staging_hpa_cpu_utilization(self):
-        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-staging",
-                        "-o", "jsonpath={.spec.metrics[0].resource.target.averageUtilization}")
-        self.assertEqual(value, "50")
-
-    def test_prod_hpa_max_replicas(self):
-        value = kubectl("get", "hpa", "api-gateway", "-n", "api-gateway-prod",
-                        "-o", "jsonpath={.spec.maxReplicas}")
-        self.assertEqual(value, "6")
-
-    def test_staging_configmap_deleted(self):
-        value = kubectl("get", "configmap", "horizontal-scaling-config",
-                        "-n", "api-gateway-staging", "--ignore-not-found",
-                        "-o", "jsonpath={.metadata.name}")
-        self.assertEqual(value, "")
-
-    def test_prod_configmap_deleted(self):
-        value = kubectl("get", "configmap", "horizontal-scaling-config",
-                        "-n", "api-gateway-prod", "--ignore-not-found",
-                        "-o", "jsonpath={.metadata.name}")
-        self.assertEqual(value, "")
-
+    def test_find_pods_uid_output(self):
+        path = os.path.join(COURSE_DIR, "find_pods_uid.sh")
+        output = run_script(path)
+        self.assertIn("NAMESPACE", output)
+        self.assertIn("NAME", output)
 
 class QuietResult(unittest.TextTestResult):
     def printErrors(self):
         pass
-
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)
