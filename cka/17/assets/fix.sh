@@ -26,5 +26,5 @@ RUNTIME_TYPE=$(docker exec "$NODE_NAME" crictl inspect "$CONTAINER_ID" | grep ru
 # Write to pod-container.txt
 echo "$CONTAINER_ID $RUNTIME_TYPE" > "$SCRIPT_DIR/../course/pod-container.txt"
 
-# Get logs
-docker exec "$NODE_NAME" crictl logs "$CONTAINER_ID" > "$SCRIPT_DIR/../course/pod-container.log"
+# Get logs - capture both stdout and stderr
+docker exec "$NODE_NAME" crictl logs "$CONTAINER_ID" > "$SCRIPT_DIR/../course/pod-container.log" 2>&1

@@ -53,7 +53,7 @@ class TestContainerInfo(unittest.TestCase):
         with open(log_path, 'r') as f:
             content = f.read().strip()
 
-        self.assertTrue(len(content) > 0, "pod-container.log should not be empty")
+        self.assertTrue(len(content) > 0, f"pod-container.log should not be empty. Content: '{content}'")
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2)
