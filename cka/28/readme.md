@@ -1,11 +1,11 @@
-# Question 11 | Create Secret and mount into Pod
+# Question 28 | Create Secret and mount into Pod
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** the "cka-lab-28" kind cluster
 
 Create *Namespace* `secret` and implement the following in it:
 
 - Create *Pod* `secret-pod` with image `busybox:1`. It should be kept running by executing `sleep 1d` or something similar
-- Create the existing *Secret* `cka/28/course/secret1.yaml` and mount it readonly into the *Pod* at `/tmp/secret1`
+- Create the existing *Secret* `cka/28/course/28_secret1.yaml` and mount it readonly into the *Pod* at `/tmp/secret1`
 - Create a new *Secret* called `secret2` which should contain `user=user1` and `pass=1234`. These entries should be available inside the *Pod*'s container as environment variables `APP_USER` and `APP_PASS`
 
 ## Answer
@@ -22,11 +22,11 @@ namespace/secret created
 To create the existing *Secret* we need to adjust the *Namespace* for it:
 
 ```bash
-cp cka/28/course/secret1.yaml 11_secret1.yaml
+cp cka/28/course/28_secret1.yaml 28_secret1.yaml
 ```
 
 ```yaml
-# 11_secret1.yaml
+# 28_secret1.yaml
 apiVersion: v1
 data:
   halt: IyEgL2Jpbi9zaAo...
@@ -38,7 +38,7 @@ metadata:
 ```
 
 ```bash
-kubectl -n secret create -f 11_secret1.yaml
+kubectl -n secret create -f 28_secret1.yaml
 secret/secret1 created
 ```
 
@@ -56,13 +56,13 @@ secret/secret2 created
 Now we create the *Pod* template:
 
 ```bash
-kubectl -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 11.yaml
+kubectl -n secret run secret-pod --image=busybox:1 --dry-run=client -o yaml -- sh -c "sleep 1d" > 28.yaml
 ```
 
 Then make the necessary changes:
 
 ```yaml
-# 11.yaml
+# 28.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -107,7 +107,7 @@ status: {}
 And execute:
 
 ```bash
-kubectl -n secret create -f 11.yaml
+kubectl -n secret create -f 28.yaml
 pod/secret-pod created
 ```
 
@@ -139,12 +139,12 @@ kubectl -n secret exec secret-pod -- cat /tmp/secret1/halt
 ```
 
 
-## Killer.sh Checklist (Score: 0/7)
+## Checklist (Score: 0/7)
 
-- [ ] Secret secret1 exists
-- [ ] Secret secret2 exists
-- [ ] Pod exists
-- [ ] Pod has single container
-- [ ] Pod container has correct image
-- [ ] Pod mounts secret1 readonly
-- [ ] Pod has secret2 env variables
+- [ ] *Secret* `secret1` exists
+- [ ] *Secret* `secret2` exists
+- [ ] *Pod* exists
+- [ ] *Pod* has single *Container*
+- [ ] *Pod* *Container* has correct image
+- [ ] *Pod* mounts `secret1` readonly
+- [ ] *Pod* has `secret2` env variables
