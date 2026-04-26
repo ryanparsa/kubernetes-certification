@@ -2,9 +2,6 @@
 
 Open-source practice labs and study materials for Kubernetes certification exams.
 
-[![CKA Lab 1](https://github.com/ryanparsa/kubernetes-certification/actions/workflows/cka-lab-1.yml/badge.svg)](https://github.com/ryanparsa/kubernetes-certification/actions/workflows/cka-lab-1.yml)
-[![CKA Lab 29](https://github.com/ryanparsa/kubernetes-certification/actions/workflows/cka-lab-29.yml/badge.svg)](https://github.com/ryanparsa/kubernetes-certification/actions/workflows/cka-lab-29.yml)
-
 ## Exams Covered
 
 | Exam | Full Name | Contents |
@@ -34,13 +31,11 @@ Open-source practice labs and study materials for Kubernetes certification exams
 
 ## CKA Labs
 
-Each lab reproduces a question from the [killer.sh](https://killer.sh) CKA simulator. Labs run on local [kind](https://kind.sigs.k8s.io/) clusters and include automated checks.
 
 | Simulator | Labs |
 |-----------|------|
 | Simulator A | `cka/1` – `cka/17` |
 | Simulator B | `cka/18` – `cka/34` |
-| Simulator A Preview | `cka/35` – `cka/37` |
 
 See [`cka/README.md`](cka/README.md) for the full lab index with status.
 
@@ -87,7 +82,7 @@ The [`ref/`](ref/) directory contains concise command and concept references use
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file templates, CI setup, and conventions. The canonical reference lab is [`cka/29/`](cka/29/).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file templates, CI setup, and conventions.
 
 Contributions are welcome — feel free to open an issue or pull request.
 
