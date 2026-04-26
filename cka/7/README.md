@@ -1,4 +1,4 @@
-# Question 7 | Node and Pod Resource Usage
+# Question 7
 
 > **Solve this question on:** the "cka-lab-7" kind cluster
 

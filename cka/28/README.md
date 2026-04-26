@@ -1,4 +1,4 @@
-# Question 28 | Create Secret and mount into Pod
+# Question 28
 
 > **Solve this question on:** the "cka-lab-28" kind cluster
 

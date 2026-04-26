@@ -1,4 +1,4 @@
-# Question 5 | Kustomize configure HPA Autoscaler
+# Question 5
 
 > **Solve this question on:** the "cka-lab-5" kind cluster
 

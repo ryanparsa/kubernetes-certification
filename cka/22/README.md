@@ -1,4 +1,4 @@
-# Question 5 | Kubectl sorting
+# Question 5
 
 > **Solve this question on:** the "cka-lab" kind cluster
 

@@ -1,4 +1,4 @@
-# Question 4 | Pod Ready if Service is reachable
+# Question 4
 
 > **Solve this question on:** the "cka-lab-21" kind cluster
 

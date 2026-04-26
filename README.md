@@ -19,7 +19,7 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 ```
 .
 ├── cka/                  # CKA — practice labs + exam definition
-│   ├── <N>/              # Each lab: readme.md + assets/ (up/down/fix/check scripts)
+│   ├── <N>/              # Each lab: README.md + assets/ (setup/cleanup/fix/check scripts)
 │   ├── ref/              # Verbatim killer.sh simulator source questions
 │   └── README.md         # Exam overview, domain weights, topics, lab index
 ├── ckad/
@@ -59,26 +59,29 @@ See [`cka/README.md`](cka/README.md) for the full lab index with status.
 **Prerequisites:** `docker`, `kind`, `kubectl`, `python3`
 
 ```bash
-# 1. Start the cluster
-bash cka/<N>/assets/up.sh
-export KUBECONFIG=cka/<N>/assets/kubeconfig.yaml
+# 1. Enter the lab directory
+cd cka/<N>
 
-# 2. Read the scenario
-cat cka/<N>/readme.md
+# 2. Start the cluster
+bash assets/setup.sh
+export KUBECONFIG=assets/kubeconfig.yaml
 
-# 3. Solve (save manifests under cka/<N>/course/)
+# 3. Read the scenario
+cat README.md
 
-# 4. Verify your solution
-bash cka/<N>/assets/check.sh
+# 4. Solve (save manifests under course/)
 
-# 5. Tear down
-bash cka/<N>/assets/down.sh
+# 5. Verify your solution
+bash assets/check.sh
+
+# 6. Tear down
+bash assets/cleanup.sh
 ```
 
 If you get stuck, `fix.sh` applies the reference solution:
 
 ```bash
-bash cka/<N>/assets/fix.sh
+bash assets/fix.sh
 ```
 
 ## AI Practice Prompts

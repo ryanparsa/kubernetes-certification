@@ -1,4 +1,4 @@
-# Question 9 | Contact K8s Api from inside Pod
+# Question 9
 
 There is *ServiceAccount* `secret-reader` in *Namespace* `project-swan`. Create a *Pod* of image `nginx:1-alpine` named `api-contact` which uses this *ServiceAccount*.
 

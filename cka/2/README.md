@@ -1,4 +1,4 @@
-# Question 2 | MinIO Operator, CRD Config, Helm Install
+# Question 2
 
 Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and create the *Tenant* CRD:
 

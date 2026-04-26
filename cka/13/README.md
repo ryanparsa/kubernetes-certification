@@ -1,4 +1,4 @@
-# Question 13 | Gateway API Ingress
+# Question 13
 
 The team from Project r500 wants to replace their *Ingress* (networking.k8s.io) with a *Gateway API* (gateway.networking.k8s.io) solution. The old *Ingress* is available at `cka/13/course/ingress.yaml`.
 

@@ -1,4 +1,4 @@
-# Question 9 | Kill Scheduler, Manual Scheduling
+# Question 9
 
 Temporarily stop the kube-scheduler, this means in a way that you can start it again afterwards.
 

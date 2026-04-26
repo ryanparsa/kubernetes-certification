@@ -1,4 +1,4 @@
-# Question 17 | Find Container of Pod and check info
+# Question 17
 
 > **Solve this question on:** the "cka-lab-17" kind cluster
 

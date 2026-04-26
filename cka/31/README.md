@@ -1,4 +1,4 @@
-# Question 31 | Find out Cluster Information
+# Question 31
 
 > **Solve this question on:** the "cka-lab-31" kind cluster
 

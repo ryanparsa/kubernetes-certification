@@ -1,4 +1,4 @@
-# Question 4 | Find Pods first to be terminated
+# Question 4
 
 > **Solve this question on:** the "cka-lab-4" kind cluster
 

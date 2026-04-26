@@ -1,4 +1,4 @@
-# Question 10 | RBAC ServiceAccount Role RoleBinding
+# Question 10
 
 > **Solve this question on:** the "cka-lab-10" kind cluster
 

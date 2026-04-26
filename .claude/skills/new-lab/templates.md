@@ -59,7 +59,7 @@ nodes:
 
 ---
 
-## up.sh — minimal (no pre-seeded resources)
+## setup.sh — minimal (no pre-seeded resources)
 
 ```bash
 #!/usr/bin/env bash
@@ -84,7 +84,7 @@ echo "Lab ready!"
 echo "  export KUBECONFIG=$KUBECONFIG_FILE"
 ```
 
-## up.sh — with pre-seeded namespace + workload
+## setup.sh — with pre-seeded namespace + workload
 
 ```bash
 #!/usr/bin/env bash
@@ -176,12 +176,12 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 
-python3 "$(dirname "$0")/check.py"
+python3 "$(dirname "$0")/_check.py"
 ```
 
 ---
 
-## check.py — Kubernetes object assertions
+## _check.py — Kubernetes object assertions
 
 ```python
 #!/usr/bin/env python3
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     unittest.main(verbosity=2)
 ```
 
-## check.py — file content assertions
+## _check.py — file content assertions
 
 ```python
 #!/usr/bin/env python3
@@ -251,7 +251,7 @@ if __name__ == "__main__":
 
 ---
 
-## down.sh
+## cleanup.sh
 
 ```bash
 #!/usr/bin/env bash
@@ -301,7 +301,7 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: bash <exam>/<N>/assets/down.sh
+        run: bash <exam>/<N>/assets/cleanup.sh
 ```
 
 **Note:** The `helm/kind-action@v1` step creates the cluster AND sets `KUBECONFIG` automatically, so `fix.sh` and `check.sh` must also set `KUBECONFIG` internally (they do, via `export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"`) — but `kind-action` writes to a different path. Always include `export KUBECONFIG` inside each script rather than relying on the environment.

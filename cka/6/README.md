@@ -1,4 +1,4 @@
-# Question 6 | Storage, PV, PVC, Pod volume
+# Question 6
 
 > **Solve this question on:** the "cka-lab-6" kind cluster
 

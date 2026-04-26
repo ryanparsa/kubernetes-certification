@@ -1,4 +1,4 @@
-# Question 36 | Kube-Proxy iptables
+# Question 36
 
 > **Solve this question on:** the "cka-lab-36" kind cluster
 

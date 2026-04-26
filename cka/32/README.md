@@ -1,4 +1,4 @@
-# Question 32 | Cluster Event Logging
+# Question 32
 
 > **Solve this question on:** the "cka-lab-32" kind cluster
 

@@ -1,4 +1,4 @@
-# Question 6 | Fix Kubelet
+# Question 6
 
 > **Solve this question on:** the "cka-lab-23" kind cluster
 

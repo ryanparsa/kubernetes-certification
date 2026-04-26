@@ -1,4 +1,4 @@
-# Question 12 | Deployment on all Nodes
+# Question 12
 
 > **Solve this question on:** the `cka-lab-12` kind cluster
 

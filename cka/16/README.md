@@ -1,4 +1,4 @@
-# Question 16 | Update CoreDNS Configuration
+# Question 16
 
 > **Solve this question on:** the `cka-lab` kind cluster
 

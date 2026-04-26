@@ -1,4 +1,4 @@
-# Question 2 | Create a Static Pod and Service
+# Question 2
 
 > **Solve this question on:** the `cka-lab` kind cluster
 

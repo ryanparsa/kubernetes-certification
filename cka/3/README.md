@@ -1,4 +1,4 @@
-# Question 3 | Scale down StatefulSet
+# Question 3
 
 > **Solve this question on:** the "cka-lab-3" kind cluster
 

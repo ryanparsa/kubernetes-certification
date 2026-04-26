@@ -1,6 +1,6 @@
 ---
 name: new-lab
-description: Create a complete CKA/CKAD/CKS lab scenario from any input—text description, killer.sh URL, pasted question text, or screenshot. Generates readme.md, all asset scripts, check.py, and the CI workflow.
+description: Create a complete CKA/CKAD/CKS lab scenario from any input—text description, killer.sh URL, pasted question text, or screenshot. Generates readme.md, all asset scripts, _check.py, and the CI workflow.
 disable-model-invocation: true
 argument-hint: [cka|ckad|cks] [description, URL, or paste content]
 allowed-tools: Bash Read Write WebFetch
@@ -40,9 +40,9 @@ Before writing any files, reason through:
   - Single control-plane only: simple read/inspect tasks (ETCD info, cert check)
   - Control-plane + 1 worker: scheduling, drain, cordon, DaemonSets
   - Control-plane + 2 workers: HA scenarios, PodDisruptionBudgets
-- **Pre-seeded state** (`up.sh`): what resources must exist before the user starts? Create namespaces, broken workloads, RBAC gaps, missing secrets, etc.
+- **Pre-seeded state** (`setup.sh`): what resources must exist before the user starts? Create namespaces, broken workloads, RBAC gaps, missing secrets, etc.
 - **Solution** (`fix.sh`): what is the minimal correct solution? Use `kubectl apply`, never `kubectl create`. Must be idempotent.
-- **Verification** (`check.py`): one `test_` method per checklist item. Use `jsonpath` for field checks; avoid parsing text output.
+- **Verification** (`_check.py`): one `test_` method per checklist item. Use `jsonpath` for field checks; avoid parsing text output.
 - **Checklist**: 2–6 bullet items that map directly to `test_` methods.
 
 ## Step 4 — Write all files
@@ -53,11 +53,11 @@ Create these files (see [templates.md](templates.md) for the exact boilerplate):
 |------|---------|
 | `<exam>/<N>/readme.md` | Question + full answer walkthrough + checklist |
 | `<exam>/<N>/assets/kind-config.yaml` | Kind cluster topology |
-| `<exam>/<N>/assets/up.sh` | Create cluster + pre-seed state |
+| `<exam>/<N>/assets/setup.sh` | Create cluster + pre-seed state |
 | `<exam>/<N>/assets/fix.sh` | Idempotent complete solution |
-| `<exam>/<N>/assets/check.sh` | Delegates to check.py |
-| `<exam>/<N>/assets/check.py` | unittest assertions, one per checklist item |
-| `<exam>/<N>/assets/down.sh` | Delete cluster + course/ |
+| `<exam>/<N>/assets/check.sh` | Delegates to _check.py |
+| `<exam>/<N>/assets/_check.py` | unittest assertions, one per checklist item |
+| `<exam>/<N>/assets/cleanup.sh` | Delete cluster + course/ |
 | `.github/workflows/<exam>-lab-<N>.yml` | CI workflow |
 
 Create directories first:
@@ -91,7 +91,7 @@ Rules:
 - Use fenced code blocks with language tags (`bash`, `yaml`).
 - YAML snippets for files in `course/` must show the path as a comment on the first line: `# <exam>/<N>/course/<file>.yaml`.
 
-## Step 6 — check.py structure
+## Step 6 — _check.py structure
 
 ```python
 #!/usr/bin/env python3
@@ -128,10 +128,10 @@ Rules:
 
 After writing all files, run:
 ```bash
-bash -n <exam>/<N>/assets/up.sh
+bash -n <exam>/<N>/assets/setup.sh
 bash -n <exam>/<N>/assets/fix.sh
-bash -n <exam>/<N>/assets/down.sh
-python3 -m py_compile <exam>/<N>/assets/check.py
+bash -n <exam>/<N>/assets/cleanup.sh
+python3 -m py_compile <exam>/<N>/assets/_check.py
 ```
 
 Report any syntax errors and fix them before declaring the lab ready.
@@ -142,7 +142,7 @@ Print a brief summary:
 - Lab path and number
 - Kind topology (nodes)
 - Checklist items generated
-- Command to test it: `bash <exam>/<N>/assets/up.sh && bash <exam>/<N>/assets/fix.sh && bash <exam>/<N>/assets/check.sh`
+- Command to test it: `bash <exam>/<N>/assets/setup.sh && bash <exam>/<N>/assets/fix.sh && bash <exam>/<N>/assets/check.sh`
 
 ## Additional resources
 

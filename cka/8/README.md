@@ -1,4 +1,4 @@
-# Question 8 | Update Kubernetes Version and join cluster
+# Question 8
 
 > **Solve this question on:** the "cka-lab-8" kind cluster
 

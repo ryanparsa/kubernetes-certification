@@ -37,4 +37,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: bash cka/3/assets/down.sh
+        run: bash cka/3/assets/cleanup.sh

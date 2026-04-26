@@ -1,4 +1,4 @@
-# Question 7 | Etcd Operations
+# Question 7
 
 > **Solve this question on:** the "cka-lab" kind cluster
 > **For tasks requiring direct access to the control plane node (e.g. etcd snapshot):** `docker exec -it cka-lab-control-plane bash`

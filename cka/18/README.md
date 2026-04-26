@@ -1,4 +1,4 @@
-# Question 1 | DNS / FQDN / Headless Service
+# Question 1
 
 > **Solve this question on:** the "cka-lab" kind cluster
 

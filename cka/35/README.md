@@ -1,4 +1,4 @@
-# Question 35 | ETCD Information
+# Question 35
 
 > **Solve this question on:** `docker exec -it cka-lab-control-plane bash`
 

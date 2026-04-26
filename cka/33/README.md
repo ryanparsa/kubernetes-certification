@@ -1,4 +1,4 @@
-# Question 16 | Namespaces and Api Resources
+# Question 16
 
 > **Solve this question on:** the "cka-lab" kind cluster
 

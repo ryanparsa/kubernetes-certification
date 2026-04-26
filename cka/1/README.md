@@ -1,4 +1,4 @@
-# Question 1 | Contexts
+# Question 1
 
 > **Solve this question on:** the "cka-lab-1" kind cluster
 

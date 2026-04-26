@@ -1,4 +1,4 @@
-# Question 11 | DaemonSet on all Nodes
+# Question 11
 
 > **Solve this question on:** the "cka-lab-11" kind cluster
 

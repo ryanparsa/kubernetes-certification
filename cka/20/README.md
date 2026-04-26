@@ -1,4 +1,4 @@
-# Question 3 | Kubelet client/server cert info
+# Question 3
 
 > **Solve this question on:** the `cka-lab` kind cluster
 

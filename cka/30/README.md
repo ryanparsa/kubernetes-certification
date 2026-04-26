@@ -1,4 +1,4 @@
-# Question 30 | Multi Containers and Pod shared Volume
+# Question 30
 
 > **Solve this question on:** the "cka-lab-30" kind cluster
 

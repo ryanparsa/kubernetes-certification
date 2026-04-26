@@ -1,4 +1,4 @@
-# Question 14 | Check how long certificates are valid
+# Question 14
 
 Perform some tasks on cluster certificates:
 

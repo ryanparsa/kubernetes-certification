@@ -1,4 +1,4 @@
-# Question 15 | NetworkPolicy
+# Question 15
 
 > **Solve this question on:** the `cka-lab-15` kind cluster
 

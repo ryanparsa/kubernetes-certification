@@ -1,4 +1,4 @@
-# Question 25 | Get Controlplane Information
+# Question 25
 
 Check how the *Controlplane Nodes* components *Kubelet*, *Kube-apiserver*, *Kube-scheduler*, *Kube-controller-manager* and *Etcd* are started/installed on the *Controlplane Nodes*.
 

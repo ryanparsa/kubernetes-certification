@@ -1,4 +1,4 @@
-# Question 10 | PV PVC Dynamic Provisioning
+# Question 10
 
 > **Solve this question on:** the "cka-lab" kind cluster
 

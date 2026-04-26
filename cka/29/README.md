@@ -1,4 +1,4 @@
-# Question 29 | Schedule Pod on Controlplane Nodes
+# Question 29
 
 > **Solve this question on:** the "cka-lab-29" kind cluster
 

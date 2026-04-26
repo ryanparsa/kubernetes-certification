@@ -1,4 +1,4 @@
-# Question 34 | Operator, CRDs, RBAC, Kustomize
+# Question 34
 
 > **Solve this question on:** the "cka-lab-34" kind cluster
 

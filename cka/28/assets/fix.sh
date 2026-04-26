@@ -20,7 +20,7 @@ EOF
 
 # Create Secret 1 from file, injecting namespace
 # Note: In CI, we need to make sure the file exists.
-# Since we are not running up.sh, we use the source of truth if course file is missing.
+# Since we are not running setup.sh, we use the source of truth if course file is missing.
 SOURCE_SECRET="$SCRIPT_DIR/../course/28_secret1.yaml"
 if [ ! -f "$SOURCE_SECRET" ]; then
     SOURCE_SECRET="$SCRIPT_DIR/task-secret1.yaml"
