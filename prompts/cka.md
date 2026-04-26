@@ -44,3 +44,25 @@ Networking (admin level)
 - CNI plugin location: /etc/cni/net.d/, /opt/cni/bin/
 - kube-proxy ConfigMap, mode (iptables vs ipvs)
 - CoreDNS ConfigMap, Corefile syntax, restarting CoreDNS pods
+- Services: ClusterIP, NodePort, LoadBalancer — spec.selector matching, targetPort int vs string
+- Ingress: rules, pathType (Exact / Prefix), ingressClassName
+- NetworkPolicy: podSelector, namespaceSelector, ipBlock, ingress/egress, ports[].protocol uppercase
+- DNS: <service>.<namespace>.svc.cluster.local, resolv.conf in pods, ndots
+
+Storage
+- PersistentVolume: capacity, accessModes (ReadWriteOnce / ReadOnlyMany / ReadWriteMany), reclaim policy
+- PersistentVolumeClaim: storageClassName, accessModes array, resources.requests.storage
+- StorageClass: provisioner, reclaimPolicy, volumeBindingMode
+- Dynamic provisioning vs static binding
+- Volume types in pods: emptyDir, hostPath, configMap, secret, persistentVolumeClaim
+- kubectl get pv / pvc — Bound vs Pending, capacity, access modes
+
+Scheduling
+- nodeSelector: simple key/value label matching
+- Node affinity: requiredDuringSchedulingIgnoredDuringExecution vs preferred; matchExpressions operators
+- Pod affinity / anti-affinity: topologyKey, scheduling pods together or apart
+- Taints: kubectl taint nodes, effect (NoSchedule / PreferNoSchedule / NoExecute)
+- Tolerations: key, operator (Equal / Exists), effect, value; omit value for Exists
+- priorityClass: globalDefault, value, preemptionPolicy
+- Resource requests: CPU/memory requests driving scheduler decisions
+- DaemonSet scheduling: tolerations for control-plane taint
