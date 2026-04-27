@@ -8,18 +8,15 @@
 
 # Lab-Based Exams (CKA / CKAD / CKS)
 
-## Terminal Setup (First 2 Minutes)
+## Terminal Setup (After SSH-ing In)
 
-Do this before touching any question. These two commands save minutes over the course of the exam:
+The `k` alias and kubectl completion are pre-configured on exam nodes — you don't need to set them up. Just verify after SSH-ing in:
 
 ```bash
-# Enable kubectl autocompletion
-source <(kubectl completion bash)
-
-# Short alias
-alias k=kubectl
-complete -F __start_kubectl k
+type k
 ```
+
+Don't bother setting aliases manually. Since each question uses a different SSH node, any alias you set is lost the moment you `exit`.
 
 Keep a scratch file open in a second terminal tab for manifests:
 
@@ -27,19 +24,27 @@ Keep a scratch file open in a second terminal tab for manifests:
 vim ~/scratch.yaml
 ```
 
-## Context Switching — Do This for Every Question
+## SSH to the Right Node — Do This for Every Question
 
-Each question runs on a specific cluster. The exam tells you which one. **Always switch context first** — forgetting this is an instant zero for the question.
+Each question specifies a node to solve it on. **Always SSH there first** — forgetting this is an instant zero for the question.
 
-```bash
-kubectl config use-context <context-name>
+```
+Solve this question on: ssh cka7968
 ```
 
-Verify you are on the right cluster before proceeding:
+```bash
+ssh cka7968
+```
+
+You'll be dropped in as `candidate@cka7968`. All `kubectl` commands run against that node's cluster — no manual context switching required.
+
+**Before moving to the next question, always exit the SSH session:**
 
 ```bash
-kubectl config current-context
+exit
 ```
+
+A common mistake is leaving the previous SSH session open and solving the next question on the wrong node. Check your prompt — if it shows `candidate@<nodename>` instead of your base prompt, you're still inside an old session.
 
 If the question also specifies a namespace, either pass `-n <ns>` on every command or set a default:
 
@@ -63,18 +68,15 @@ kubectl config set-context --current --namespace=<ns>
 
 ## Question Tracker (Notepad)
 
-Open a text editor at the very start. One line per question:
+Open a text editor at the very start. Keep it as short as possible — one line per question:
 
 ```
-Q1   7%  hard – come back
-Q2   4%  ignore – too slow
-Q3   8%  easy – RBAC
-Q4   6%  done
-Q5   5%  syntax error – revisit
-Q6   7%  in progress
+2 done
+3 yaml error
+4 done
+5 ignore
+8 come back
 ```
-
-Statuses: `easy`, `done`, `in progress`, `hard – come back`, `ignore`, `syntax error – revisit`
 
 ## Point-Value Rules
 

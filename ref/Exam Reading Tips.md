@@ -38,6 +38,25 @@ These word pairs are visually similar and frequently confused under exam pressur
 | `configmap` | `secret` |
 | namespace `default` | namespace `kube-system` (or a custom one) |
 
+## Write-to-File Tasks
+
+Some questions ask you to write your answer to a specific file (e.g. `/opt/course/4/pods-terminated-first.txt`). **The file write IS the answer** — finding the correct value in your head but never writing it to the file scores zero.
+
+When you see a path like `/opt/course/N/...` in the question, note it before you touch the terminal.
+
+## Multi-Step Questions
+
+Before starting, number the sub-tasks as a comment in your terminal:
+
+```bash
+# 1. create ns minio
+# 2. helm install minio-operator
+# 3. edit minio-tenant.yaml
+# 4. kubectl apply minio-tenant.yaml
+```
+
+This keeps you from marking the question done after step 3 and missing the last step.
+
 ## Watch for Negative Constraints
 
 Questions often include hard constraints that are easy to miss:
@@ -53,9 +72,9 @@ Scan for `not`, `must not`, `do not`, `without`, and `existing` before you start
 
 Questions that specify a namespace or cluster context are testing whether you read them.
 
-- Note the **exact namespace** before opening the terminal — `kube-system` ≠ `kube-public` ≠ `default`.
+- Note the **SSH target node** before opening the terminal — each question tells you which node to SSH into (e.g. `ssh cka7968`).
+- Note the **exact namespace** — `kube-system` ≠ `kube-public` ≠ `default`.
 - Note the **exact resource name** — `web` ≠ `webapp` ≠ `web-app`.
-- If the question says "on cluster `k8s`", switch context first (see [Exam Strategy](Exam%20Strategy.md)).
 
 ## During the Exam
 
