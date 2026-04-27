@@ -1,3 +1,403 @@
+### Domain 1: Kubernetes Fundamentals (Core Architecture & Components)
+
+- [ ]  001. Understand the architecture of a Kubernetes cluster, specifically the master-worker node topology.
+- [ ]  002. Explain the exact role of the `kube-apiserver` as the central synchronous gateway for all cluster REST communications.
+- [ ]  003. Understand how `etcd` functions as a distributed, highly available key-value store and the single source of truth for cluster state.
+- [ ]  004. Describe the mechanism of the `kube-scheduler` in selecting optimal nodes for newly created, unassigned Pods.
+- [ ]  005. Identify the responsibilities of the `kube-controller-manager` in maintaining the desired state via continuous control loops.
+- [ ]  006. Define the role of the `cloud-controller-manager` in integrating Kubernetes with external cloud provider APIs.
+- [ ]  007. Explain the function of the `kubelet` agent running on every worker node to manage container lifecycles and communicate with the API.
+- [ ]  008. Understand how `kube-proxy` maintains network rules and enables Service networking and load balancing across the cluster.
+- [ ]  009. Explain the concept of a declarative configuration model (using YAML/JSON) versus an imperative execution model.
+- [ ]  010. Understand the function of the reconciliation loop in continuously matching the current cluster state to the desired state.
+- [ ]  011. Identify what a Pod is, why it is the smallest deployable compute unit in Kubernetes, and how containers within a Pod share resources.
+- [ ]  012. Explain the use case for multi-container Pods, specifically focusing on the sidecar, ambassador, and adapter patterns.
+- [ ]  013. Describe the lifecycle phases of a Pod: Pending, Running, Succeeded, Failed, and Unknown.
+- [ ]  014. Understand what a ReplicaSet is and how it utilizes label selectors to ensure a specified number of Pod replicas are running.
+- [ ]  015. Differentiate between creating a raw ReplicaSet directly versus managing it indirectly via a Deployment object.
+- [ ]  016. Explain how Deployments manage ReplicaSets to enable declarative updates, scaling, and controlled rollbacks.
+- [ ]  017. Identify the use case for DaemonSets (ensuring a copy of a specific Pod runs on all or selected nodes in the cluster).
+- [ ]  018. Explain the purpose of StatefulSets for stateful applications requiring unique, persistent network identifiers and ordered deployment.
+- [ ]  019. Describe the function of Jobs for finite, run-to-completion tasks and CronJobs for scheduled task execution.
+- [ ]  020. Understand the role of Namespaces in providing logical isolation and resource quota boundaries within a single physical cluster.
+- [ ]  021. Explain how Labels are used as key-value pairs to logically organize, group, and select subsets of Kubernetes objects.
+- [ ]  022. Describe Annotations and how they differ from Labels by storing non-identifying metadata often used by third-party tools.
+- [ ]  023. Understand the concept of Label Selectors and their critical role in linking Services to their backing Pods.
+- [ ]  024. Define a Kubernetes Service and its role in providing a stable IP address and DNS name to abstract dynamic Pod IP addresses.
+- [ ]  025. Explain the `ClusterIP` Service type, which is the default and only exposes the service for internal cluster communication.
+- [ ]  026. Explain the `NodePort` Service type, which exposes the service on a static, high-numbered port across all worker nodes.
+- [ ]  027. Explain the `LoadBalancer` Service type, which provisions an external load balancer from the underlying cloud provider.
+- [ ]  028. Understand `ExternalName` Services, which act as a proxy mapping a service to a DNS CNAME record without label selectors.
+- [ ]  029. Identify the purpose of a Headless Service (setting ClusterIP to 'None') for direct Pod IP discovery without load balancing.
+- [ ]  030. Understand the concept of Endpoints and EndpointSlices in keeping track of the network addresses of Pods matching a Service selector.
+- [ ]  031. Explain Kubernetes API Groups and how they organize REST endpoints into logical categories (e.g., `core`, `apps`, `batch`).
+- [ ]  032. Differentiate between API versions (`v1alpha1`, `v1beta1`, `v1`) and the stability guarantees associated with each phase.
+- [ ]  033. Understand the structure of a standard Kubernetes YAML manifest, including the `apiVersion`, `kind`, `metadata`, and `spec` fields.
+- [ ]  034. Explain the role of Taints on a node and Tolerations on a Pod in repelling or allowing scheduling on specific nodes.
+- [ ]  035. Describe Node Affinity and Pod Affinity/Anti-Affinity for granular, rule-based scheduling control.
+- [ ]  036. Understand Resource Requests (guaranteed CPU/Memory resources) versus Limits (maximum allowed resources before throttling or killing).
+- [ ]  037. Explain how the `kube-scheduler` utilizes Resource Requests to find worker nodes with adequate available capacity.
+- [ ]  038. Define Out-Of-Memory (OOM) kills and CPU throttling as direct results of a container exceeding its defined resource limits.
+- [ ]  039. Understand Liveness Probes and how they are used by the kubelet to determine when to restart an unhealthy container.
+- [ ]  040. Understand Readiness Probes and how they determine when a container is ready to accept traffic from a Service.
+- [ ]  041. Understand Startup Probes and their specific use case for applications with exceptionally slow initial initialization times.
+- [ ]  042. Describe the concept of Ephemeral Containers and how they are used dynamically to debug running, distroless Pods.
+- [ ]  043. Explain the function of Linux cgroups (control groups) in constraining the resource usage of containers at the OS level.
+- [ ]  044. Explain the function of Linux namespaces in providing process, mount, and network isolation for containers.
+- [ ]  045. Understand the Kubernetes garbage collection mechanisms for cleaning up unreferenced or completed resources.
+- [ ]  046. Describe the role of a Custom Resource Definition (CRD) in extending the Kubernetes API with user-defined object types.
+- [ ]  047. Explain what a Kubernetes Operator is and how it uses a custom controller to watch and manage custom resources.
+- [ ]  048. Understand the `kubeconfig` file structure (clusters, users, contexts) and its role in authenticating API requests.
+- [ ]  049. Describe the difference between a static Pod (managed directly by the kubelet) and a standard Pod (managed by the API server).
+- [ ]  050. Recognize the architectural flow when a `kubectl` command is issued to create a Pod, tracing it from API server to kubelet execution.
+
+### Domain 1: Kubernetes Fundamentals (Kubectl Commands & Operations)
+
+- [ ]  051. Execute `kubectl get pods` to list all Pods in the currently active namespace.
+- [ ]  052. Utilize the `A` or `-all-namespaces` flag to list resources across the entire Kubernetes cluster.
+- [ ]  053. Run `kubectl describe pod <name>` to view detailed, human-readable events, state, and configuration of a specific Pod.
+- [ ]  054. Use `kubectl logs <pod-name>` to extract stdout and stderr streaming logs from a running container.
+- [ ]  055. Use `kubectl logs -f <pod-name>` to continuously tail logs in real-time.
+- [ ]  056. Extract logs from a specific container within a multi-container Pod using the `c <container-name>` flag.
+- [ ]  057. Utilize the `-previous` flag in `kubectl logs` to view the logs of a container instance that has crashed or restarted.
+- [ ]  058. Execute `kubectl create -f <file.yaml>` to imperatively create a resource from a local or remote YAML file.
+- [ ]  059. Execute `kubectl apply -f <file.yaml>` to declaratively create or update a resource, maintaining the last-applied-configuration annotation.
+- [ ]  060. Use `kubectl delete pod <name>` or `kubectl delete -f <file.yaml>` to forcefully terminate a resource.
+- [ ]  061. Use `kubectl exec -it <pod-name> -- /bin/sh` or `/bin/bash` to open an interactive terminal session inside a running container.
+- [ ]  062. Execute `kubectl port-forward <pod-name> <local-port>:<pod-port>` to access internal Pod applications for local debugging.
+- [ ]  063. Use `kubectl get pods <name> -o yaml` to export the full, live configuration of a running Pod in YAML format.
+- [ ]  064. Use `kubectl get pods -o wide` to see extended information, including the node assignment and the internal Pod IP address.
+- [ ]  065. Explain the output of `kubectl get events -A --sort-by='.lastTimestamp'` for cluster-wide troubleshooting and auditing.
+- [ ]  066. Use `kubectl run <name> --image=<image>` as an imperative shortcut to deploy a single Pod without writing a YAML manifest.
+- [ ]  067. Use `kubectl create deployment <name> --image=<image>` to generate a Deployment resource imperatively.
+- [ ]  068. Scale a Deployment imperatively using `kubectl scale deployment <name> --replicas=<count>`.
+- [ ]  069. Expose a Deployment as a Service using `kubectl expose deployment <name> --port=<port>`.
+- [ ]  070. Utilize `kubectl rollout status deployment <name>` to monitor the progress of a rolling update.
+- [ ]  071. Execute `kubectl rollout undo deployment <name>` to quickly revert a Deployment to its previous revision.
+- [ ]  072. Use `kubectl set image deployment/<name> <container>=<image>` to trigger a rolling update by changing the image version.
+- [ ]  073. View the history of deployment revisions using `kubectl rollout history deployment <name>`.
+- [ ]  074. Manage authentication contexts and clusters using `kubectl config get-contexts`.
+- [ ]  075. Switch namespaces contextually for future commands using `kubectl config set-context --current --namespace=<name>`.
+- [ ]  076. Explore available API resources and their short names using `kubectl api-resources`.
+- [ ]  077. Understand how to view supported API groups and versions using `kubectl api-versions`.
+- [ ]  078. View live resource utilization metrics (CPU/Memory) using `kubectl top nodes` and `kubectl top pods` (requires Metrics Server).
+- [ ]  079. Create a ConfigMap from literal key-value pairs using `kubectl create configmap <name> --from-literal=<key>=<value>`.
+- [ ]  080. Securely create a generic Secret using `kubectl create secret generic <name> --from-literal=<key>=<value>`.
+- [ ]  081. Drain a node safely for maintenance, evicting all Pods gracefully, using `kubectl drain <node-name> --ignore-daemonsets`.
+- [ ]  082. Mark a node as unschedulable without evicting existing Pods using `kubectl cordon <node-name>`.
+- [ ]  083. Uncordon a node to allow scheduling again using `kubectl uncordon <node-name>`.
+- [ ]  084. Generate YAML templates without applying them to the cluster using the `-dry-run=client -o yaml` flags.
+- [ ]  085. Use `kubectl explain <resource>` to access inline API documentation for resource schema fields.
+- [ ]  086. Use `kubectl explain <resource> --recursive` to view the entire schema hierarchy for an object.
+- [ ]  087. List labels attached to resources in the output using the `-show-labels` flag.
+- [ ]  088. Filter returned resources using label selectors with the `l` flag (e.g., `kubectl get pods -l app=nginx`).
+- [ ]  089. Copy files between the local filesystem and a container using `kubectl cp <local-path> <pod-name>:<container-path>`.
+- [ ]  090. Understand how to configure autocomplete for `kubectl` in bash or zsh environments.
+- [ ]  091. View cluster connection information and control plane endpoints using `kubectl cluster-info`.
+- [ ]  092. Use `kubectl patch` to update a specific field of a resource using JSON patch formats.
+- [ ]  093. Troubleshoot failed Pod scheduling by reading the Events section in `kubectl describe pod`.
+- [ ]  094. Check the status of component control plane services using `kubectl get componentstatuses` (noting its deprecation status).
+- [ ]  095. Forcefully delete a terminating Pod that is stuck using `kubectl delete pod <name> --force --grace-period=0`.
+- [ ]  096. Create a new namespace imperatively using `kubectl create namespace <namespace-name>`.
+- [ ]  097. Get a list of all custom resource definitions installed on the cluster via `kubectl get crds`.
+- [ ]  098. View the raw JSON output of a resource using `kubectl get <resource> -o json` for parsing with tools like `jq`.
+- [ ]  099. Diff a local YAML file against the live cluster state using `kubectl diff -f <file.yaml>`.
+- [ ]  100. Authenticate to the cluster using a specific kubeconfig file by utilizing the `-kubeconfig=<path>` flag.
+
+### Domain 2: Container Orchestration (Runtimes, Storage & Networking)
+
+- [ ]  101. Define containerization and explain how it provides process isolation compared to traditional hardware virtualization (VMs).
+- [ ]  102. Explain the purpose of the Open Container Initiative (OCI) in standardizing container image formats and runtime behavior.
+- [ ]  103. Describe the OCI Image Specification and how container images are composed of immutable filesystem layers.
+- [ ]  internalTrafficPolicy
+- [ ]  topologyKey
+- [ ]  104. Understand the OCI Runtime Specification and how it dictates the execution of a container filesystem bundle.
+- [ ]  105. Describe the OCI Distribution Specification for pushing and pulling container images from remote registries.
+- [ ]  106. Differentiate between Docker (as a developer platform and tooling) and containerd (as an underlying container runtime).
+- [ ]  107. Explain the function of CRI-O as a lightweight, OCI-compliant container runtime dedicated strictly to Kubernetes workloads.
+- [ ]  108. Understand the Container Runtime Interface (CRI) and its role in abstracting the runtime layer from the kubelet.
+- [ ]  109. Explain the concept of container immutability and why live-patching a running container is considered a severe anti-pattern.
+- [ ]  110. Identify the role of a container registry (e.g., Docker Hub, Harbor, Amazon ECR) in the application delivery lifecycle.
+- [ ]  111. Understand the importance of using specific semantic versioning (e.g., `v1.2.3`) for image tags.
+- [ ]  112. Explain the operational and security risks associated with deploying images tagged with `latest` in production environments.
+- [ ]  113. Define the Container Network Interface (CNI) and its responsibility for IP address allocation and network connectivity for Pods.
+- [ ]  114. Identify common CNI plugins used in the Kubernetes ecosystem, such as Calico, Flannel, Cilium, and Weave Net.
+- [ ]  115. Differentiate between physical Underlay networks (hardware, cables, BGP) and virtualized Overlay networks.
+- [ ]  116. Explain how encapsulation protocols (like VXLAN) enable flat, logically separated networks across disparate physical nodes.
+- [ ]  117. Understand the default networking behavior in a standard Kubernetes cluster (all Pods can communicate with all Pods without NAT).
+- [ ]  118. Understand the role of CoreDNS in providing internal service discovery and DNS resolution for cluster resources.
+- [ ]  119. Explain the standard Kubernetes internal DNS record format: `<service>.<namespace>.svc.cluster.local`.
+- [ ]  120. Define a Service Mesh and identify the operational problems it solves (observability, security, traffic management).
+- [ ]  121. Understand the "sidecar proxy" pattern utilized extensively by service meshes like Istio and Linkerd.
+- [ ]  122. Differentiate between the Service Mesh data plane (the proxies handling traffic) and the control plane (managing the proxies).
+- [ ]  123. Understand the Service Mesh Interface (SMI) standard for maintaining interoperability between different mesh implementations.
+- [ ]  124. Explain the difference between ephemeral storage (which is tied to a Pod's lifecycle) and persistent storage in Kubernetes.
+- [ ]  125. Define a PersistentVolume (PV) as a cluster-level storage resource provisioned by an administrator or dynamically.
+- [ ]  126. Define a PersistentVolumeClaim (PVC) as a user's declarative request for and consumption of persistent storage resources.
+- [ ]  127. Understand the binding process and lifecycle phases between a PVC and an available PV.
+- [ ]  128. Explain StorageClasses and their critical role in enabling dynamic volume provisioning without manual administrator intervention.
+- [ ]  129. Define the Container Storage Interface (CSI) and how it abstracts external block and file storage systems from Kubernetes core code.
+- [ ]  130. Understand access modes for persistent storage: ReadWriteOnce (RWO), ReadOnlyMany (ROX), and ReadWriteMany (RWX).
+- [ ]  131. Explain the purpose of a ConfigMap in decoupling non-sensitive configuration artifacts from container images.
+- [ ]  132. Understand how to mount ConfigMaps into Pods either as environmental variables or as file directories via volumes.
+- [ ]  133. Explain the purpose of a Secret resource for managing sensitive data such as passwords, OAuth tokens, and SSH keys.
+- [ ]  134. Recognize that Kubernetes Secrets are base64-encoded by default and are not inherently encrypted at rest without explicit etcd configuration.
+- [ ]  135. Understand how to securely mount Secrets into Pods as files or environment variables.
+- [ ]  136. Explain the function of ImagePullSecrets and their role in authenticating the kubelet to private container registries.
+- [ ]  137. Understand how an Ingress resource manages external HTTP/HTTPS routing, TLS termination, and host-based routing to internal Services.
+- [ ]  138. Differentiate between an Ingress Controller (the execution engine, e.g., NGINX) and an Ingress Resource (the routing rule definition).
+- [ ]  139. Explain the emerging Kubernetes Gateway API and how it aims to succeed standard Ingress with a more extensible, role-based model.
+- [ ]  140. Understand the concept of port binding and how container ports map to Service ports and NodePorts.
+- [ ]  141. Describe how to troubleshoot `ImagePullBackOff` and `ErrImagePull` errors.
+- [ ]  142. Describe how to troubleshoot `CrashLoopBackOff` errors and why reading container logs is the first step.
+- [ ]  143. Understand the concept of "Init Containers" and how they run to completion before the main application containers start.
+- [ ]  144. Explain the difference between a Deployment and a StatefulSet regarding network identity and storage persistence.
+- [ ]  145. Recognize the role of a headless service in managing the network domains for Pods in a StatefulSet.
+- [ ]  146. Understand the concept of volume snapshots and how the CSI standardizes backup processes for persistent volumes.
+- [ ]  147. Explain the function of the `hostPath` volume type and the security risks associated with mounting node filesystems into Pods.
+- [ ]  148. Understand the `emptyDir` volume type, which is initially empty and shares the Pod's lifecycle, often used as temporary scratch space.
+- [ ]  149. Describe the role of kube-proxy in utilizing `iptables` or `IPVS` to implement virtual IP routing for Services.
+- [ ]  150. Understand the concept of a dual-stack Kubernetes cluster supporting both IPv4 and IPv6 networking concurrently.
+
+### Domain 2: Container Orchestration (Security & Policies)
+
+- [ ]  151. Explain the "4C's of Cloud Native Security" model: Cloud, Cluster, Container, and Code.
+- [ ]  152. Understand the principle of least privilege and how it applies to IAM, RBAC, and container execution.
+- [ ]  153. Define Role-Based Access Control (RBAC) in Kubernetes and why it is the standard for authorization.
+- [ ]  154. Differentiate between a `Role` (which is namespace-scoped) and a `ClusterRole` (which applies cluster-wide).
+- [ ]  155. Explain the function of a `RoleBinding` in attaching a Role's permissions to a specific User, Group, or ServiceAccount.
+- [ ]  156. Explain the function of a `ClusterRoleBinding` in granting cluster-wide permissions.
+- [ ]  157. Understand the purpose of a ServiceAccount for providing an explicit identity and permissions to Pods interacting with the API.
+- [ ]  158. Describe the new Pod Security Admission (PSA) controller and how it enforces security standards.
+- [ ]  159. Identify the three profiles of Pod Security Standards: Privileged, Baseline, and Restricted.
+- [ ]  160. Understand why the older PodSecurityPolicy (PSP) resource was deprecated and removed from Kubernetes.
+- [ ]  161. Explain the security risks of running containers as the `root` user and how to prevent it.
+- [ ]  162. Define a `SecurityContext` at the Pod and Container level to enforce privilege dropping and read-only root filesystems.
+- [ ]  163. Understand the `runAsNonRoot` and `runAsUser` directives within a `SecurityContext`.
+- [ ]  164. Explain the use of Kubernetes Network Policies to implement micro-segmentation and firewall rules between Pods.
+- [ ]  165. Understand that Network Policies are declarative but require a CNI plugin that supports them (like Calico) to actually enforce the rules.
+- [ ]  166. Describe how to write a Network Policy to implement a "default deny all" posture for a namespace.
+- [ ]  167. Explain mutual TLS (mTLS) and how a service mesh implements it transparently to encrypt east-west intra-cluster traffic.
+- [ ]  168. Understand the concept of zero-trust architecture within a cluster boundary, treating internal network segments as untrusted.
+- [ ]  169. Describe the use of admission controllers in intercepting and mutating API requests before they are persisted to etcd.
+- [ ]  170. Differentiate between Mutating Admission Webhooks (which modify requests) and Validating Admission Webhooks (which reject non-compliant requests).
+- [ ]  171. Identify common policy engines like Open Policy Agent (OPA) Gatekeeper or Kyverno that utilize admission webhooks.
+- [ ]  172. Understand how to secure the `kube-apiserver` by restricting network access, disabling anonymous auth, and enforcing TLS.
+- [ ]  173. Describe the importance of regularly upgrading Kubernetes clusters and worker node OS to mitigate CVEs.
+- [ ]  174. Explain the severe security implications of mounting the Docker socket (`/var/run/docker.sock`) into a Pod.
+- [ ]  175. Understand the importance of scanning container images for vulnerabilities during the CI phase before deployment.
+- [ ]  176. Explain what a Software Bill of Materials (SBOM) is and its relevance to modern software supply chain security.
+- [ ]  177. Describe container image signing (e.g., using Cosign/Sigstore) to verify image integrity and origin before execution.
+- [ ]  178. Understand the concept of seccomp (secure computing mode) profiles to restrict the system calls a container can make to the Linux kernel.
+- [ ]  179. Explain AppArmor and SELinux and how they provide mandatory access control (MAC) for container isolation.
+- [ ]  180. Recognize the importance of configuring Resource Quotas at the Namespace level to prevent resource exhaustion and noisy neighbor scenarios.
+- [ ]  181. Understand the concept of LimitRanges to enforce default memory and CPU parameters for Pods that lack explicit requests/limits.
+- [ ]  182. Describe the concept of Distroless images and how they enhance security by removing the shell, package manager, and OS utilities.
+- [ ]  183. Explain how to manage external secrets securely within a GitOps workflow using tools like Sealed Secrets or External Secrets Operator.
+- [ ]  184. Understand the role of key management systems (e.g., HashiCorp Vault, AWS KMS) in cloud-native security.
+- [ ]  185. Explain the importance of rotating Kubernetes TLS certificates and ServiceAccount tokens periodically.
+- [ ]  186. Describe the security benefits of using multi-stage Docker builds to reduce the final container image size and attack surface area.
+- [ ]  187. Understand the concept of namespace isolation and why multitenancy in Kubernetes is considered "soft" rather than "hard."
+- [ ]  188. Explain the potential security risks of utilizing third-party Helm charts without inspecting the rendered manifests.
+- [ ]  189. Recognize the function of the Kubernetes audit log in providing a chronological record of all API requests for security analysis.
+- [ ]  190. Understand how role aggregation works in RBAC to combine multiple roles into a single role dynamically.
+
+### Domain 3: Cloud Native Architecture (Scaling, Personas & Standards)
+
+- [ ]  191. Define monolithic architecture and identify its inherent bottlenecks in scaling, deployment agility, and fault isolation.
+- [ ]  192. Define microservices architecture and how it divides complex business logic into independent, loosely coupled, scalable services.
+- [ ]  193. Explain the trade-offs of microservices, specifically regarding increased network latency, operational overhead, and distributed tracing complexity.
+- [ ]  194. Understand the concept of "Serverless" computing and how it abstracts underlying infrastructure management entirely from the developer.
+- [ ]  195. Define Function as a Service (FaaS) and its event-driven execution model within the cloud-native ecosystem.
+- [ ]  196. Explain the concept of horizontal scaling (scaling out by adding more instances/Pods to handle load).
+- [ ]  197. Explain the concept of vertical scaling (scaling up by adding more CPU/RAM to a single instance/Pod).
+- [ ]  198. Understand the Horizontal Pod Autoscaler (HPA) and how it automatically scales Pod replicas based on CPU, memory, or custom metric thresholds.
+- [ ]  199. Understand the Vertical Pod Autoscaler (VPA) and how it adjusts Pod resource requests and limits dynamically based on historical usage.
+- [ ]  200. Explain the Cluster Autoscaler and how it adds or removes physical worker nodes from the cluster based on aggregate Pod resource demands.
+- [ ]  201. Recognize the conflict potential if both HPA and VPA are applied to the same metric on the same workload simultaneously.
+- [ ]  202. Define cloud-native elasticity and the ability of a system to gracefully expand and contract dynamically without human intervention.
+- [ ]  203. Understand the role of the Cloud Native Computing Foundation (CNCF) as an independent, vendor-neutral organization under the Linux Foundation.
+- [ ]  204. Explain the CNCF project maturity model: Sandbox, Incubating, and Graduated tiers.
+- [ ]  205. Define a CNCF Sandbox project as an early-stage, experimental technology meant to foster innovation.
+- [ ]  206. Define a CNCF Incubating project as a technology with proven production adoption, a diverse contributor base, and completed security audits.
+- [ ]  207. Define a CNCF Graduated project as an enterprise-grade standard with deep community integration (e.g., Kubernetes, Prometheus, Envoy).
+- [ ]  208. Identify the "Application Developer" persona, focused primarily on writing business logic, code, and building container images.
+- [ ]  209. Identify the "Platform Engineer" persona, focused on building internal developer portals and self-service infrastructure for development teams.
+- [ ]  210. Identify the "Site Reliability Engineer (SRE)" persona, focused on system availability, defining SLOs, and incident response.
+- [ ]  211. Identify the "DevOps Engineer" persona, bridging the cultural gap between development and operations via automated CI/CD pipelines.
+- [ ]  212. Understand the concept of "Infrastructure as Code" (IaC) and declarative infrastructure management using tools like Terraform or Pulumi.
+- [ ]  213. Explain the shift from ITIL-based manual infrastructure provisioning to automated, API-driven GitOps workflows.
+- [ ]  214. Understand the five stages of the Cloud Native Maturity Model: Build, Operate, Scale, Improve, and Adapt.
+- [ ]  215. Explain the concept of Platform Engineering and the role of internal developer portals like Backstage in reducing cognitive load.
+- [ ]  216. Understand the difference between tightly coupled architectures and loosely coupled cloud-native architectures.
+- [ ]  217. Describe event-driven architecture and the role of messaging queues and streaming platforms (e.g., Kafka, NATS, RabbitMQ).
+- [ ]  218. Explain the concept of immutable infrastructure, where servers and containers are replaced entirely rather than being modified in place.
+- [ ]  219. Understand the phrase "cattle, not pets" in relation to server and application instance lifecycle management.
+- [ ]  220. Describe the importance of standardized, centralized logging and monitoring layers in a complex microservices ecosystem.
+- [ ]  221. Understand the role of cloud-native storage orchestrators like Rook in automating the management of distributed storage systems.
+- [ ]  222. Explain the fundamental difference between stateful applications (which save client data between sessions) and stateless applications.
+- [ ]  223. Recognize why stateless applications are significantly easier to orchestrate, load balance, and autoscale in a Kubernetes environment.
+- [ ]  224. Describe the concept of multi-cloud architectures (using services from multiple cloud providers) and hybrid-cloud architectures (mixing on-premise and public cloud).
+- [ ]  225. Explain how Kubernetes provides a consistent abstraction layer, allowing workloads to run seamlessly across multiple public clouds.
+- [ ]  226. Understand edge computing and how lightweight Kubernetes distributions (like K3s) are designed to operate in resource-constrained edge environments.
+- [ ]  227. Recognize the importance of the CNCF Technical Oversight Committee (TOC) in governing project inclusion and technical direction.
+- [ ]  228. Understand the role of the CNCF End User Community in providing real-world feedback on technology adoption and challenges.
+- [ ]  229. Explain the concept of "Day 0" (architecture/design), "Day 1" (deployment), and "Day 2" (ongoing maintenance/operations) phases of software lifecycle.
+- [ ]  230. Understand the critical importance of disaster recovery planning and automated backups (using tools like Velero) in a cloud-native architecture.
+- [ ]  231. Explain the concept of API gateways and how they manage north-south edge traffic, rate limiting, and authentication routing.
+- [ ]  232. Differentiate clearly between an API Gateway (handling traffic entering the cluster) and a Service Mesh (handling east-west traffic between internal microservices).
+- [ ]  233. Understand the impact of cloud-native principles on organizational agility, deployment frequency, and time-to-market.
+- [ ]  234. Recognize the "shift-left" approach, which advocates integrating security scanning and testing as early as possible in the software development lifecycle.
+- [ ]  235. Explain the concept of Chaos Engineering and tools like Chaos Mesh in proactively injecting controlled failures to test system resilience.
+- [ ]  236. Describe the use of WebAssembly (Wasm) in the cloud-native ecosystem as a lightweight, highly secure execution sandbox.
+- [ ]  237. Differentiate between Wasm and traditional Linux containers in terms of startup speed, isolation mechanisms, and cross-platform compatibility.
+- [ ]  238. Identify Envoy as the ubiquitous, high-performance cloud-native proxy that often serves as the data plane for modern service meshes.
+- [ ]  239. Explain the role of the CNCF Sandbox project "Crossplane" in extending the Kubernetes API to provision and manage external cloud resources declaratively.
+- [ ]  240. Understand the overarching philosophy of cloud-native computing: building scalable, resilient, observable, and easily managed distributed systems through declarative automation.
+
+### Domain 4 & 5: Application Delivery & Observability (12-Factor, CI/CD, Telemetry)
+
+- [ ]  241. Define Continuous Integration (CI) and its primary goal of merging and automatically testing code changes frequently.
+- [ ]  242. Define Continuous Delivery (CD) and its goal of maintaining an automated, always-deployable release candidate.
+- [ ]  243. Define Continuous Deployment and explain how it differs from Delivery by automatically pushing verified changes directly to production.
+- [ ]  244. 12-Factor App: Codebase - Understand the principle of maintaining one codebase tracked in revision control that yields many deployments.
+- [ ]  245. 12-Factor App: Dependencies - Understand the requirement to explicitly declare and isolate all application dependencies.
+- [ ]  246. 12-Factor App: Config - Grasp the absolute necessity of storing configuration parameters in the environment, not hardcoded in the application code.
+- [ ]  247. 12-Factor App: Backing Services - Treat external services (databases, caches, SMTP) as attached resources that can be swapped without code changes.
+- [ ]  248. 12-Factor App: Build, Release, Run - Strictly separate the build stage (compiling code) from the execution stage.
+- [ ]  249. 12-Factor App: Processes - Execute the app as one or more stateless, share-nothing processes to facilitate horizontal scaling.
+- [ ]  250. 12-Factor App: Port Binding - Export services by binding them directly to a port, rather than relying on runtime injection of a web server.
+- [ ]  251. 12-Factor App: Concurrency - Scale out applications via the process model rather than relying solely on threading within a single instance.
+- [ ]  252. 12-Factor App: Disposability - Ensure fast startup times and graceful shutdown routines to maximize robustness and orchestration compatibility.
+- [ ]  253. 12-Factor App: Dev/Prod Parity - Keep development, staging, and production environments as identical as possible to prevent "it works on my machine" issues.
+- [ ]  254. 12-Factor App: Logs - Treat logs as continuous, unbuffered event streams routed to stdout/stderr, not written to local files.
+- [ ]  255. 12-Factor App: Admin Processes - Run database migrations or admin tasks as one-off processes in environments identical to the regular app.
+- [ ]  256. Define GitOps and its reliance on a Git repository as the single source of truth for declarative infrastructure and application manifests.
+- [ ]  257. Differentiate between push-based CD (e.g., Jenkins executing `kubectl apply`) and pull-based GitOps.
+- [ ]  258. Explain how GitOps controllers (like ArgoCD or Flux) operate securely inside the cluster to monitor drift and pull changes from Git.
+- [ ]  259. Understand the core benefits of GitOps: version-controlled infrastructure, auditability, simplified rollbacks, and enhanced security via reduced external access.
+- [ ]  260. Explain the Recreate deployment strategy and why it causes application downtime during the replacement process.
+- [ ]  261. Explain the Rolling Update deployment strategy, which ensures zero downtime by gradually replacing Pods in increments.
+- [ ]  262. Understand how the `maxUnavailable` and `maxSurge` parameters control the speed and safety of a Rolling Update.
+- [ ]  263. Describe a Blue-Green deployment strategy, which involves maintaining two identical environments and instantly switching router traffic.
+- [ ]  264. Describe a Canary deployment strategy, which mitigates risk by routing a small percentage of traffic to the new version to test stability.
+- [ ]  265. Explain A/B testing deployments, which route traffic based on specific user profiles, cookies, or HTTP headers rather than pure percentages.
+- [ ]  266. Understand the role of Helm as the standard package manager for deploying complex applications in Kubernetes.
+- [ ]  267. Define a Helm Chart as a collection of YAML templates describing a related set of Kubernetes resources.
+- [ ]  268. Explain Helm templating and how `values.yaml` files allow users to customize deployments across different environments.
+- [ ]  269. Understand Kustomize as a native alternative to Helm, utilizing a template-free, overlay-based patching mechanism.
+- [ ]  270. Recognize that `kubectl` natively supports Kustomize execution via the `kubectl apply -k` command.
+- [ ]  271. Define Observability and how it differs from traditional threshold-based monitoring by allowing operators to ask arbitrary questions about system state.
+- [ ]  272. Identify the three pillars of observability: Metrics, Logs, and Traces.
+- [ ]  273. Define Metrics as numerical representations of data measured continuously over time.
+- [ ]  274. Define Logs as immutable, timestamped records of discrete events occurring within the application or infrastructure.
+- [ ]  275. Define Traces as representations of the end-to-end journey of a single request as it traverses multiple distributed microservices.
+- [ ]  276. Understand the architecture of Prometheus as a highly efficient, pull-based time-series database designed for cloud-native environments.
+- [ ]  277. Explain how Prometheus scrapes metric targets via exposed HTTP endpoints (typically located at `/metrics`).
+- [ ]  278. Identify a Prometheus Counter metric type, which is a cumulative value that only monotonically increases (e.g., total HTTP requests).
+- [ ]  279. Identify a Prometheus Gauge metric type, which is a numerical value that can arbitrarily fluctuate up or down (e.g., current memory usage).
+- [ ]  280. Identify a Prometheus Histogram metric type, which sorts observations into configurable buckets to calculate percentiles and distributions.
+- [ ]  281. Identify a Prometheus Summary metric type, which calculates quantiles directly on the client side, though it is less aggregatable than Histograms.
+- [ ]  282. Understand the basic structure of a Prometheus metric: `metric_name{label_key="label_value"} measurement_value`.
+- [ ]  283. Explain the absolute importance of labels in Prometheus for adding multi-dimensional metadata to metrics for powerful querying.
+- [ ]  284. Understand PromQL (Prometheus Query Language) as the standard, functional query language for extracting and calculating time-series data.
+- [ ]  285. Describe the role of Grafana in visualizing time-series data sourced from Prometheus via interactive dashboards.
+- [ ]  286. Explain the function of the Prometheus Alertmanager in deduplicating, grouping, and routing alerts to notification endpoints (e.g., Slack, PagerDuty).
+- [ ]  287. Define OpenTelemetry as the vendor-neutral, CNCF standard for instrumenting, generating, and exporting telemetry data across languages.
+- [ ]  288. Understand the role of distributed tracing backends like Jaeger or Zipkin in visualizing request latency bottlenecks.
+- [ ]  289. Explain the concept of a Trace ID and how it must be propagated in HTTP headers to track cross-service requests.
+- [ ]  290. Define a Span as a single operation or logical piece of work within a larger Trace.
+- [ ]  291. Identify common logging architectures like the EFK stack (Elasticsearch, Fluentd, Kibana).
+- [ ]  292. Explain the role of Fluentd or Fluent Bit as a unified, high-performance logging layer and forwarder in Kubernetes.
+- [ ]  293. Describe Loki as a cost-effective, index-free log aggregation system inspired by Prometheus label structures.
+- [ ]  294. Understand how to correlate logs, metrics, and traces during an incident using shared metadata (e.g., injecting trace IDs into logs).
+- [ ]  295. Explain the concept of Cloud Cost Optimization (FinOps) and tools like Kubecost for tracking Kubernetes spending down to the Namespace or Pod level.
+- [ ]  296. Describe the RED method for monitoring user-facing microservices: monitoring Rate, Errors, and Duration.
+- [ ]  297. Describe the USE method for monitoring underlying infrastructure resources: monitoring Utilization, Saturation, and Errors.
+- [ ]  298. Understand the concept of synthetic monitoring, which proactively simulates user traffic to verify uptime and SLA compliance.
+- [ ]  299. Explain the concept of Service Level Indicators (SLIs), Service Level Objectives (SLOs), and Error Budgets in SRE practices.
+- [ ]  300. Recognize the danger of alert fatigue and the critical necessity of configuring actionable, symptom-based alerting rather than alerting on every minor metric deviation.
+---
+
+# KCNA Progression Checklist: 78% → 90%
+
+For candidates who already passed the basics. Focus on these 70 topics to close the gap from a passing score to a strong score.
+
+---
+
+- [ ]  001. Understand the benefits of containers vs virtual machines and why containers are lightweight.
+- [ ]  002. Review what a container image is, its layered filesystem, and immutability.
+- [ ]  003. Know how to build container images using a Dockerfile and common instructions (FROM, RUN, COPY, CMD).
+- [ ]  004. Understand container registries (Docker Hub, ECR, Quay.io) and image push/pull workflows.
+- [ ]  005. Explain the difference between Docker, containerd, and CRI-O as container runtimes.
+- [ ]  006. Review the Container Runtime Interface (CRI) and its role in Kubernetes.
+- [ ]  007. Know OCI (Open Container Initiative) standards for images and runtimes.
+- [ ]  008. Understand container lifecycle (build, run, stop, commit, export) and basic commands.
+- [ ]  009. Review image tagging, versioning, and best practices for secure images.
+- [ ]  010. Know container security basics like image scanning (Trivy) and least-privilege runs.
+- [ ]  011. Differentiate immutable infrastructure principles with containers.
+- [ ]  012. Understand runtime classes and how Kubernetes selects runtimes.
+- [ ]  013. Explain Pods as the smallest deployable unit and their multi-container support.
+- [ ]  014. Understand ReplicaSets and how they maintain desired pod replicas.
+- [ ]  015. Review Deployments for declarative updates, rollouts, and rollbacks.
+- [ ]  016. Know Kubernetes Services and the four main types (ClusterIP, NodePort, LoadBalancer, ExternalName).
+- [ ]  017. Understand ConfigMaps for injecting non-sensitive configuration into pods.
+- [ ]  018. Review Secrets for handling sensitive data securely.
+- [ ]  019. Know DaemonSets for running exactly one pod per node.
+- [ ]  020. Understand StatefulSets for stateful apps with stable identities and storage.
+- [ ]  021. Review Jobs and CronJobs for one-off or scheduled batch tasks.
+- [ ]  022. Master Kubernetes YAML manifests and resource API versions.
+- [ ]  023. Know essential kubectl commands: get, describe, apply, delete, edit, and scale.
+- [ ]  024. Review kubectl logs, exec, attach, and cp for pod interaction and troubleshooting.
+- [ ]  025. Understand kubectl port-forward, proxy, and cluster-info.
+- [ ]  026. Review Kubernetes control plane components (kube-apiserver, etcd, kube-scheduler, kube-controller-manager).
+- [ ]  027. Know worker node components (kubelet, kube-proxy, container runtime).
+- [ ]  028. Understand the Kubernetes scheduler process and pod placement decisions.
+- [ ]  029. Review resource requests and limits for CPU/memory and their impact on scheduling.
+- [ ]  030. Know node selectors for directing pods to specific nodes.
+- [ ]  031. Understand node affinity and anti-affinity rules.
+- [ ]  032. Review pod affinity and anti-affinity for co-location or spreading.
+- [ ]  033. Explain taints and tolerations to control pod scheduling on nodes.
+- [ ]  034. Know PriorityClasses and pod preemption mechanics.
+- [ ]  035. Review common scheduling failures and how to diagnose them.
+- [ ]  036. Differentiate ephemeral vs persistent storage in Kubernetes pods.
+- [ ]  037. Understand PersistentVolumes (PV) creation, static/dynamic provisioning, and lifecycle.
+- [ ]  038. Review PersistentVolumeClaims (PVC) and how they bind to PVs.
+- [ ]  039. Know StorageClasses for dynamic volume provisioning and parameters.
+- [ ]  040. Understand the Container Storage Interface (CSI) and driver plugins.
+- [ ]  041. Review common volume types (emptyDir, hostPath, configMap, secret).
+- [ ]  042. Know storage configuration for StatefulSets and data persistence strategies.
+- [ ]  043. Understand Role-Based Access Control (RBAC): Roles, RoleBindings, ClusterRoles.
+- [ ]  044. Review how to create and apply RBAC permissions for users and service accounts.
+- [ ]  045. Know Network Policies for controlling pod ingress and egress traffic.
+- [ ]  046. Understand Pod Security Standards (Privileged, Baseline, Restricted) and enforcement.
+- [ ]  047. Review secure management and mounting of Secrets.
+- [ ]  048. Know basics of service mesh (Istio/Linkerd) for traffic security and mTLS.
+- [ ]  049. Understand admission controllers and Pod Security Admission.
+- [ ]  050. Review Kubernetes security best practices and common vulnerabilities.
+- [ ]  051. Explain the Container Network Interface (CNI) and popular plugins (Calico, Flannel, Cilium).
+- [ ]  052. Understand pod IP assignment, overlay networking, and pod-to-pod communication.
+- [ ]  053. Review CoreDNS for internal service discovery and DNS resolution.
+- [ ]  054. Know Kubernetes Service networking and DNS records.
+- [ ]  055. Review advanced Network Policy use cases.
+- [ ]  056. Understand the three pillars of observability: logs, metrics, traces.
+- [ ]  057. Review Prometheus for metrics collection, querying, and alerting.
+- [ ]  058. Know Grafana for visualization, dashboards, and alerting.
+- [ ]  059. Understand OpenTelemetry for unified instrumentation and standards.
+- [ ]  060. Review logging agents (Fluent Bit, Fluentd, Loki) and aggregation.
+- [ ]  061. Know distributed tracing tools like Jaeger.
+- [ ]  062. Understand Kubernetes built-in observability (events, audit logs, kubectl describe).
+- [ ]  063. Review monitoring pod/node health, resource usage, and cluster metrics.
+- [ ]  064. Know alerting strategies and observability best practices in cloud native.
+- [ ]  065. Understand how to set up a basic observability stack in Kubernetes.
+- [ ]  066. Know CNCF project maturity levels (Sandbox, Incubating, Graduated) and examples.
+- [ ]  067. Review key graduated CNCF projects (Prometheus, Helm, Envoy, Fluentd).
+- [ ]  068. Understand the 12-Factor App methodology principles.
+- [ ]  069. Review microservices vs monolithic architecture and cloud native benefits.
+- [ ]  070. Know CI/CD pipelines, GitOps (ArgoCD/Flux), Blue-Green, and Canary deployment strategies.
+
+---
+
 ## **The Comprehensive KCNA Examination Assessment Bank**
 
 The following exhaustive repository provides 200 high-yield, exam-aligned practice questions mathematically derived from
