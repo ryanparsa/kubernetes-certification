@@ -19,6 +19,7 @@ Each exam scope prompt (`cka.md`, `ckad.md`, etc.) is a thin wrapper — it list
 | `speed.md` | Practice type | Imperative commands only. No writing YAML from scratch. |
 | `yaml.md` | Practice type | Write complete manifests from scratch. Inline error annotation. |
 | `mock.md` | Practice type | Full timed exam. All tasks at once, multiple contexts, scored out of 100. |
+| `mcq.md` | Practice type | 4-option multiple-choice quiz for KCNA/KCSA. Adaptive difficulty, domain tracking. |
 
 ## Usage
 
@@ -38,3 +39,5 @@ Paste the contents of each file into your session in order: base → exam scope 
 | YAML muscle memory (either exam) | `base` + `cka` or `ckad` + `yaml` |
 | Docs navigation | `docs` (standalone) |
 | Full mock exam | `base` + `cka` or `ckad` + `mock` |
+| KCNA MCQ practice | `mcq` + `kcna` |
+| KCSA MCQ practice | `mcq` + `kcsa` |

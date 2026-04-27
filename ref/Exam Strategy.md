@@ -1,5 +1,13 @@
 # Exam Strategy
 
+> This file covers both exam formats. See the section that matches your target cert.
+> - **Lab-based (CKA / CKAD / CKS):** hands-on terminal tasks, scored by automated checkers
+> - **MCQ (KCNA / KCSA):** 60 multiple-choice questions, 4 options, 90 minutes
+
+---
+
+# Lab-Based Exams (CKA / CKAD / CKS)
+
 ## The Workflow
 
 **Never solve questions in order.** Q1–Q5 can be the hardest ones and burn your energy and time before you even reach the easy points.
@@ -52,3 +60,36 @@ Example: "Create a Pod exposed via a NodePort Service"
 
 - Mental limit of **~8 minutes per question**
 - Not close to done? Update notepad, move on
+
+---
+
+# MCQ Exams (KCNA / KCSA)
+
+## The Core Loop
+
+Repeat this cycle until you're consistently passing mock tests:
+
+```
+Checklist → Test → Checklist → Test → ...
+```
+
+1. **Week 1 — Checklist pass:** Work through the exam checklist. Tick off what you know confidently. Study what you don't.
+2. **After ~1 week — Mock test:** Take a full practice test (see below). Note which domains you failed.
+3. **Return to checklist:** Focus study time on the weak domains identified by the test.
+4. **Repeat** until you score 85%+ consistently on mocks before booking the real exam.
+
+## How to Simulate MCQ Tests
+
+| Method | How |
+|--------|-----|
+| LLM-based | Paste `prompts/mcq.md` + `prompts/kcna.md` (or `kcsa.md`) into a new chat session |
+| Udemy | Buy a dedicated KCNA/KCSA practice exam course |
+| killer.sh | killer.sh offers MCQ-style simulators for associate-level certs |
+
+## Domain-Weighted Study Priority
+
+Don't study all domains equally — weight your time by exam percentage.
+
+**KCNA:** Kubernetes Fundamentals (46%) → Container Orchestration (22%) → Cloud Native Architecture (16%) → Application Delivery (8%)
+
+**KCSA:** Cluster Component Security + Security Fundamentals (44% combined) → Threat Model + Platform Security (32% combined) → Cloud Native Overview (14%) → Compliance (10%)
