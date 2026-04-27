@@ -108,16 +108,16 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator A         | Question 15     | `15`      | Done   | Ready |       |
 | Simulator A         | Question 16     | `16`      | Done   | Ready | Ready |
 | Simulator A         | Question 17     | `17`      | Done   | Ready | Ready |
-| Simulator B         | Question 1      | `18`      | Done   | Ready |       |
-| Simulator B         | Question 2      | `19`      | Done   | Ready |       |
+| Simulator B         | Question 1      | `18`      | Done   | Ready | Ready |
+| Simulator B         | Question 2      | `19`      | Done   | Ready | Ready |
 | Simulator B         | Question 3      | `20`      | Done   | Ready | Ready |
 | Simulator B         | Question 4      | `21`      | Done   | Ready | Ready |
 | Simulator B         | Question 5      | `22`      | Done   | Ready |       |
 | Simulator B         | Question 6      | `23`      | Done   | Ready |       |
 | Simulator B         | Question 7      | `24`      | Done   | Ready |       |
 | Simulator B         | Question 8      | `25`      | Done   | Ready | Ready |
-| Simulator B         | Question 9      | `26`      | Done   | Ready |       |
-| Simulator B         | Question 10     | `27`      | Done   | Ready |       |
+| Simulator B         | Question 9      | `26`      | Done   | Ready | Ready |
+| Simulator B         | Question 10     | `27`      | Done   | Ready | Ready |
 | Simulator B         | Question 11     | `28`      | Done   | Ready | Ready |
 | Simulator B         | Question 12     | `29`      | Done   | Ready | Ready |
 | Simulator B         | Question 13     | `30`      | Done   | Ready | Ready |

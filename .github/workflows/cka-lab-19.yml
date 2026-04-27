@@ -1,0 +1,31 @@
+name: CKA Lab 19
+
+on:
+  push:
+    paths: ['cka/19/**', '.github/workflows/cka-lab-19.yml']
+  pull_request:
+    paths: ['cka/19/**', '.github/workflows/cka-lab-19.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/19/assets/kind-config.yaml
+          cluster_name: cka-lab-19
+
+      - name: Apply solution
+        run: bash cka/19/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/19/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/19/assets/cleanup.sh

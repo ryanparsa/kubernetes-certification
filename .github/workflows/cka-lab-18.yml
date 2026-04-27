@@ -1,0 +1,37 @@
+name: CKA Lab 18
+
+on:
+  push:
+    paths: ['cka/18/**', '.github/workflows/cka-lab-18.yml']
+  pull_request:
+    paths: ['cka/18/**', '.github/workflows/cka-lab-18.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/18/assets/kind-config.yaml
+          cluster_name: cka-lab-18
+
+      - name: Apply workloads
+        run: kubectl apply -f cka/18/assets/workloads.yaml
+
+      - name: Wait for Deployment
+        run: kubectl rollout status -n lima-control deployment/controller --timeout=120s
+
+      - name: Apply solution
+        run: bash cka/18/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/18/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/18/assets/cleanup.sh
