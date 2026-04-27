@@ -292,9 +292,8 @@ Great, *Gateway API* ftw!
 
 ## Checklist
 
-(Score: 0/6)
+(Score: 0/5)
 - [ ] HTTPRoute `traffic-director` exists in namespace `project-r500`
-- [ ] HTTPRoute references parent Gateway `main`
 - [ ] Path `/desktop` forwards to `web-desktop:80`
 - [ ] Path `/mobile` forwards to `web-mobile:80`
 - [ ] Path `/auto` with `User-Agent: mobile` forwards to `web-mobile:80`

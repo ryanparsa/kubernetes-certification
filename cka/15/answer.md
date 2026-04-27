@@ -148,10 +148,12 @@ kubectl -n project-snake exec backend-0 -- curl --connect-timeout 2 -s 10.44.0.2
 
 Also helpful to use `kubectl describe` on the NP to see how K8s has interpreted the policy.
 
-## Killer.sh Checklist (Score: 0/5)
+## Killer.sh Checklist (Score: 0/7)
 
 - [ ] NetworkPolicy `np-backend` exists in namespace `project-snake`
-- [ ] Policy selects pods with label `app=backend`
-- [ ] Policy type is `Egress` only
-- [ ] Egress rule allows traffic to pods with `app=db1` on port `1111`
-- [ ] Egress rule allows traffic to pods with `app=db2` on port `2222`
+- [ ] StatefulSets `backend`, `db1`, `db2` and `vault` exist and are ready
+- [ ] Backend can reach `db1` on port `1111`
+- [ ] Backend can reach `db1` only on port `1111`
+- [ ] Backend can reach `db2` on port `2222`
+- [ ] Backend can reach `db2` only on port `2222`
+- [ ] Backend cannot reach `vault` on any port

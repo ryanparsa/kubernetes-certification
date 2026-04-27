@@ -176,9 +176,7 @@ CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TOKEN}"
 ```
 
-## Killer.sh Checklist (Score: 0/4)
+## Killer.sh Checklist (Score: 0/2)
 
-- [ ] Pod `api-contact` exists in Namespace `project-swan`
-- [ ] Pod uses ServiceAccount `secret-reader`
-- [ ] Pod is Running
-- [ ] `lab/result.json` exists and contains a `SecretList`
+- [ ] Pod `api-contact` exists in namespace `project-swan`
+- [ ] `lab/result.json` contains correct API response with secrets (`SecretList` including `read-me`)

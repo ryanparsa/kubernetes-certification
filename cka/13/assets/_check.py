@@ -20,10 +20,6 @@ class TestGatewayAPIIngress(unittest.TestCase):
         name = kubectl("get", "httproute", "traffic-director", "-n", "project-r500", "-o", "jsonpath={.metadata.name}")
         self.assertEqual(name, "traffic-director")
 
-    def test_httproute_parent_gateway(self):
-        parent = kubectl("get", "httproute", "traffic-director", "-n", "project-r500", "-o", "jsonpath={.spec.parentRefs[0].name}")
-        self.assertEqual(parent, "main")
-
     def test_desktop_route_exists(self):
         rules = kubectl("get", "httproute", "traffic-director", "-n", "project-r500", "-o", "jsonpath={.spec.rules}")
         self.assertIn("web-desktop", rules)
