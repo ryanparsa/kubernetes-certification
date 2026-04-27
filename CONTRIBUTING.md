@@ -4,11 +4,11 @@
 
 ```
 kubernetes-certification/
-├── cka/          # CKA labs
-├── ckad/         # CKAD labs
-├── cks/          # CKS labs
 ├── kcna/         # KCNA study material
 ├── kcsa/         # KCSA study material
+├── ckad/         # CKAD labs
+├── cka/          # CKA labs
+├── cks/          # CKS labs
 ├── ref/          # Shared reference sheets (all exams)
 └── prompts/      # Composable AI trainer prompts
 ```
@@ -327,10 +327,10 @@ if __name__ == "__main__":
 
 ## Exam-Specific Notes
 
-- **CKA**: use multi-node topologies when the task involves scheduling or node management.
-- **CKAD**: may pre-seed namespaces, resource quotas, or broken workloads in `setup.sh`.
-- **CKS**: may need extra mounts and kubeadm config patches in the cluster config (audit logging, encryption).
 - **KCNA / KCSA**: assessment bank, checklist, and resources — no lab scripts or CI.
+- **CKAD**: may pre-seed namespaces, resource quotas, or broken workloads in `setup.sh`.
+- **CKA**: use multi-node topologies when the task involves scheduling or node management.
+- **CKS**: may need extra mounts and kubeadm config patches in the cluster config (audit logging, encryption).
 
 ---
 

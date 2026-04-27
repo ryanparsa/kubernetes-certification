@@ -6,11 +6,11 @@ Open-source practice labs and study materials for Kubernetes certification exams
 
 | Exam | Full Name | Directory |
 |------|-----------|-----------|
-| [CKA](cka/) | Certified Kubernetes Administrator | `cka/` — 37 hands-on practice labs + exam definition |
-| [CKAD](ckad/) | Certified Kubernetes Application Developer | `ckad/` — exam definition |
-| [CKS](cks/) | Certified Kubernetes Security Specialist | `cks/` — exam definition |
 | [KCNA](kcna/) | Kubernetes and Cloud Native Associate | `kcna/` — study materials, 200 practice questions, checklists |
 | [KCSA](kcsa/) | Kubernetes and Cloud Native Security Associate | `kcsa/` — exam definition |
+| [CKAD](ckad/) | Certified Kubernetes Application Developer | `ckad/` — exam definition |
+| [CKA](cka/) | Certified Kubernetes Administrator | `cka/` — 37 hands-on practice labs + exam definition |
+| [CKS](cks/) | Certified Kubernetes Security Specialist | `cks/` — exam definition |
 
 Each exam directory contains a `README.md` with the official exam overview, domain weights, and key topics. The [`prompts/`](prompts/) directory provides AI trainer prompts that reference these definitions.
 
@@ -18,6 +18,15 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 
 ```
 .
+├── kcna/                 # KCNA study material + exam definition
+│   ├── kcna-assessment-bank.md   # 200 practice Q&A
+│   ├── kcna-exam-checklist.md    # Domain-by-domain prep checklist
+│   ├── resources.md              # Curated learning resources
+│   └── README.md                 # Exam overview, domain weights, topics
+├── kcsa/
+│   └── README.md         # Exam overview, domain weights, topics
+├── ckad/
+│   └── README.md         # Exam overview, domain weights, topics
 ├── cka/                  # CKA — practice labs + exam definition
 │   ├── <N>/              # Each lab:
 │   │   ├── README.md     #   Question only
@@ -26,20 +35,11 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 │   │   └── lab/          #   Created by setup.sh (git-ignored): kubeconfig + working files
 │   ├── ref/              # Verbatim killer.sh simulator source questions
 │   └── README.md         # Exam overview, domain weights, topics, lab index
-├── ckad/
-│   └── README.md         # Exam overview, domain weights, topics
 ├── cks/
-│   └── README.md         # Exam overview, domain weights, topics
-├── kcna/                 # KCNA study material + exam definition
-│   ├── kcna-assessment-bank.md   # 200 practice Q&A
-│   ├── kcna-exam-checklist.md    # Domain-by-domain prep checklist
-│   ├── resources.md              # Curated learning resources
-│   └── README.md                 # Exam overview, domain weights, topics
-├── kcsa/
 │   └── README.md         # Exam overview, domain weights, topics
 ├── prompts/              # AI trainer prompts (reference exam dirs for scope)
 │   ├── base.md           # Shared session rules
-│   ├── cka.md / ckad.md / cks.md / kcsa.md   # Exam scope (thin wrappers)
+│   ├── kcna.md / kcsa.md / ckad.md / cka.md / cks.md   # Exam scope (thin wrappers)
 │   └── ...               # Practice types: speed, yaml, mock, troubleshoot, docs
 ├── ref/                  # Kubernetes quick-reference sheets
 │   ├── Kubernetes Commands Reference.md
