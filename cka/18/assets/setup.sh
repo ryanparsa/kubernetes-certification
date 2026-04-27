@@ -17,7 +17,11 @@ done
 mkdir -p "$TASK_DIR/lab"
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# 3. Apply pre-existing workloads
+# 3. Apply namespaces, wait for default service accounts, then apply workloads
+kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/namespaces.yaml"
+until kubectl get serviceaccount default -n lima-workload --kubeconfig "$KUBECONFIG_FILE" &>/dev/null; do
+  sleep 1
+done
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
 
 # 4. Wait for deployments to be ready
