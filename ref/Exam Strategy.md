@@ -8,6 +8,45 @@
 
 # Lab-Based Exams (CKA / CKAD / CKS)
 
+## Terminal Setup (First 2 Minutes)
+
+Do this before touching any question. These two commands save minutes over the course of the exam:
+
+```bash
+# Enable kubectl autocompletion
+source <(kubectl completion bash)
+
+# Short alias
+alias k=kubectl
+complete -F __start_kubectl k
+```
+
+Keep a scratch file open in a second terminal tab for manifests:
+
+```bash
+vim ~/scratch.yaml
+```
+
+## Context Switching — Do This for Every Question
+
+Each question runs on a specific cluster. The exam tells you which one. **Always switch context first** — forgetting this is an instant zero for the question.
+
+```bash
+kubectl config use-context <context-name>
+```
+
+Verify you are on the right cluster before proceeding:
+
+```bash
+kubectl config current-context
+```
+
+If the question also specifies a namespace, either pass `-n <ns>` on every command or set a default:
+
+```bash
+kubectl config set-context --current --namespace=<ns>
+```
+
 ## The Workflow
 
 **Never solve questions in order.** Q1–Q5 can be the hardest ones and burn your energy and time before you even reach the easy points.
@@ -55,6 +94,23 @@ Example: "Create a Pod exposed via a NodePort Service"
 - ❌ NodePort Service missing → 0 for that part
 
 **Rule: even on hard questions, always do the parts you know.** Never leave a question completely blank just because you can't solve all of it. A half-done answer is always better than nothing.
+
+## Verify Before Moving On
+
+Before marking a question done and moving to the next:
+
+```bash
+# confirm the resource exists with the right spec
+kubectl get <resource> <name> -n <ns> -o yaml | grep <key-field>
+
+# confirm pods are running (for workload questions)
+kubectl get pods -n <ns>
+
+# confirm RBAC works (for RBAC questions)
+kubectl auth can-i <verb> <resource> --as=system:serviceaccount:<ns>:<sa> -n <ns>
+```
+
+A 30-second sanity check here prevents losing points you already earned.
 
 ## Time Boxing
 
