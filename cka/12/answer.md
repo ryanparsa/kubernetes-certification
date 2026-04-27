@@ -138,15 +138,16 @@ Or our topologySpreadConstraints reason `didn't match pod topology spread constr
 Warning  FailedScheduling  20s (x2 over 22s)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) didn't match pod topology spread constraints. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
 ```
 
-## Killer.sh Checklist (Score: 0/10)
+## Killer.sh Checklist (Score: 0/11)
 
 - [ ] Deployment `deploy-important` exists in namespace `project-tiger`
-- [ ] Deployment has label `id=very-important`
-- [ ] Pod template has label `id=very-important`
 - [ ] Deployment has 3 replicas
+- [ ] Deployment has 2 running replicas
+- [ ] Deployment has two containers
 - [ ] First container is named `container1`
 - [ ] First container uses image `nginx:1-alpine`
 - [ ] Second container is named `container2`
 - [ ] Second container uses image `google/pause`
-- [ ] Pod has `podAntiAffinity` or `topologySpreadConstraints`
-- [ ] Scheduling constraint uses `topologyKey: kubernetes.io/hostname`
+- [ ] Three pods exist for deployment
+- [ ] Two pods for deployment are Running
+- [ ] Two pods of deployment run on different nodes

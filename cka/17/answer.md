@@ -69,9 +69,11 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 [Mon Sep 13 13:32:18.555610 2021] [core:notice] [pid 1:tid 139929534545224] AH00094: Command line: 'httpd -D FOREGROUND'
 ```
 
-## Checklist (Score: 0/4)
+## Killer.sh Checklist (Score: 0/6)
 
-- [ ] Pod `tigers-reunite` created with correct image and labels in `project-tiger` namespace
-- [ ] `cka/17/lab/pod-container.txt` contains correct container ID and runtimeType
-- [ ] `cka/17/lab/pod-container.log` contains container logs
-- [ ] Pod is scheduled and running
+- [ ] Pod `tigers-reunite` is running in namespace `project-tiger`
+- [ ] Pod has single container
+- [ ] Pod container has correct image `httpd:2-alpine`
+- [ ] Pod has correct labels (`pod=container`, `container=pod`)
+- [ ] File `lab/pod-container.txt` contains correct container ID and runtimeType
+- [ ] File `lab/pod-container.log` contains container logs

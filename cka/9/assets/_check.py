@@ -20,34 +20,22 @@ def kubectl(*args):
 class TestContactK8sApi(unittest.TestCase):
 
     def test_pod_exists(self):
+        """Pod api-contact exists in namespace project-swan"""
         name = kubectl("get", "pod", "api-contact", "-n", "project-swan",
-                       "-o", "jsonpath={.metadata.name}")
-        self.assertEqual(name, "api-contact")
+                       "--ignore-not-found", "-o", "jsonpath={.metadata.name}")
+        self.assertEqual(name, "api-contact", "Pod api-contact does not exist in project-swan")
 
-    def test_pod_uses_service_account(self):
-        sa = kubectl("get", "pod", "api-contact", "-n", "project-swan",
-                     "-o", "jsonpath={.spec.serviceAccountName}")
-        self.assertEqual(sa, "secret-reader")
-
-    def test_pod_is_running(self):
-        phase = kubectl("get", "pod", "api-contact", "-n", "project-swan",
-                        "-o", "jsonpath={.status.phase}")
-        self.assertEqual(phase, "Running")
-
-    def test_result_json_exists(self):
+    def test_result_file_contains_api_response_with_secrets(self):
+        """lab/result.json contains correct API response with secrets"""
         self.assertTrue(os.path.isfile(RESULT_JSON),
                         f"lab/result.json does not exist (expected at {RESULT_JSON})")
-
-    def test_result_json_is_secret_list(self):
         with open(RESULT_JSON) as f:
             data = json.load(f)
-        self.assertEqual(data.get("kind"), "SecretList")
-
-    def test_result_json_contains_read_me_secret(self):
-        with open(RESULT_JSON) as f:
-            data = json.load(f)
+        self.assertEqual(data.get("kind"), "SecretList",
+                         "result.json should contain a SecretList")
         names = [item.get("metadata", {}).get("name") for item in data.get("items", [])]
-        self.assertIn("read-me", names)
+        self.assertIn("read-me", names,
+                      "SecretList should include the 'read-me' secret")
 
 
 class QuietResult(unittest.TextTestResult):

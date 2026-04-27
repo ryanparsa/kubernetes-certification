@@ -24,7 +24,7 @@ kubectl --kubeconfig "$KUBECONFIG_FILE" wait --for=condition=Ready nodes --all -
 
 kubectl apply --kubeconfig "$KUBECONFIG_FILE" -f "$SCRIPT_DIR/workloads.yaml"
 
-# Wait for all pods in project-snake to be ready
+# Wait for all StatefulSet pods in project-snake to be ready
 echo "Waiting for pods in project-snake..."
 kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
   -n project-snake pod/backend-0 pod/db1-0 pod/db2-0 pod/vault-0 \

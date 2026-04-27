@@ -459,9 +459,9 @@ Both approaches have pros and cons:
 
 ## Killer.sh Checklist (Score: 0/6)
 
-- [ ] HPA `api-gateway` exists in namespace `api-gateway-staging` with `minReplicas: 2`
-- [ ] HPA `api-gateway` in namespace `api-gateway-staging` has `maxReplicas: 4`
-- [ ] HPA `api-gateway` in namespace `api-gateway-staging` targets 50% average CPU utilisation
-- [ ] HPA `api-gateway` exists in namespace `api-gateway-prod` with `maxReplicas: 6`
-- [ ] ConfigMap `horizontal-scaling-config` does not exist in namespace `api-gateway-staging`
-- [ ] ConfigMap `horizontal-scaling-config` does not exist in namespace `api-gateway-prod`
+- [ ] Kustomize ConfigMap removed from base
+- [ ] Kustomize HPA added in base with required configuration (minReplicas: 2, maxReplicas: 4, cpu: 50%)
+- [ ] Kustomize HPA replicas overwritten in prod (maxReplicas: 6)
+- [ ] Kustomize changes deployed to cluster
+- [ ] ConfigMaps removed manually from staging and prod namespaces
+- [ ] Kustomize Build base, staging and prod without error after updates
