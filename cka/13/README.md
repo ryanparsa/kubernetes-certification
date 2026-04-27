@@ -12,10 +12,10 @@ Perform the following in *Namespace* `project-r500` and for the already existing
 The existing *Gateway* is reachable at `http://r500.gateway:30080` which means your implementation should work for these commands:
 
 ```bash
-curl r500.gateway:30080/desktop
-curl r500.gateway:30080/mobile
-curl r500.gateway:30080/auto -H "User-Agent: mobile" 
-curl r500.gateway:30080/auto
+curl http://r500.gateway:30080/desktop --resolve r500.gateway:30080:127.0.0.1
+curl http://r500.gateway:30080/mobile --resolve r500.gateway:30080:127.0.0.1
+curl http://r500.gateway:30080/auto -H "User-Agent: mobile" --resolve r500.gateway:30080:127.0.0.1
+curl http://r500.gateway:30080/auto --resolve r500.gateway:30080:127.0.0.1
 ```
 
 ---

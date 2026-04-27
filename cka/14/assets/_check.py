@@ -3,16 +3,20 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 LAB_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "lab"))
+CONTAINER = "cka-lab-14-control-plane"
 
 
-def kubectl(*args):
+def get_cert_expiration():
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        ["docker", "exec", CONTAINER,
+         "openssl", "x509", "-noout", "-enddate", "-in", "/etc/kubernetes/pki/apiserver.crt"],
         capture_output=True, text=True,
     )
-    return result.stdout.strip()
+    if result.returncode != 0:
+        return None
+    # output: notAfter=Oct 29 14:19:27 2025 GMT
+    return result.stdout.strip().replace("notAfter=", "")
 
 
 class TestCertificateExpiration(unittest.TestCase):
@@ -21,11 +25,17 @@ class TestCertificateExpiration(unittest.TestCase):
         path = os.path.join(LAB_DIR, "expiration")
         self.assertTrue(os.path.isfile(path), "File cka/14/lab/expiration not found")
 
-    def test_expiration_file_not_empty(self):
+    def test_expiration_file_matches_cert(self):
         path = os.path.join(LAB_DIR, "expiration")
         self.assertTrue(os.path.isfile(path), "File cka/14/lab/expiration not found")
+        cert_date = get_cert_expiration()
+        if cert_date is None:
+            self.skipTest(f"Could not read cert from container '{CONTAINER}' — is the lab running?")
         content = open(path).read().strip()
-        self.assertTrue(content, "File cka/14/lab/expiration is empty")
+        self.assertEqual(
+            content, cert_date,
+            f"Expected openssl Not After date '{cert_date}', got '{content}'"
+        )
 
     def test_renewal_script_exists(self):
         path = os.path.join(LAB_DIR, "kubeadm-renew-certs.sh")

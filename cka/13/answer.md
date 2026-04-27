@@ -58,7 +58,7 @@ spec:
 We can already contact the *Gateway* like this:
 
 ```bash
-curl r500.gateway:30080
+curl http://r500.gateway:30080 --resolve r500.gateway:30080:127.0.0.1
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -152,13 +152,13 @@ kubectl -n project-r500 get httproute
 NAME               HOSTNAMES          AGE
 traffic-director   ["r500.gateway"]   7s
 
-curl r500.gateway:30080/desktop
+curl http://r500.gateway:30080/desktop --resolve r500.gateway:30080:127.0.0.1
 Web Desktop App
 
-curl r500.gateway:30080/mobile
+curl http://r500.gateway:30080/mobile --resolve r500.gateway:30080:127.0.0.1
 Web Mobile App
 
-curl r500.gateway:30080
+curl http://r500.gateway:30080 --resolve r500.gateway:30080:127.0.0.1
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -278,13 +278,13 @@ We need to understand that the order of rules matters. If we would add the deskt
 Our solution should result in this:
 
 ```bash
-curl -H "User-Agent: mobile" r500.gateway:30080/auto
+curl http://r500.gateway:30080/auto -H "User-Agent: mobile" --resolve r500.gateway:30080:127.0.0.1
 Web Mobile App
 
-curl -H "User-Agent: something" r500.gateway:30080/auto
+curl http://r500.gateway:30080/auto -H "User-Agent: something" --resolve r500.gateway:30080:127.0.0.1
 Web Desktop App
 
-curl r500.gateway:30080/auto
+curl http://r500.gateway:30080/auto --resolve r500.gateway:30080:127.0.0.1
 Web Desktop App
 ```
 

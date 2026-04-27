@@ -40,7 +40,7 @@ spec:
       - image: nginx:1-alpine
         name: container1        # change
         resources: {}
-      - image: google/pause     # add
+      - image: registry.k8s.io/pause:3.9 # add
         name: container2        # add
       affinity:                                     # add
         podAntiAffinity:                            # add
@@ -87,7 +87,7 @@ spec:
       - image: nginx:1-alpine
         name: container1        # change
         resources: {}
-      - image: google/pause     # add
+      - image: registry.k8s.io/pause:3.9 # add
         name: container2        # add
       topologySpreadConstraints:                 # add
       - maxSkew: 1                               # add

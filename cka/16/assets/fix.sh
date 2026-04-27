@@ -9,45 +9,17 @@ fi
 
 mkdir -p "$SCRIPT_DIR/../lab"
 
-# SEEDING (Idempotent)
-# Ensure project-* namespaces exist
-kubectl apply -f "$SCRIPT_DIR/namespaces.yaml"
-
-# Create Roles in project-miami (300), project-melbourne (2), project-seoul (10)
-for ns_count in "project-miami:300" "project-melbourne:2" "project-seoul:10"; do
-  ns="${ns_count%%:*}"
-  count="${ns_count##*:}"
-  {
-    for i in $(seq 1 "$count"); do
-      cat <<EOF
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: role-$i
-  namespace: $ns
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
----
-EOF
-    done
-  } | kubectl apply -f -
-done
-
 # SOLUTION
-# 1. write all namespaced resource names to resources.txt
-kubectl api-resources --namespaced -o name > "$SCRIPT_DIR/../lab/resources.txt"
 
-# 2. find the project-* namespace with the most Roles
-max_count=0
-max_ns=""
-for ns in $(kubectl get namespace -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep '^project-'); do
-  count=$(kubectl get role -n "$ns" --no-headers 2>/dev/null | wc -l | tr -d ' ')
-  if [ "$count" -gt "$max_count" ]; then
-    max_count=$count
-    max_ns=$ns
-  fi
-done
+# 1. Back up the existing CoreDNS ConfigMap
+kubectl -n kube-system get cm coredns -oyaml > "$SCRIPT_DIR/../lab/coredns_backup.yaml"
 
-echo "$max_ns with $max_count roles" > "$SCRIPT_DIR/../lab/crowded-namespace.txt"
+# 2. Add custom-domain to the kubernetes plugin line (idempotent)
+COREFILE=$(kubectl -n kube-system get cm coredns -o jsonpath='{.data.Corefile}')
+NEW_COREFILE=$(echo "$COREFILE" | sed 's/kubernetes cluster\.local/kubernetes custom-domain cluster.local/')
+ENCODED=$(python3 -c "import sys, json; print(json.dumps(sys.argv[1]))" "$NEW_COREFILE")
+kubectl -n kube-system patch cm coredns --type=merge -p "{\"data\":{\"Corefile\":$ENCODED}}"
+
+# 3. Restart CoreDNS to pick up the new config
+kubectl -n kube-system rollout restart deploy coredns
+kubectl -n kube-system rollout status deploy coredns --timeout=60s

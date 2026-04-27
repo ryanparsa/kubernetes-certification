@@ -32,9 +32,10 @@ class TestGatewayAPIIngress(unittest.TestCase):
 
     def test_auto_route_has_mobile_header_match(self):
         rules = kubectl("get", "httproute", "traffic-director", "-n", "project-r500", "-o", "jsonpath={.spec.rules}")
-        self.assertIn("/auto", rules)
-        self.assertIn("user-agent", rules)
-        self.assertIn("mobile", rules)
+        rules_lower = rules.lower()
+        self.assertIn("/auto", rules_lower)
+        self.assertIn("user-agent", rules_lower)
+        self.assertIn("mobile", rules_lower)
 
     def test_auto_route_has_desktop_fallback(self):
         # There must be at least two rules matching /auto: one conditional, one catch-all

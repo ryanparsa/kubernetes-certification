@@ -55,6 +55,6 @@ kubeadm certs renew apiserver
 ## Killer.sh Checklist (Score: 0/4)
 
 - [ ] File `cka/14/lab/expiration` exists and contains the apiserver certificate expiration date
-- [ ] Expiration date in the file matches the `kubeadm certs check-expiration` output for `apiserver`
+- [ ] Expiration date in the file matches the `openssl x509` Not After date for `/etc/kubernetes/pki/apiserver.crt` (format: `Oct 29 14:19:27 2025 GMT`)
 - [ ] File `cka/14/lab/kubeadm-renew-certs.sh` exists
 - [ ] File contains the command `kubeadm certs renew apiserver`
