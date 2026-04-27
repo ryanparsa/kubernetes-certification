@@ -373,7 +373,152 @@ command 2>/dev/null            # discard stderr
 
 ---
 
-## 9. Quick reference — exam tips
+## 9. Bash shortcuts and CLI productivity
+
+### Command-line editing (readline / emacs mode — default)
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+A` | Move cursor to **start** of line |
+| `Ctrl+E` | Move cursor to **end** of line |
+| `Ctrl+Left` / `Alt+B` | Move one **word** left |
+| `Ctrl+Right` / `Alt+F` | Move one **word** right |
+| `Ctrl+W` | Delete word **before** cursor |
+| `Alt+D` | Delete word **after** cursor |
+| `Ctrl+U` | Delete everything **before** cursor (cuts to clipboard) |
+| `Ctrl+K` | Delete everything **after** cursor (cuts to clipboard) |
+| `Ctrl+Y` | **Paste** (yank) what was cut with `Ctrl+U`/`Ctrl+K` |
+| `Ctrl+_` | **Undo** last edit on the line |
+| `Ctrl+L` | **Clear** the screen (same as `clear`) |
+| `Ctrl+C` | **Cancel** current command |
+| `Ctrl+D` | **Logout** / send EOF (exits shell or ends input) |
+| `Ctrl+Z` | **Suspend** current foreground process → `fg` to resume |
+
+### History navigation
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+R` | **Reverse search** through history — type to filter, `Ctrl+R` again for next match, `Enter` to run, `Ctrl+G` to cancel |
+| `Ctrl+S` | Forward search through history (may need `stty -ixon` to enable) |
+| `Up` / `Down` | Walk through history one command at a time |
+| `!!` | Repeat **last command** |
+| `!<n>` | Run history entry number `n` (see `history`) |
+| `!<str>` | Run last command that **starts with** `str` |
+| `!$` | Last **argument** of previous command |
+| `!*` | All arguments of previous command |
+| `Alt+.` | Insert last argument of the **previous command** (repeat to cycle history) |
+| `^old^new` | Rerun last command with `old` replaced by `new` |
+
+```bash
+# Examples
+kubectl get pods -n kube-system
+kubectl describe pod -n kube-system !$    # !$ = "kube-system" (last arg)
+
+# Fix a typo in the last command
+^aplly^apply   # re-runs with "aplly" replaced by "apply"
+
+# Enable forward search if Ctrl+S freezes terminal
+stty -ixon    # add to ~/.bashrc to persist
+```
+
+### Tab completion
+
+```bash
+# Tab completes commands, file paths, and (with bash-completion) kubectl resources
+kubectl get pod <Tab><Tab>       # list all pods in current namespace
+kubectl -n kube-system get <Tab> # list available resource types
+```
+
+### Job control
+
+```bash
+command &          # run in background
+jobs               # list background/suspended jobs
+fg                 # bring last background job to foreground
+fg %2              # bring job 2 to foreground
+bg                 # resume suspended job in background
+Ctrl+Z             # suspend foreground process
+wait               # wait for all background jobs to finish
+```
+
+### Multiplexing — tmux (available in exam environment)
+
+```bash
+# Start a new session (named)
+tmux new -s exam
+
+# Key bindings (default prefix: Ctrl+B)
+Ctrl+B  c          # create new window
+Ctrl+B  n          # next window
+Ctrl+B  p          # previous window
+Ctrl+B  <n>        # switch to window n
+Ctrl+B  %          # split pane vertically (side by side)
+Ctrl+B  "          # split pane horizontally (top/bottom)
+Ctrl+B  o          # switch to next pane
+Ctrl+B  arrow      # move to pane in direction
+Ctrl+B  z          # zoom/unzoom current pane (full screen toggle)
+Ctrl+B  d          # detach session (session keeps running)
+Ctrl+B  [          # enter scroll/copy mode (q to exit, arrows to scroll)
+tmux attach -t exam  # re-attach after detach
+
+# Practical exam setup
+tmux new -s exam
+Ctrl+B %           # split: left for kubectl, right for vim / logs
+```
+
+### Shell configuration for the exam
+
+```bash
+# Add to ~/.bashrc for instant productivity boost:
+
+# kubectl alias and autocomplete
+alias k=kubectl
+complete -F __start_kubectl k
+source <(kubectl completion bash)
+
+# Short aliases
+alias kn='kubectl config set-context --current --namespace'  # kn mynamespace
+alias kgp='kubectl get pods'
+alias kgpa='kubectl get pods -A'
+alias kgs='kubectl get svc'
+alias kgn='kubectl get nodes'
+alias kdp='kubectl describe pod'
+
+# Faster YAML-friendly vim
+export KUBE_EDITOR='vim -c "set et ts=2 sw=2 nu"'
+
+# Apply immediately without reopening shell
+source ~/.bashrc
+```
+
+### Useful one-liners for speed
+
+```bash
+# Run last command as root
+sudo !!
+
+# Repeat a command until it succeeds (e.g. wait for pod)
+until kubectl get pod mypod | grep Running; do sleep 2; done
+
+# Watch a command refresh every 2 seconds
+watch -n 2 kubectl get pods -A
+
+# Open the last-edited file in vim
+vim $(ls -t | head -1)
+
+# Quickly create and edit a file
+> /tmp/pod.yaml && vim /tmp/pod.yaml
+
+# Print command without running it (syntax check)
+kubectl run test --image=nginx --dry-run=client -o yaml
+
+# Pipe dry-run output directly to apply
+kubectl run test --image=nginx --dry-run=client -o yaml | kubectl apply -f -
+```
+
+---
+
+## 10. Quick reference — exam tips
 
 ```bash
 # Open vim with YAML-friendly settings immediately
