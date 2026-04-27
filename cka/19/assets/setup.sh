@@ -3,6 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
+EXAM="$(basename "$(dirname "$TASK_DIR")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
 
 # 1. Check dependencies
@@ -12,9 +15,7 @@ done
 
 # 2. Create cluster
 mkdir -p "$TASK_DIR/lab"
-kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE" --name cka-lab
-
-# 5. Create the lab/ output directory
+kind create cluster --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE" --name "$CLUSTER_NAME"
 
 # 7. Print summary
 echo ""
@@ -24,4 +25,4 @@ echo "Run this to set your kubeconfig:"
 echo "  export KUBECONFIG=lab/kubeconfig.yaml"
 echo ""
 echo "To access the control-plane node (for static pod manifests):"
-echo "  docker exec -it cka-lab-control-plane bash"
+echo "  docker exec -it ${CLUSTER_NAME}-control-plane bash"

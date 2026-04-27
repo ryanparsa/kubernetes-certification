@@ -116,12 +116,12 @@ Commercial support is available at
 ```
 
 
-## Killer.sh Checklist (Score: 5/7)
+## Killer.sh Checklist (Score: 7/7)
 
-- [ ] Static Pod my-static-pod-cka2560 exists
-- [ ] Pod has single container
-- [ ] Pod container has correct image
-- [ ] Pod has correct CPU resource requests
-- [ ] Pod has correct memory resource requests
-- [ ] Service is of type NodePort
-- [ ] Service selector matches Pod
+- [x] Static Pod my-static-pod-cka2560 exists
+- [x] Pod has single container
+- [x] Pod container has correct image
+- [x] Pod has correct CPU resource requests
+- [x] Pod has correct memory resource requests
+- [x] Service is of type NodePort
+- [x] Service selector matches Pod

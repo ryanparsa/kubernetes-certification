@@ -215,10 +215,10 @@ Address: 1.2.3.4
 ```
 
 
-## Killer.sh Checklist (Score: 0/5)
+## Killer.sh Checklist (Score: 5/5)
 
-- [ ] DNS_1 in ConfigMap correct
-- [ ] DNS_2 in ConfigMap correct
-- [ ] DNS_3 in ConfigMap correct
-- [ ] DNS_4 in ConfigMap correct
-- [ ] Correct values from ConfigMap available in Deployment
+- [x] DNS_1 in ConfigMap correct
+- [x] DNS_2 in ConfigMap correct
+- [x] DNS_3 in ConfigMap correct
+- [x] DNS_4 in ConfigMap correct
+- [x] Correct values from ConfigMap available in Deployment
