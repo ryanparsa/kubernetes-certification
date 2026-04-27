@@ -32,7 +32,7 @@ class TestContactK8sApi(unittest.TestCase):
         with open(RESULT_JSON) as f:
             data = json.load(f)
         self.assertEqual(data.get("kind"), "SecretList",
-                         "result.json should contain a SecretList")
+                         f"Expected SecretList, got {data.get('kind')!r}")
         names = [item.get("metadata", {}).get("name") for item in data.get("items", [])]
         self.assertIn("read-me", names,
                       "SecretList should include the 'read-me' secret")

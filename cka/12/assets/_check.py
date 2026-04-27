@@ -82,8 +82,11 @@ class TestDeploymentOnAllNodes(unittest.TestCase):
         """Two pods of deployment run on different nodes"""
         pods = kubectl("get", "pods", "-n", "project-tiger", "-l", "id=very-important",
                        "-o", "jsonpath={range .items[*]}{.status.phase}:{.spec.nodeName} {end}")
-        running_nodes = [entry.split(":")[1] for entry in pods.split()
-                         if entry.startswith("Running:") and len(entry.split(":")) == 2]
+        running_nodes = []
+        for entry in pods.split():
+            parts = entry.split(":")
+            if len(parts) == 2 and parts[0] == "Running":
+                running_nodes.append(parts[1])
         self.assertEqual(len(running_nodes), 2, f"Expected 2 Running pods with node info, got {running_nodes}")
         self.assertNotEqual(running_nodes[0], running_nodes[1],
                             f"Both Running pods are on the same node: {running_nodes[0]}")

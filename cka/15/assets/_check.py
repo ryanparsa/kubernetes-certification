@@ -19,10 +19,11 @@ def get_pod_ip(pod_name, namespace):
 
 
 def can_connect(src_pod, namespace, target_ip, port, timeout=5):
+    """Try to connect from src_pod to target_ip:port. Returns True if curl exits 0."""
     result = subprocess.run(
         ["kubectl", "--kubeconfig", KUBECONFIG,
          "exec", src_pod, "-n", namespace, "--",
-         "curl", "-s", "--connect-timeout", str(timeout), f"{target_ip}:{port}"],
+         "curl", "-s", "--connect-timeout", str(int(timeout)), f"{target_ip}:{port}"],
         capture_output=True, text=True,
     )
     return result.returncode == 0
