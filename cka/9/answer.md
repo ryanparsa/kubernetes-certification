@@ -128,7 +128,7 @@ yes
 
 ### Store result at requested location
 
-We write the full result into `cka/9/lab/9/result.json`:
+We write the full result into `lab/result.json`:
 
 ```
 {
@@ -163,7 +163,7 @@ curl -k https://kubernetes.default/api/v1/secrets -H "Authorization: Bearer ${TO
 
 exit
 
-kubectl -n project-swan exec api-contact -it -- cat result.json > cka/9/lab/9/result.json
+kubectl -n project-swan exec api-contact -it -- cat result.json > lab/result.json
 ```
 
 ### Connect via HTTPS with correct CA
@@ -181,4 +181,4 @@ curl --cacert ${CACERT} https://kubernetes.default/api/v1/secrets -H "Authorizat
 - [ ] Pod `api-contact` exists in Namespace `project-swan`
 - [ ] Pod uses ServiceAccount `secret-reader`
 - [ ] Pod is Running
-- [ ] `lab/9/result.json` exists and contains a `SecretList`
+- [ ] `lab/result.json` exists and contains a `SecretList`

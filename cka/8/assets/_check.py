@@ -5,7 +5,6 @@ import unittest
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 
-
 def kubectl(*args):
     result = subprocess.run(
         ["kubectl", "--kubeconfig", KUBECONFIG, *args],
@@ -13,33 +12,36 @@ def kubectl(*args):
     )
     return result.stdout.strip()
 
+def get_nodes():
+    out = kubectl("get", "nodes",
+                  "-o", "jsonpath={range .items[*]}{.metadata.name},{.status.conditions[-1].type},{.status.conditions[-1].status},{.status.nodeInfo.kubeletVersion}{'\\n'}{end}")
+    return [line.split(",") for line in out.splitlines() if line]
 
-class TestUpdateKubernetesVersionAndJoinCluster(unittest.TestCase):
+class TestNodeJoinAndUpgrade(unittest.TestCase):
+
+    def setUp(self):
+        self.nodes = get_nodes()
+
+    def test_worker_node_joined(self):
+        cp_labels = kubectl("get", "nodes",
+                            "-l", "node-role.kubernetes.io/control-plane",
+                            "-o", "jsonpath={.items[*].metadata.name}").split()
+        all_names = [n[0] for n in self.nodes]
+        workers = [n for n in all_names if n not in cp_labels]
+        self.assertGreater(len(workers), 0, "No worker node found in the cluster")
 
     def test_all_nodes_ready(self):
-        not_ready = kubectl(
-            "get", "nodes",
-            "-o", "jsonpath={range .items[?(@.status.conditions[-1].type=='Ready')]}"
-                  "{.status.conditions[-1].status} {end}",
-        )
-        for status in not_ready.split():
-            self.assertEqual(status, "True", "One or more nodes are not Ready")
+        not_ready = [n[0] for n in self.nodes if n[1] != "Ready" or n[2] != "True"]
+        self.assertEqual(not_ready, [], f"Nodes not Ready: {not_ready}")
 
-    def test_nodes_same_version(self):
-        versions = kubectl("get", "nodes", "-o", "jsonpath={range .items[*]}{.status.nodeInfo.kubeletVersion} {end}")
-        version_list = versions.split()
-        self.assertGreater(len(version_list), 0)
-        self.assertEqual(len(set(version_list)), 1, f"Nodes run different versions: {version_list}")
-
-    def test_worker_joined(self):
-        node_count = kubectl("get", "nodes", "-o", "jsonpath={range .items[*]}{.metadata.name} {end}")
-        self.assertGreaterEqual(len(node_count.split()), 2, "Expected at least 2 nodes (control-plane + worker)")
-
+    def test_all_nodes_same_version(self):
+        versions = {n[3] for n in self.nodes}
+        self.assertEqual(len(versions), 1,
+                         f"Nodes are running different versions: {versions}")
 
 class QuietResult(unittest.TextTestResult):
     def printErrors(self):
         pass
-
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner(verbosity=2, resultclass=QuietResult)

@@ -9,12 +9,15 @@ Use CKA lab 29 (`cka/29/`) as the canonical reference implementation.
 
 ### Local Development
 
-| Tool      | Purpose                           | Install reference                                   |
-|-----------|-----------------------------------|-----------------------------------------------------|
-| `docker`  | Required by kind to run nodes     | <https://docs.docker.com/get-docker/>               |
-| `kind`    | Creates local Kubernetes clusters | <https://kind.sigs.k8s.io/docs/user/quick-start/>   |
-| `kubectl` | Interacts with the cluster        | <https://kubernetes.io/docs/tasks/tools/>           |
-| `python3` | Runs `_check.py` validation suite  | <https://www.python.org/downloads/> (3.8+ required) |
+| Tool       | Purpose                                        | Install reference                                   |
+|------------|------------------------------------------------|-----------------------------------------------------|
+| `docker`   | Required by kind to run nodes                  | <https://docs.docker.com/get-docker/>               |
+| `kind`     | Creates local Kubernetes clusters              | <https://kind.sigs.k8s.io/docs/user/quick-start/>   |
+| `limactl`  | Manages VMs for kubeadm join/upgrade labs      | <https://lima-vm.io/>                               |
+| `kubectl`  | Interacts with the cluster                     | <https://kubernetes.io/docs/tasks/tools/>           |
+| `python3`  | Runs `_check.py` validation suite              | <https://www.python.org/downloads/> (3.8+ required) |
+
+Not every lab needs all tools. Kind-based labs require `docker` + `kind`; Lima-based labs require only `limactl`.
 
 ### CI/CD (GitHub Actions)
 
@@ -217,6 +220,117 @@ if __name__ == "__main__":
 4. **Solve**: implement the solution; save manifests under `lab/`; write `fix.sh` and `check.sh` as you go.
 5. **Verify**: run `check.sh` — do not mark the lab done until every check passes.
 6. **Tear down**: run `cleanup.sh`.
+
+## Lima-Based Labs (kubeadm join / upgrade)
+
+Labs that require separate nodes with independent kernels — specifically those testing `kubeadm join` and `kubeadm upgrade` — use [Lima](https://lima-vm.io/) VMs instead of kind. Lima provides real VMs with full systemd support across macOS (Intel + Apple Silicon), Linux, and Windows, without requiring a separate hypervisor install.
+
+Use `cka/8/` as the canonical reference implementation.
+
+### When to use Lima instead of kind
+
+Use Lima when the task requires:
+- `kubeadm join` — attaching a virgin worker node to a control plane
+- `kubeadm upgrade` — upgrading Kubernetes packages via `apt`, restarting `kubelet` via `systemctl`
+- Any workflow that interacts with `systemd` or the OS package manager at the node level
+
+All other labs should use kind.
+
+### Directory layout (Lima lab)
+
+```
+<exam>/<N>/
+├── README.md
+├── answer.md
+├── assets/
+│   ├── control-plane.yaml          # Lima VM spec (images, cpu, memory, network)
+│   ├── worker.yaml                 # Lima VM spec for worker
+│   ├── provision-control-plane.sh  # Provisioning script run inside the CP VM
+│   ├── provision-worker.sh         # Provisioning script run inside the worker VM
+│   ├── setup.sh                    # Starts VMs, provisions, extracts kubeconfig
+│   ├── cleanup.sh                  # Deletes VMs and lab/
+│   ├── fix.sh                      # Reference solution (uses limactl shell)
+│   ├── check.sh                    # Runs _check.py
+│   └── _check.py
+└── lab/                            # Created by setup.sh (git-ignored)
+```
+
+### Lima VM spec template (`control-plane.yaml` / `worker.yaml`)
+
+```yaml
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+    arch: "x86_64"
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+
+cpus: 2
+memory: "2GiB"
+disk: "10GiB"
+
+networks:
+  - lima: user-v2
+```
+
+All VMs must use the `user-v2` network. It provides VM-to-VM DNS resolution (instance names are resolvable by hostname) and host-to-VM connectivity without root privileges or manual bridge configuration.
+
+### setup.sh template (Lima)
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+
+CP_NAME="$EXAM-lab-$LAB_ID-cp"
+WORKER_NAME="$EXAM-lab-$LAB_ID-worker"
+KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
+
+command -v limactl &>/dev/null || { echo "Error: 'limactl' not found. Install Lima: https://lima-vm.io"; exit 1; }
+
+mkdir -p "$TASK_DIR/lab"
+
+limactl start --name "$CP_NAME" "$SCRIPT_DIR/control-plane.yaml"
+limactl copy "$SCRIPT_DIR/provision-control-plane.sh" "$CP_NAME:/tmp/provision.sh"
+limactl shell "$CP_NAME" sudo bash /tmp/provision.sh
+
+limactl start --name "$WORKER_NAME" "$SCRIPT_DIR/worker.yaml"
+limactl copy "$SCRIPT_DIR/provision-worker.sh" "$WORKER_NAME:/tmp/provision.sh"
+limactl shell "$WORKER_NAME" sudo bash /tmp/provision.sh
+
+limactl copy "$CP_NAME:/etc/kubernetes/admin.conf" "$KUBECONFIG_FILE"
+CP_IP=$(limactl shell "$CP_NAME" hostname -I | awk '{print $1}')
+sed -i.bak "s|server: https://.*:6443|server: https://$CP_IP:6443|" "$KUBECONFIG_FILE"
+rm -f "${KUBECONFIG_FILE}.bak"
+
+echo "Lab ready!"
+echo "  export KUBECONFIG=lab/kubeconfig.yaml"
+echo "  limactl shell $CP_NAME"
+echo "  limactl shell $WORKER_NAME"
+```
+
+### cleanup.sh template (Lima)
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+
+limactl delete --force "$EXAM-lab-$LAB_ID-cp" "$EXAM-lab-$LAB_ID-worker" 2>/dev/null || true
+rm -rf "$TASK_DIR/lab"
+echo "Lab $LAB_ID cleaned up."
+```
+
+### CI
+
+Lima VMs require a real Linux kernel and cannot run inside a standard GitHub Actions runner. Lima-based labs are **excluded from CI**. Do not add a `.github/workflows/` file for Lima labs.
 
 ## Exam-Specific Notes
 

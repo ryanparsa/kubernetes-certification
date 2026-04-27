@@ -1,30 +1,49 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 1. Check dependencies
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
-CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
-for cmd in kind kubectl docker; do
-  command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
-done
+CP_NAME="$EXAM-lab-$LAB_ID-cp"
+WORKER_NAME="$EXAM-lab-$LAB_ID-worker"
+KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
 
-# 2. Create cluster
-mkdir -p "$SCRIPT_DIR/../lab"
-kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+command -v limactl &>/dev/null || { echo "Error: 'limactl' not found. Install Lima: https://lima-vm.io"; exit 1; }
 
-# 5. Create the lab/ output directory
+mkdir -p "$TASK_DIR/lab"
 
-# 7. Print summary
+echo "Starting control plane VM ($CP_NAME)..."
+limactl start --name "$CP_NAME" "$SCRIPT_DIR/control-plane.yaml"
+
+echo "Provisioning control plane..."
+limactl copy "$SCRIPT_DIR/provision-control-plane.sh" "$CP_NAME:/tmp/provision.sh"
+limactl shell "$CP_NAME" sudo bash /tmp/provision.sh
+
+echo "Starting worker VM ($WORKER_NAME)..."
+limactl start --name "$WORKER_NAME" "$SCRIPT_DIR/worker.yaml"
+
+echo "Provisioning worker..."
+limactl copy "$SCRIPT_DIR/provision-worker.sh" "$WORKER_NAME:/tmp/provision.sh"
+limactl shell "$WORKER_NAME" sudo bash /tmp/provision.sh
+
+echo "Copying kubeconfig..."
+limactl copy "$CP_NAME:/etc/kubernetes/admin.conf" "$KUBECONFIG_FILE"
+
+CP_IP=$(limactl shell "$CP_NAME" hostname -I | awk '{print $1}')
+sed -i.bak "s|server: https://.*:6443|server: https://$CP_IP:6443|" "$KUBECONFIG_FILE"
+rm -f "${KUBECONFIG_FILE}.bak"
+
 echo ""
 echo "Lab ready!"
 echo ""
-echo "Note: In the real exam, the worker node starts outside the cluster with an older"
-echo "Kubernetes version. In this kind lab both nodes run the same version and the worker"
-echo "is already joined — you can practise generating a join token and exploring kubeadm."
+printf "  %-16s %s  Kubernetes 1.32.4\n" "Control plane:" "$CP_NAME"
+printf "  %-16s %s  Kubernetes 1.31.8 (not joined)\n" "Worker:" "$WORKER_NAME"
 echo ""
 echo "Run this to set your kubeconfig:"
-echo "  export KUBECONFIG=$KUBECONFIG_FILE"
+echo "  export KUBECONFIG=lab/kubeconfig.yaml"
+echo ""
+echo "SSH into nodes:"
+echo "  limactl shell $CP_NAME"
+echo "  limactl shell $WORKER_NAME"

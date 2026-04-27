@@ -2,10 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
+KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
 
 # 1. Check dependencies
 for cmd in kind kubectl docker; do
@@ -45,10 +46,10 @@ kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
   --for=condition=Ready --timeout=60s
 
 # 5. Create the lab/ output directory
-mkdir -p "$SCRIPT_DIR/../lab"
+mkdir -p "$TASK_DIR/lab"
 
 # 6. Copy task assets
-cp "$SCRIPT_DIR/task-ingress.yaml" "$SCRIPT_DIR/../lab/ingress.yaml"
+cp "$SCRIPT_DIR/task-ingress.yaml" "$TASK_DIR/lab/ingress.yaml"
 
 # 7. Print summary
 echo ""
@@ -58,4 +59,4 @@ echo "NOTE: To use 'curl r500.gateway:30080/...', add this to /etc/hosts:"
 echo "  127.0.0.1 r500.gateway"
 echo ""
 echo "Run this to set your kubeconfig:"
-echo "  export KUBECONFIG=$KUBECONFIG_FILE"
+echo "  export KUBECONFIG=lab/kubeconfig.yaml"

@@ -6,7 +6,7 @@ There is *ServiceAccount* `secret-reader` in *Namespace* `project-swan`. Create 
 
 Exec into the *Pod* and use `curl` to manually query all *Secrets* from the Kubernetes Api.
 
-Write the result into file `cka/9/lab/9/result.json`.
+Write the result into file `lab/result.json`.
 
 ---
 

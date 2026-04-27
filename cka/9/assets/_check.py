@@ -6,7 +6,7 @@ import unittest
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 SCRIPT_DIR = os.path.dirname(__file__)
-RESULT_JSON = os.path.join(SCRIPT_DIR, "..", "lab", "9", "result.json")
+RESULT_JSON = os.path.join(SCRIPT_DIR, "..", "lab", "result.json")
 
 
 def kubectl(*args):
@@ -36,7 +36,7 @@ class TestContactK8sApi(unittest.TestCase):
 
     def test_result_json_exists(self):
         self.assertTrue(os.path.isfile(RESULT_JSON),
-                        f"lab/9/result.json does not exist (expected at {RESULT_JSON})")
+                        f"lab/result.json does not exist (expected at {RESULT_JSON})")
 
     def test_result_json_is_secret_list(self):
         with open(RESULT_JSON) as f:

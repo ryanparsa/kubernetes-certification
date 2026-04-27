@@ -433,6 +433,45 @@ kubectl cp ./local-file <pod>:/path/in/pod      # copy from local to pod
 
 ---
 
+### 2.4.1 — Data Transfer Patterns (Exam)
+
+When a question asks you to write output from inside a pod or remote node to a local file:
+
+**Pod → Local**
+
+```bash
+# Option 1: kubectl cp (cleanest)
+# Note: "tar: removing leading '/' from member names" is a harmless tar warning — copy succeeds
+kubectl cp <namespace>/<pod>:/path/in/pod ./local-file
+kubectl cp project-swan/api-contact:/tmp/result.json lab/result.json
+
+# Option 2: kubectl exec + cat, redirected locally
+kubectl -n <namespace> exec <pod> -- cat /tmp/result.json > ./local-file
+
+# Option 3: run the command non-interactively and redirect directly
+kubectl -n <namespace> exec <pod> -- curl -sk https://... > ./local-file
+```
+
+**Remote Node → Local**
+
+```bash
+# SSH + cat redirect
+ssh node01 "cat /etc/kubernetes/manifests/kube-apiserver.yaml" > local-copy.yaml
+
+# SCP
+scp node01:/path/to/file ./local-copy
+
+# Pipe any command over SSH
+ssh node01 "crictl ps" > output.txt
+```
+
+**Workflow pattern:**
+1. Do the work inside the pod/node, optionally save to a temp file (`> /tmp/result.json`)
+2. Exit back to the exam terminal
+3. Pull with `kubectl exec -- cat <file> > local-file` or `ssh node cat <file> > local-file`
+
+---
+
 ### 2.5 — Rollout / Scale
 
 ```bash

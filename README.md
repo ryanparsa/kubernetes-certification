@@ -60,13 +60,17 @@ See [`cka/README.md`](cka/README.md) for the full lab index with status.
 
 ### Running a Lab Locally
 
-**Prerequisites:** `docker`, `kind`, `kubectl`, `python3`
+Most labs run on a local [kind](https://kind.sigs.k8s.io/) cluster. Labs that require real OS-level node operations (kubeadm join, kubeadm upgrade) use [Lima](https://lima-vm.io/) VMs instead. Each lab's `setup.sh` handles the difference — the workflow is the same either way.
+
+**Prerequisites — kind-based labs:** `docker`, `kind`, `kubectl`, `python3`
+
+**Prerequisites — Lima-based labs:** `limactl`, `kubectl`, `python3`
 
 ```bash
 # 1. Enter the lab directory
 cd cka/<N>
 
-# 2. Start the cluster
+# 2. Start the environment
 bash assets/setup.sh
 export KUBECONFIG=lab/kubeconfig.yaml
 

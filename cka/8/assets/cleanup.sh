@@ -2,12 +2,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
-CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 
-kind delete cluster --name "$CLUSTER_NAME"
+CP_NAME="$EXAM-lab-$LAB_ID-cp"
+WORKER_NAME="$EXAM-lab-$LAB_ID-worker"
 
-rm -rf "$SCRIPT_DIR/../lab"
+limactl delete --force "$CP_NAME" "$WORKER_NAME" 2>/dev/null || true
+rm -rf "$TASK_DIR/lab"
 
-echo "Lab torn down."
+echo "Lab $LAB_ID cleaned up."
