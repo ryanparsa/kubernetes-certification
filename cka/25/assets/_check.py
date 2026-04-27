@@ -4,7 +4,7 @@ import unittest
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ANS_FILE = os.path.join(SCRIPT_DIR, "..", "course", "controlplane-components.txt")
+ANS_FILE = os.path.join(SCRIPT_DIR, "..", "lab", "controlplane-components.txt")
 
 class QuietResult(unittest.TextTestResult):
     def addSuccess(self, test):

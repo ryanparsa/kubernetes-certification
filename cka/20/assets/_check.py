@@ -4,7 +4,7 @@ import os
 import re
 import unittest
 
-CERT_FILE = os.path.join(os.path.dirname(__file__), "..", "course", "certificate-info.txt")
+CERT_FILE = os.path.join(os.path.dirname(__file__), "..", "lab", "certificate-info.txt")
 
 
 class TestKubeletCertInfo(unittest.TestCase):

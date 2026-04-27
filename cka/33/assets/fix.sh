@@ -2,16 +2,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 if [ -f "$KUBECONFIG_FILE" ]; then
   export KUBECONFIG="$KUBECONFIG_FILE"
 fi
 
-COURSE_DIR="$SCRIPT_DIR/../course"
-mkdir -p "$COURSE_DIR"
+LAB_DIR="$SCRIPT_DIR/../lab"
+mkdir -p "$LAB_DIR"
 
 # 1. Make a backup of the existing configuration YAML
-kubectl -n kube-system get cm coredns -o yaml > "$COURSE_DIR/coredns_backup.yaml"
+kubectl -n kube-system get cm coredns -o yaml > "$LAB_DIR/coredns_backup.yaml"
 
 # 2. Update the CoreDNS configuration
 # We use a python script to safely modify the ConfigMap data

@@ -2,13 +2,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 if [ -f "$KUBECONFIG_FILE" ]; then
   export KUBECONFIG="$KUBECONFIG_FILE"
 fi
 
-# Ensure course directory exists
-mkdir -p "$SCRIPT_DIR/../course"
+# Ensure lab directory exists
+mkdir -p "$SCRIPT_DIR/../lab"
 
 # Create Namespace
 kubectl apply -f - <<EOF
@@ -20,8 +20,8 @@ EOF
 
 # Create Secret 1 from file, injecting namespace
 # Note: In CI, we need to make sure the file exists.
-# Since we are not running setup.sh, we use the source of truth if course file is missing.
-SOURCE_SECRET="$SCRIPT_DIR/../course/28_secret1.yaml"
+# Since we are not running setup.sh, we use the source of truth if lab file is missing.
+SOURCE_SECRET="$SCRIPT_DIR/../lab/28_secret1.yaml"
 if [ ! -f "$SOURCE_SECRET" ]; then
     SOURCE_SECRET="$SCRIPT_DIR/task-secret1.yaml"
 fi

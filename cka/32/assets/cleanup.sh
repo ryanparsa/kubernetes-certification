@@ -7,6 +7,6 @@ EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 
 kind delete cluster --name "$CLUSTER_NAME"
-rm -rf "$SCRIPT_DIR/../course"
+rm -rf "$SCRIPT_DIR/../lab"
 
 echo "Lab torn down."

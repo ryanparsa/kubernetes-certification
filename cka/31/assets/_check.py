@@ -2,8 +2,8 @@
 import os
 import unittest
 
-COURSE_DIR = os.path.join(os.path.dirname(__file__), "..", "course")
-INFO_FILE = os.path.join(COURSE_DIR, "cluster-info")
+LAB_DIR = os.path.join(os.path.dirname(__file__), "..", "lab")
+INFO_FILE = os.path.join(LAB_DIR, "cluster-info")
 
 
 class TestClusterInformation(unittest.TestCase):

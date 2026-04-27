@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # 1. Check dependencies
 for cmd in kind kubectl docker; do
@@ -10,6 +10,7 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
+mkdir -p "$SCRIPT_DIR/../lab"
 kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
@@ -21,8 +22,7 @@ for deploy in berlin-external-monitor berlin-external-proxy; do
     deployment/"$deploy" --timeout=120s
 done
 
-# 5. Create the course/ output directory
-mkdir -p "$SCRIPT_DIR/../course"
+# 5. Create the lab/ output directory
 
 # 7. Print summary
 echo ""

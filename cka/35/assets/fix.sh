@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 CONTROL_PLANE_NODE="$CLUSTER_NAME-control-plane"
 ETCD_MANIFEST="/etc/kubernetes/manifests/etcd.yaml"
@@ -24,9 +24,9 @@ if [ "$CLIENT_AUTH" == "true" ]; then
     CLIENT_AUTH_YES_NO="yes"
 fi
 
-# Write to the course file
-mkdir -p "$SCRIPT_DIR/../course"
-cat <<EOF > "$SCRIPT_DIR/../course/etcd-info.txt"
+# Write to the lab file
+mkdir -p "$SCRIPT_DIR/../lab"
+cat <<EOF > "$SCRIPT_DIR/../lab/etcd-info.txt"
 Server private key location: $KEY_FILE
 Server certificate expiration date: $EXPIRY
 Is client certificate authentication enabled: $CLIENT_AUTH_YES_NO

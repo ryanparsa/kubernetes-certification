@@ -2,11 +2,11 @@
 import os
 import unittest
 
-COURSE_DIR = os.path.join(os.path.dirname(__file__), "..", "course")
+LAB_DIR = os.path.join(os.path.dirname(__file__), "..", "lab")
 
 
 def read_file(name):
-    with open(os.path.join(COURSE_DIR, name)) as f:
+    with open(os.path.join(LAB_DIR, name)) as f:
         return f.read().strip()
 
 

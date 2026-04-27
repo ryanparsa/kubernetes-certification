@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # 1. Check dependencies
 for cmd in kind kubectl docker; do
@@ -10,6 +10,7 @@ for cmd in kind kubectl docker; do
 done
 
 # 2. Create cluster
+mkdir -p "$SCRIPT_DIR/../lab"
 kind create cluster --name cka-lab --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
 # 3. Apply pre-existing workloads
@@ -20,7 +21,7 @@ echo "Waiting for deployments to be ready..."
 kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n lima-control \
   deployment/controller --timeout=120s
 
-# 5. Create the course/ output directory (Omitted)
+# 5. Create the lab/ output directory (Omitted)
 # 6. Copy task kubeconfig (Omitted)
 
 # 7. Print summary

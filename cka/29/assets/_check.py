@@ -5,7 +5,7 @@ import subprocess
 import unittest
 
 # Try local kubeconfig first (for local dev), then fallback to default (for CI)
-LOCAL_KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+LOCAL_KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 KUBECONFIG = LOCAL_KUBECONFIG if os.path.exists(LOCAL_KUBECONFIG) else os.environ.get("KUBECONFIG")
 
 

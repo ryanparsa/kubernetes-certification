@@ -3,9 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-mkdir -p "$SCRIPT_DIR/../course"
+mkdir -p "$SCRIPT_DIR/../lab"
 
-cat <<EOF > "$SCRIPT_DIR/../course/cluster-info"
+cat <<EOF > "$SCRIPT_DIR/../lab/cluster-info"
 1: 1
 2: 0
 3: 10.96.0.0/12

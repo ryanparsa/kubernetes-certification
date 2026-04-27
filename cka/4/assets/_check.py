@@ -3,8 +3,8 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
-COURSE_DIR = os.path.join(os.path.dirname(__file__), "..", "course")
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
+LAB_DIR = os.path.join(os.path.dirname(__file__), "..", "lab")
 
 
 def kubectl(*args):
@@ -18,11 +18,11 @@ def kubectl(*args):
 class TestPodsTerminatedFirst(unittest.TestCase):
 
     def test_file_exists(self):
-        path = os.path.join(COURSE_DIR, "pods-terminated-first.txt")
+        path = os.path.join(LAB_DIR, "pods-terminated-first.txt")
         self.assertTrue(os.path.exists(path), "pods-terminated-first.txt not found")
 
     def test_listed_pods_are_besteffort(self):
-        path = os.path.join(COURSE_DIR, "pods-terminated-first.txt")
+        path = os.path.join(LAB_DIR, "pods-terminated-first.txt")
         with open(path) as f:
             listed = [l.strip() for l in f if l.strip()]
         self.assertGreater(len(listed), 0, "File is empty")
@@ -32,7 +32,7 @@ class TestPodsTerminatedFirst(unittest.TestCase):
             self.assertEqual(qos, "BestEffort", f"Pod {pod} is not BestEffort")
 
     def test_all_besteffort_pods_listed(self):
-        path = os.path.join(COURSE_DIR, "pods-terminated-first.txt")
+        path = os.path.join(LAB_DIR, "pods-terminated-first.txt")
         with open(path) as f:
             listed = {l.strip() for l in f if l.strip()}
         raw = kubectl(

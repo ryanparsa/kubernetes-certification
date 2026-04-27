@@ -2,9 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
-RESULT_FILE="$SCRIPT_DIR/../course/9/result.json"
+RESULT_FILE="$SCRIPT_DIR/../lab/9/result.json"
 mkdir -p "$(dirname "$RESULT_FILE")"
 
 kubectl apply -f - <<EOF
@@ -27,4 +27,4 @@ kubectl exec api-contact -n project-swan -- sh -c \
    https://kubernetes.default/api/v1/secrets' \
   > "$RESULT_FILE"
 
-echo "Result written to course/9/result.json"
+echo "Result written to lab/9/result.json"

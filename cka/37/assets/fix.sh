@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # 1. Create the Pod and initial Service
 kubectl run check-ip --image=httpd:2-alpine

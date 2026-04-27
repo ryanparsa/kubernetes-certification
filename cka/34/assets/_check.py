@@ -3,7 +3,7 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 
 
 def kubectl(*args):
@@ -17,8 +17,8 @@ def kubectl(*args):
 class TestOperatorKustomize(unittest.TestCase):
 
     def test_kustomize_role_updated(self):
-        # Check if the role in course/operator/base/rbac.yaml contains students and classes
-        rbac_path = os.path.join(os.path.dirname(__file__), "..", "course", "operator", "base", "rbac.yaml")
+        # Check if the role in lab/operator/base/rbac.yaml contains students and classes
+        rbac_path = os.path.join(os.path.dirname(__file__), "..", "lab", "operator", "base", "rbac.yaml")
         with open(rbac_path, 'r') as f:
             content = f.read()
         self.assertIn("students", content)
@@ -46,7 +46,7 @@ class TestOperatorKustomize(unittest.TestCase):
 
     def test_kustomize_student_added_in_base(self):
         # Check if student4 is in base/students.yaml
-        students_path = os.path.join(os.path.dirname(__file__), "..", "course", "operator", "base", "students.yaml")
+        students_path = os.path.join(os.path.dirname(__file__), "..", "lab", "operator", "base", "students.yaml")
         with open(students_path, 'r') as f:
             content = f.read()
         self.assertIn("student4", content)
@@ -59,8 +59,8 @@ class TestOperatorKustomize(unittest.TestCase):
 
     def test_kustomize_build_no_error(self):
         # Check if kustomize build works for both base and prod
-        base_dir = os.path.join(os.path.dirname(__file__), "..", "course", "operator", "base")
-        prod_dir = os.path.join(os.path.dirname(__file__), "..", "course", "operator", "prod")
+        base_dir = os.path.join(os.path.dirname(__file__), "..", "lab", "operator", "base")
+        prod_dir = os.path.join(os.path.dirname(__file__), "..", "lab", "operator", "prod")
 
         res_base = subprocess.run(["kubectl", "kustomize", base_dir], capture_output=True)
         self.assertEqual(res_base.returncode, 0, f"Kustomize build base failed: {res_base.stderr.decode()}")

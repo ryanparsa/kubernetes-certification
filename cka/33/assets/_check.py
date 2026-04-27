@@ -4,8 +4,8 @@ import subprocess
 import unittest
 import time
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
-COURSE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "course")
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
+LAB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lab")
 
 def kubectl(*args):
     cmd = ["kubectl"]
@@ -17,7 +17,7 @@ def kubectl(*args):
 
 class TestUpdateCoreDNSConfiguration(unittest.TestCase):
     def test_backup_exists(self):
-        filepath = os.path.join(COURSE_DIR, "coredns_backup.yaml")
+        filepath = os.path.join(LAB_DIR, "coredns_backup.yaml")
         self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
         with open(filepath, 'r') as f:

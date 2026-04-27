@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # Step 1: Create namespace
 kubectl create namespace minio --dry-run=client -o yaml | kubectl apply -f -

@@ -3,8 +3,8 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.environ.get("KUBECONFIG", os.path.join(os.path.dirname(__file__), "kubeconfig.yaml"))
-COURSE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "course")
+KUBECONFIG = os.environ.get("KUBECONFIG", os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml"))
+LAB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lab")
 
 def kubectl(*args):
     result = subprocess.run(
@@ -29,8 +29,8 @@ class TestContainerInfo(unittest.TestCase):
         self.assertEqual(phase, "Running")
 
     def test_pod_container_txt_content(self):
-        """cka/17/course/pod-container.txt contains correct container ID and runtimeType"""
-        txt_path = os.path.join(COURSE_DIR, "pod-container.txt")
+        """cka/17/lab/pod-container.txt contains correct container ID and runtimeType"""
+        txt_path = os.path.join(LAB_DIR, "pod-container.txt")
         self.assertTrue(os.path.exists(txt_path), f"{txt_path} does not exist")
 
         with open(txt_path, 'r') as f:
@@ -46,8 +46,8 @@ class TestContainerInfo(unittest.TestCase):
         self.assertTrue(len(container_id) > 0)
 
     def test_pod_container_log_not_empty(self):
-        """cka/17/course/pod-container.log contains container logs"""
-        log_path = os.path.join(COURSE_DIR, "pod-container.log")
+        """cka/17/lab/pod-container.log contains container logs"""
+        log_path = os.path.join(LAB_DIR, "pod-container.log")
         self.assertTrue(os.path.exists(log_path), f"{log_path} does not exist")
 
         with open(log_path, 'r') as f:

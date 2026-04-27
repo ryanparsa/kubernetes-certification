@@ -26,5 +26,5 @@ Use the `.memory/` directory to store and read persistent memory across sessions
 - `cka/29/` is the canonical reference lab — use it as a template.
 - Never paraphrase or reformat `readme.md` files; content must match `cka/ref/` verbatim.
 - `fix.sh` must be idempotent (`kubectl apply`, not `kubectl create`).
-- `kubeconfig.yaml` and `course/` are git-ignored — never commit them.
+- `kubeconfig.yaml` and `lab/` are git-ignored — never commit them.
 - Every lab needs a CI workflow at `.github/workflows/<exam>-lab-<N>.yml` using `helm/kind-action@v1`.

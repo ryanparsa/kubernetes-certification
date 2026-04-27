@@ -11,5 +11,5 @@ if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
   kind delete cluster --name "$CLUSTER_NAME"
 fi
 
-rm -rf "$SCRIPT_DIR/../course"
+rm -rf "$SCRIPT_DIR/../lab"
 echo "Lab torn down."

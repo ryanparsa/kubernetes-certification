@@ -5,14 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
-COURSE_DIR="$SCRIPT_DIR/../course"
-mkdir -p "$COURSE_DIR"
+LAB_DIR="$SCRIPT_DIR/../lab"
+mkdir -p "$LAB_DIR"
 
 # Step 1: Save etcd version output
 kubectl -n kube-system exec "etcd-${CLUSTER_NAME}-control-plane" -- etcd --version \
-  > "$COURSE_DIR/etcd-version"
+  > "$LAB_DIR/etcd-version"
 
 # Step 2: Create etcd snapshot (run inside the kind node where etcdctl and certs are available)
 docker exec "${CLUSTER_NAME}-control-plane" bash -c "
@@ -23,4 +23,4 @@ docker exec "${CLUSTER_NAME}-control-plane" bash -c "
     --key /etc/kubernetes/pki/etcd/server.key
 "
 
-echo "etcd-version and etcd-snapshot.db written to course/"
+echo "etcd-version and etcd-snapshot.db written to lab/"

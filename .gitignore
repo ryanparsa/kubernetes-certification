@@ -75,7 +75,7 @@ secrets/
 *.pem
 
 # CKA lab output directories
-cka/[0-9]*/course/
+cka/[0-9]*/lab/
 
 
 # Documentation build artifacts
@@ -107,5 +107,5 @@ personal/
 .cache/
 .npm/
 .yarn/
-cka/14/course/
-cka/37/course/
+cka/14/lab/
+cka/37/lab/

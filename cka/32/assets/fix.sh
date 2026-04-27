@@ -7,16 +7,16 @@ EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 
 # Use local kubeconfig if it exists, otherwise assume it's already set (e.g. in CI)
-if [[ -f "$SCRIPT_DIR/kubeconfig.yaml" ]]; then
-  export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+if [[ -f "$SCRIPT_DIR/../lab/kubeconfig.yaml" ]]; then
+  export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 fi
 
 # 1. Create cluster_events.sh
-mkdir -p "$SCRIPT_DIR/../course"
-cat <<EOF > "$SCRIPT_DIR/../course/cluster_events.sh"
+mkdir -p "$SCRIPT_DIR/../lab"
+cat <<EOF > "$SCRIPT_DIR/../lab/cluster_events.sh"
 kubectl get events -A --sort-by=.metadata.creationTimestamp
 EOF
-chmod +x "$SCRIPT_DIR/../course/cluster_events.sh"
+chmod +x "$SCRIPT_DIR/../lab/cluster_events.sh"
 
 # 2. Delete kube-proxy pod and capture logs
 # Wait for pods to be ready first to ensure we have a kube-proxy pod
@@ -28,7 +28,7 @@ kubectl -n kube-system delete pod "$POD_NAME" --wait=false
 # Give it some time to generate events
 sleep 5
 
-bash "$SCRIPT_DIR/../course/cluster_events.sh" > "$SCRIPT_DIR/../course/pod_kill.log"
+bash "$SCRIPT_DIR/../lab/cluster_events.sh" > "$SCRIPT_DIR/../lab/pod_kill.log"
 
 # 3. Kill kube-proxy container and capture logs
 # Wait for the new pod to be ready
@@ -43,4 +43,4 @@ docker exec "$CLUSTER_NAME-control-plane" crictl rm --force "$CONTAINER_ID"
 # Give it some time to generate events
 sleep 5
 
-bash "$SCRIPT_DIR/../course/cluster_events.sh" > "$SCRIPT_DIR/../course/container_kill.log"
+bash "$SCRIPT_DIR/../lab/cluster_events.sh" > "$SCRIPT_DIR/../lab/container_kill.log"

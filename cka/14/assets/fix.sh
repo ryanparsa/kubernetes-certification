@@ -9,10 +9,10 @@ CLUSTER_NAME="cka-lab-$LAB_ID"
 EXPIRY=$(docker exec "${CLUSTER_NAME}-control-plane" openssl x509 -noout -enddate \
   -in /etc/kubernetes/pki/apiserver.crt | cut -d= -f2)
 
-mkdir -p "$SCRIPT_DIR/../course"
+mkdir -p "$SCRIPT_DIR/../lab"
 
-echo "$EXPIRY" > "$SCRIPT_DIR/../course/expiration"
-echo "kubeadm certs renew apiserver" > "$SCRIPT_DIR/../course/kubeadm-renew-certs.sh"
+echo "$EXPIRY" > "$SCRIPT_DIR/../lab/expiration"
+echo "kubeadm certs renew apiserver" > "$SCRIPT_DIR/../lab/kubeadm-renew-certs.sh"
 
 echo "Expiration written: $EXPIRY"
 echo "Renewal script written."

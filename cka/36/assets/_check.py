@@ -34,7 +34,7 @@ class TestKubeProxyIptables(unittest.TestCase):
         self.assertEqual(image, "nginx:1-alpine")
 
     def test_iptables_file_exists_and_contains_rules(self):
-        file_path = os.path.join(SCRIPT_DIR, "..", "course", "iptables.txt")
+        file_path = os.path.join(SCRIPT_DIR, "..", "lab", "iptables.txt")
         self.assertTrue(os.path.exists(file_path), "iptables.txt file does not exist")
         with open(file_path, 'r') as f:
             content = f.read()

@@ -2,12 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 if [ -f "$KUBECONFIG_FILE" ]; then
   export KUBECONFIG="$KUBECONFIG_FILE"
 fi
 
-mkdir -p "$SCRIPT_DIR/../course"
+mkdir -p "$SCRIPT_DIR/../lab"
 
 # SEEDING (Idempotent)
 # Ensure project-* namespaces exist
@@ -37,7 +37,7 @@ done
 
 # SOLUTION
 # 1. write all namespaced resource names to resources.txt
-kubectl api-resources --namespaced -o name > "$SCRIPT_DIR/../course/resources.txt"
+kubectl api-resources --namespaced -o name > "$SCRIPT_DIR/../lab/resources.txt"
 
 # 2. find the project-* namespace with the most Roles
 max_count=0
@@ -50,4 +50,4 @@ for ns in $(kubectl get namespace -o jsonpath='{.items[*].metadata.name}' | tr '
   fi
 done
 
-echo "$max_ns with $max_count roles" > "$SCRIPT_DIR/../course/crowded-namespace.txt"
+echo "$max_ns with $max_count roles" > "$SCRIPT_DIR/../lab/crowded-namespace.txt"

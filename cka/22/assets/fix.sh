@@ -2,18 +2,18 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COURSE_DIR="$SCRIPT_DIR/../course"
+LAB_DIR="$SCRIPT_DIR/../lab"
 
-mkdir -p "$COURSE_DIR"
+mkdir -p "$LAB_DIR"
 
-cat > "$COURSE_DIR/find_pods.sh" <<'EOF'
+cat > "$LAB_DIR/find_pods.sh" <<'EOF'
 kubectl get pod -A --sort-by=.metadata.creationTimestamp
 EOF
 
-cat > "$COURSE_DIR/find_pods_uid.sh" <<'EOF'
+cat > "$LAB_DIR/find_pods_uid.sh" <<'EOF'
 kubectl get pod -A --sort-by=.metadata.uid
 EOF
 
-chmod +x "$COURSE_DIR/find_pods.sh" "$COURSE_DIR/find_pods_uid.sh"
+chmod +x "$LAB_DIR/find_pods.sh" "$LAB_DIR/find_pods_uid.sh"
 
 echo "Solution applied."

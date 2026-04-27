@@ -4,8 +4,8 @@ import subprocess
 import unittest
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-COURSE_DIR = os.path.join(SCRIPT_DIR, "..", "course")
-ETCD_INFO_FILE = os.path.join(COURSE_DIR, "etcd-info.txt")
+LAB_DIR = os.path.join(SCRIPT_DIR, "..", "lab")
+ETCD_INFO_FILE = os.path.join(LAB_DIR, "etcd-info.txt")
 
 LAB_ID = os.path.basename(os.path.dirname(SCRIPT_DIR))
 EXAM = os.path.basename(os.path.dirname(os.path.dirname(SCRIPT_DIR)))

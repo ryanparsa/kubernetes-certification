@@ -3,8 +3,8 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
-COURSE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "course")
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
+LAB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lab")
 
 def kubectl(*args):
     cmd = ["kubectl"]
@@ -16,7 +16,7 @@ def kubectl(*args):
 
 class TestNamespacesAndApiResources(unittest.TestCase):
     def test_resources_file(self):
-        filepath = os.path.join(COURSE_DIR, "resources.txt")
+        filepath = os.path.join(LAB_DIR, "resources.txt")
         self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
         with open(filepath, 'r') as f:
@@ -33,7 +33,7 @@ class TestNamespacesAndApiResources(unittest.TestCase):
         self.assertNotIn("namespaces", content.splitlines())
 
     def test_crowded_namespace_file(self):
-        filepath = os.path.join(COURSE_DIR, "crowded-namespace.txt")
+        filepath = os.path.join(LAB_DIR, "crowded-namespace.txt")
         self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
         with open(filepath, 'r') as f:

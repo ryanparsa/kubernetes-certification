@@ -4,7 +4,7 @@ import subprocess
 import unittest
 import ipaddress
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 
 def kubectl(*args):
     result = subprocess.run(

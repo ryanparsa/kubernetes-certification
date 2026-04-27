@@ -1,0 +1,42 @@
+## Answer
+
+If we check the *Pods* we see two replicas:
+
+```bash
+k -n project-h800 get pod | grep o3db
+o3db-0                                  1/1     Running   0          6d19h
+o3db-1                                  1/1     Running   0          6d19h
+```
+
+From their name it looks like these are managed by a *StatefulSet*. But if we're unsure we could also check for the most common resources which manage *Pods*:
+
+```bash
+k -n project-h800 get deploy,ds,sts | grep o3db
+statefulset.apps/o3db   2/2     6d19h
+```
+
+Confirmed, we have to work with a *StatefulSet*. We could also look at the *Pod* labels to find this out:
+
+```bash
+k -n project-h800 get pod --show-labels | grep o3db
+o3db-0                                  1/1     Running   0          6d19h   app=nginx,apps.kubernetes.io/pod-index=0,controller-revision-hash=o3db-5fbd4bb9cc,statefulset.kubernetes.io/pod-name=o3db-0
+o3db-1                                  1/1     Running   0          6d19h   app=nginx,apps.kubernetes.io/pod-index=1,controller-revision-hash=o3db-5fbd4bb9cc,statefulset.kubernetes.io/pod-name=o3db-1
+```
+
+To fulfil the task we simply run:
+
+```bash
+k -n project-h800 scale sts o3db --replicas 1
+statefulset.apps/o3db scaled
+
+k -n project-h800 get sts o3db
+NAME   READY   AGE
+o3db   1/1     6d19h
+```
+
+The Project H800 management is happy again.
+
+## Killer.sh Checklist (Score: 0/2)
+
+- [ ] StatefulSet `o3db` in namespace `project-h800` has `replicas: 1`
+- [ ] StatefulSet `o3db` in namespace `project-h800` has 1 ready replica

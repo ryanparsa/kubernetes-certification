@@ -2,11 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
-mkdir -p "$SCRIPT_DIR/../course"
+mkdir -p "$SCRIPT_DIR/../lab"
 
-cat <<EOF > "$SCRIPT_DIR/../course/controlplane-components.txt"
+cat <<EOF > "$SCRIPT_DIR/../lab/controlplane-components.txt"
 kubelet: process
 kube-apiserver: static-pod
 kube-scheduler: static-pod

@@ -2,13 +2,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COURSE_DIR="$SCRIPT_DIR/../course"
+LAB_DIR="$SCRIPT_DIR/../lab"
 
 PASS=0
 FAIL=0
 
 echo "=== Check 1: etcd version file ==="
-if [[ -f "$COURSE_DIR/etcd-version" ]] && grep -q "etcd Version:" "$COURSE_DIR/etcd-version"; then
+if [[ -f "$LAB_DIR/etcd-version" ]] && grep -q "etcd Version:" "$LAB_DIR/etcd-version"; then
   echo "PASS: etcd-version contains version info"
   PASS=$((PASS + 1))
 else
@@ -17,7 +17,7 @@ else
 fi
 
 echo "=== Check 2: etcd snapshot file ==="
-if [[ -s "$COURSE_DIR/etcd-snapshot.db" ]]; then
+if [[ -s "$LAB_DIR/etcd-snapshot.db" ]]; then
   echo "PASS: etcd-snapshot.db exists and is non-empty"
   PASS=$((PASS + 1))
 else

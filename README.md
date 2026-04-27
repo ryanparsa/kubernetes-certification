@@ -19,7 +19,11 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 ```
 .
 ├── cka/                  # CKA — practice labs + exam definition
-│   ├── <N>/              # Each lab: README.md + assets/ (setup/cleanup/fix/check scripts)
+│   ├── <N>/              # Each lab:
+│   │   ├── README.md     #   Question only
+│   │   ├── answer.md     #   Reference solution + killer.sh checklist
+│   │   ├── assets/       #   setup / cleanup / fix / check scripts + seed files
+│   │   └── lab/          #   Created by setup.sh (git-ignored): kubeconfig + working files
 │   ├── ref/              # Verbatim killer.sh simulator source questions
 │   └── README.md         # Exam overview, domain weights, topics, lab index
 ├── ckad/
@@ -64,12 +68,12 @@ cd cka/<N>
 
 # 2. Start the cluster
 bash assets/setup.sh
-export KUBECONFIG=assets/kubeconfig.yaml
+export KUBECONFIG=lab/kubeconfig.yaml
 
 # 3. Read the scenario
 cat README.md
 
-# 4. Solve (save manifests under course/)
+# 4. Solve (save manifests under lab/)
 
 # 5. Verify your solution
 bash assets/check.sh

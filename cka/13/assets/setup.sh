@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-KUBECONFIG_FILE="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # 1. Check dependencies
 for cmd in kind kubectl docker; do
@@ -44,11 +44,11 @@ kubectl wait --kubeconfig "$KUBECONFIG_FILE" \
   -n project-r500 pod/web-desktop pod/web-mobile \
   --for=condition=Ready --timeout=60s
 
-# 5. Create the course/ output directory
-mkdir -p "$SCRIPT_DIR/../course"
+# 5. Create the lab/ output directory
+mkdir -p "$SCRIPT_DIR/../lab"
 
 # 6. Copy task assets
-cp "$SCRIPT_DIR/task-ingress.yaml" "$SCRIPT_DIR/../course/ingress.yaml"
+cp "$SCRIPT_DIR/task-ingress.yaml" "$SCRIPT_DIR/../lab/ingress.yaml"
 
 # 7. Print summary
 echo ""

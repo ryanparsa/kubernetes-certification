@@ -2,16 +2,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COURSE_DIR="$SCRIPT_DIR/../course"
+LAB_DIR="$SCRIPT_DIR/../lab"
 
-mkdir -p "$COURSE_DIR"
+mkdir -p "$LAB_DIR"
 
-cat > "$COURSE_DIR/node.sh" <<'EOF'
+cat > "$LAB_DIR/node.sh" <<'EOF'
 kubectl top node
 EOF
 
-cat > "$COURSE_DIR/pod.sh" <<'EOF'
+cat > "$LAB_DIR/pod.sh" <<'EOF'
 kubectl top pod --containers=true
 EOF
 
-echo "Scripts written to course/node.sh and course/pod.sh"
+echo "Scripts written to lab/node.sh and lab/pod.sh"

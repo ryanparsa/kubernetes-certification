@@ -3,8 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-COURSE_DIR="$SCRIPT_DIR/../course"
-mkdir -p "$COURSE_DIR"
+LAB_DIR="$SCRIPT_DIR/../lab"
+mkdir -p "$LAB_DIR"
 
 # Read kubelet client certificate once (outgoing connections to kube-apiserver)
 CLIENT_CERT=$(docker exec cka-lab-worker \
@@ -21,12 +21,12 @@ SERVER_ISSUER=$(echo "$SERVER_CERT" | awk '/Issuer:/{gsub(/^[[:space:]]+/, ""); 
 SERVER_EKU=$(echo "$SERVER_CERT" | awk '/Extended Key Usage/{found=1; next} found{gsub(/^[[:space:]]+/, ""); print; exit}')
 
 # Write certificate info to file
-cat > "$COURSE_DIR/certificate-info.txt" <<EOF
+cat > "$LAB_DIR/certificate-info.txt" <<EOF
 $CLIENT_ISSUER
 X509v3 Extended Key Usage: $CLIENT_EKU
 $SERVER_ISSUER
 X509v3 Extended Key Usage: $SERVER_EKU
 EOF
 
-echo "Certificate info written to $COURSE_DIR/certificate-info.txt"
-cat "$COURSE_DIR/certificate-info.txt"
+echo "Certificate info written to $LAB_DIR/certificate-info.txt"
+cat "$LAB_DIR/certificate-info.txt"

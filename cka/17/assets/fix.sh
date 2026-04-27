@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
 
 # Create the Pod
 kubectl -n project-tiger run tigers-reunite --image=httpd:2-alpine --labels "pod=container,container=pod"
@@ -24,7 +24,7 @@ CONTAINER_ID=$(docker exec "$NODE_NAME" crictl ps --name tigers-reunite -q)
 RUNTIME_TYPE=$(docker exec "$NODE_NAME" crictl inspect "$CONTAINER_ID" | grep runtimeType | cut -d '"' -f 4)
 
 # Write to pod-container.txt
-echo "$CONTAINER_ID $RUNTIME_TYPE" > "$SCRIPT_DIR/../course/pod-container.txt"
+echo "$CONTAINER_ID $RUNTIME_TYPE" > "$SCRIPT_DIR/../lab/pod-container.txt"
 
 # Get logs - capture both stdout and stderr
-docker exec "$NODE_NAME" crictl logs "$CONTAINER_ID" > "$SCRIPT_DIR/../course/pod-container.log" 2>&1
+docker exec "$NODE_NAME" crictl logs "$CONTAINER_ID" > "$SCRIPT_DIR/../lab/pod-container.log" 2>&1

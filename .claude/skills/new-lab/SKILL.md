@@ -57,7 +57,7 @@ Create these files (see [templates.md](templates.md) for the exact boilerplate):
 | `<exam>/<N>/assets/fix.sh` | Idempotent complete solution |
 | `<exam>/<N>/assets/check.sh` | Delegates to _check.py |
 | `<exam>/<N>/assets/_check.py` | unittest assertions, one per checklist item |
-| `<exam>/<N>/assets/cleanup.sh` | Delete cluster + course/ |
+| `<exam>/<N>/assets/cleanup.sh` | Delete cluster + lab/ |
 | `.github/workflows/<exam>-lab-<N>.yml` | CI workflow |
 
 Create directories first:
@@ -89,7 +89,7 @@ mkdir -p <exam>/<N>/assets
 Rules:
 - If the source is killer.sh content, copy the question and answer **verbatim** — do not paraphrase.
 - Use fenced code blocks with language tags (`bash`, `yaml`).
-- YAML snippets for files in `course/` must show the path as a comment on the first line: `# <exam>/<N>/course/<file>.yaml`.
+- YAML snippets for files in `lab/` must show the path as a comment on the first line: `# <exam>/<N>/lab/<file>.yaml`.
 
 ## Step 6 — _check.py structure
 
