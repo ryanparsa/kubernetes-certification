@@ -29,15 +29,20 @@ docker exec "$NODE_NAME" crictl pull nginx:1.21
 # Create an untagged image
 # We pull a specific image, get its digest, remove the tag, and then pull by digest.
 # This ensures an image with <none>:<none> repoTags exists.
-# We use sed to filter out potential log messages (lines starting with EMMDD or level=...)
 UNTAGGED_IMAGE="busybox:1.36.1"
 docker exec "$NODE_NAME" crictl pull "$UNTAGGED_IMAGE"
-JSON_OUTPUT=$(docker exec "$NODE_NAME" sh -c "crictl images -o json")
-# Find the image ID for busybox:1.36.1 and get its repoDigest
-CLEAN_JSON=$(echo "$JSON_OUTPUT" | sed '/^[EWI][0-9]\{4\}/d; /^time=/d; /^level=/d')
-DIGEST=$(echo "$CLEAN_JSON" | jq -r --arg IMG "$UNTAGGED_IMAGE" '.images[] | select(.repoTags[] == $IMG) | .repoDigests[0]')
-docker exec "$NODE_NAME" crictl rmi "$UNTAGGED_IMAGE"
-docker exec "$NODE_NAME" crictl pull "$DIGEST"
+
+# Use inspecti to get the first repoDigest
+# We filter out potential log noise with sed
+INSPECT_JSON=$(docker exec "$NODE_NAME" sh -c "crictl inspecti $UNTAGGED_IMAGE")
+DIGEST=$(echo "$INSPECT_JSON" | sed '/^[EWI][0-9]\{4\}/d; /^time=/d; /^level=/d' | jq -r '.status.repoDigests[0]')
+
+if [ -n "$DIGEST" ] && [ "$DIGEST" != "null" ]; then
+  docker exec "$NODE_NAME" crictl rmi "$UNTAGGED_IMAGE"
+  docker exec "$NODE_NAME" crictl pull "$DIGEST"
+else
+  echo "Warning: Could not determine digest for $UNTAGGED_IMAGE"
+fi
 
 # Create directory for the task output on the node
 docker exec "$NODE_NAME" mkdir -p /opt/course/123
