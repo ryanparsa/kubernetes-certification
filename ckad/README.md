@@ -78,3 +78,16 @@
 - NetworkPolicy: `podSelector`, `namespaceSelector`, `ipBlock`, ingress/egress rules, `ports[].protocol` uppercase
 - DNS: `<service>.<namespace>.svc.cluster.local`; pod DNS policy (`ClusterFirst`, `None`)
 - Service discovery via environment variables vs DNS
+
+---
+
+## Lab Index
+
+| Question Source | Question Number | Directory | Status | Lab   | Check |
+|-----------------|-----------------|-----------|--------|-------|-------|
+| Simulator A     | Question 1      | `1`       | Todo   |       |       |
+| ...             | ...             | ...       | ...    |       |       |
+| Simulator B     | Question 1      | `18`      | Todo   |       |       |
+| ...             | ...             | ...       | ...    |       |       |
+| Simulator B     | Question 17     | `34`      | Todo   |       |       |
+| Simulator C     | Question 1      | `35`      | Done   | Ready | Ready |

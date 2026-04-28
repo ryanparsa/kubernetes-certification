@@ -2,19 +2,19 @@
 
 > **Solve this question on:** `ckad-lab-35`
 
-Create a simple batch processing task to demonstrate the Job resource type.
+Create a simple batch processing task to demonstrate the *Job* resource type.
 
-Create a Kubernetes Job named `hello-job` in the `networking` namespace that runs a pod with the `busybox` image.
+Create a *Kubernetes* *Job* named `hello-job` in the `networking` *Namespace* that runs a *Pod* with the `busybox` image.
 
-The job should execute a single command that prints `Hello from Kubernetes job!` to standard output, and then completes successfully.
+The *Job* should execute a single command that prints `Hello from Kubernetes job!` to standard output, and then completes successfully.
 
-Configure the job to:
+Configure the *Job* to:
 
 1. Run only once and not be restarted after completion
-2. Have a deadline of `30` seconds (the job will be terminated if it doesn't complete within this time)
-3. Use `Never` as the restart policy for the pod
+2. Have a deadline of `30` seconds (the *Job* will be terminated if it doesn't complete within this time)
+3. Use `Never` as the `restartPolicy` for the *Pod*
 
-This job demonstrates the basic pattern for one-time task execution in Kubernetes.
+This *Job* demonstrates the basic pattern for one-time task execution in *Kubernetes*.
 
 ---
 

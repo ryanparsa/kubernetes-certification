@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LAB_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$LAB_DIR")"
+EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
+
+if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
+  kind delete cluster --name "$CLUSTER_NAME"
+fi
+
+rm -rf "$LAB_DIR/lab"
+rm -f "$SCRIPT_DIR/kubeconfig.yaml"
+
+echo "Lab torn down."
