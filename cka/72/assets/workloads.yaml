@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-r500
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-desktop
+  namespace: project-r500
+  labels:
+    app: web-desktop
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-mobile
+  namespace: project-r500
+  labels:
+    app: web-mobile
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-desktop
+  namespace: project-r500
+spec:
+  selector:
+    app: web-desktop
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-mobile
+  namespace: project-r500
+spec:
+  selector:
+    app: web-mobile
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

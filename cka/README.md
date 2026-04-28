@@ -129,3 +129,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full lab structure, file templ
 | Simulator A Preview | Question 2      | `36`      | Done   | Ready | Ready |
 | Simulator A Preview | Question 3      | `37`      | Done   | Ready | Ready |
 
+| Simulator B Preview | Question 1      | `72`      | Done   | Ready | Ready |
