@@ -47,7 +47,7 @@ spec:
 EOF
 
 # Wait for deployment
-kubectl rollout status deployment/api-new-c32 -n neptune --timeout=60s
+kubectl rollout status deployment/api-new-c32 -n neptune --timeout=300s
 
 mkdir -p "$SCRIPT_DIR/../lab"
 echo "Lab ready! Run: export KUBECONFIG=$KUBECONFIG_FILE"
