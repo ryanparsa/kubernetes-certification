@@ -18,7 +18,7 @@ class TestDeploymentRollback(unittest.TestCase):
     def test_deployment_image_rolled_back(self):
         # Check the image of the deployment
         image = kubectl("get", "deployment", "api-new-c32", "-n", "neptune", "-o", "jsonpath={.spec.template.spec.containers[0].image}")
-        self.assertEqual(image, "httpd:2.4.40-alpine", f"Deployment image is {image}, expected httpd:2.4.40-alpine")
+        self.assertEqual(image, "httpd:2.4.39-alpine", f"Deployment image is {image}, expected httpd:2.4.39-alpine")
 
     def test_pods_image_rolled_back(self):
         # Check the image of all pods in the deployment
@@ -26,7 +26,7 @@ class TestDeploymentRollback(unittest.TestCase):
         pods = json.loads(output)
         for pod in pods.get("items", []):
             image = pod["spec"]["containers"][0]["image"]
-            self.assertEqual(image, "httpd:2.4.40-alpine", f"Pod {pod['metadata']['name']} image is {image}, expected httpd:2.4.40-alpine")
+            self.assertEqual(image, "httpd:2.4.39-alpine", f"Pod {pod['metadata']['name']} image is {image}, expected httpd:2.4.39-alpine")
 
     def test_rollout_history_exists(self):
         # Check if there is rollout history (at least 2 revisions should have existed at some point)

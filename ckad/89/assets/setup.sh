@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: httpd
-        image: httpd:2.4.40-alpine
+        image: httpd:2.4.39-alpine
 EOF
 
 # Wait for deployment

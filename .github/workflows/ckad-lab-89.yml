@@ -23,9 +23,9 @@ jobs:
 
       - name: Pre-pull images
         run: |
-          docker pull httpd:2.4.40-alpine
+          docker pull httpd:2.4.39-alpine
           docker pull httpd:2.4.41-alpine
-          kind load docker-image httpd:2.4.40-alpine --name ckad-lab-89
+          kind load docker-image httpd:2.4.39-alpine --name ckad-lab-89
           kind load docker-image httpd:2.4.41-alpine --name ckad-lab-89
 
       - name: Setup environment
