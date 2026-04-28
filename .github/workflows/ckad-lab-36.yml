@@ -1,0 +1,28 @@
+name: CKAD Lab 36
+
+on:
+  push:
+    paths: ['ckad/36/**', '.github/workflows/ckad-lab-36.yml']
+  pull_request:
+    paths: ['ckad/36/**', '.github/workflows/ckad-lab-36.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No Kind cluster needed for this host-only Docker task
+
+      - name: Setup lab assets
+        run: bash ckad/36/assets/setup.sh
+
+      - name: Apply solution
+        run: bash ckad/36/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/36/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/36/assets/cleanup.sh
