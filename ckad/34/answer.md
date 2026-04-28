@@ -44,6 +44,6 @@ kubectl describe ingress api-ingress -n networking
 
 ## Checklist (Score: 0/3)
 
-- [ ] Ingress `api-ingress` exists in namespace `networking`
-- [ ] Ingress routes traffic for host `api.example.com`
-- [ ] Ingress backend points to service `api-service` on port `80`
+- [ ] *Ingress* `api-ingress` exists in *Namespace* `networking`
+- [ ] *Ingress* routes traffic for host `api.example.com`
+- [ ] *Ingress* backend points to *Service* `api-service` on port `80`
