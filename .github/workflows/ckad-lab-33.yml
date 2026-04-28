@@ -1,0 +1,38 @@
+name: CKAD Lab 33
+
+on:
+  push:
+    paths: ['ckad/33/**', '.github/workflows/ckad-lab-33.yml']
+  pull_request:
+    paths: ['ckad/33/**', '.github/workflows/ckad-lab-33.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/33/assets/kind-config.yaml
+          cluster_name: ckad-lab-33
+
+      - name: Seed environment
+        run: |
+          mkdir -p ckad/33/lab
+          kind get kubeconfig --name ckad-lab-33 > ckad/33/lab/kubeconfig.yaml
+          kubectl --kubeconfig ckad/33/lab/kubeconfig.yaml apply -f ckad/33/assets/workloads.yaml
+          kubectl --kubeconfig ckad/33/lab/kubeconfig.yaml wait deployment web-frontend -n networking --for=condition=Available --timeout=60s
+
+      - name: Apply solution
+        run: bash ckad/33/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/33/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/33/assets/cleanup.sh
