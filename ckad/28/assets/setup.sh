@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
+EXAM="$(basename "$(dirname "$TASK_DIR")")"
+CLUSTER_NAME="$EXAM-lab-$LAB_ID"
+KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
+
+for cmd in kind kubectl docker; do
+  command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
+done
+
+mkdir -p "$TASK_DIR/lab"
+kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+
+echo "Waiting for CoreDNS to be ready..."
+kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n kube-system deployment/coredns --timeout=120s
+
+echo ""
+echo "Lab ready!"
+echo ""
+echo "Run this to set your kubeconfig:"
+echo "  export KUBECONFIG=$KUBECONFIG_FILE"
