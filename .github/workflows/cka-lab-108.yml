@@ -1,0 +1,34 @@
+name: CKA Lab 108
+
+on:
+  push:
+    paths: ['cka/108/**', '.github/workflows/cka-lab-108.yml']
+  pull_request:
+    paths: ['cka/108/**', '.github/workflows/cka-lab-108.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/108/assets/kind-config.yaml
+          cluster_name: cka-lab-108
+
+      - name: Set KUBECONFIG
+        run: |
+          kind get kubeconfig --name cka-lab-108 > cka/108/assets/kubeconfig.yaml
+          echo "KUBECONFIG=$(pwd)/cka/108/assets/kubeconfig.yaml" >> $GITHUB_ENV
+
+      - name: Apply solution
+        run: bash cka/108/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/108/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/108/assets/cleanup.sh
