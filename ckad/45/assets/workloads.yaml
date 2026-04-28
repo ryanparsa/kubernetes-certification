@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: troubleshooting
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-deployment
+  namespace: troubleshooting
+  labels:
+    app: broken-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: broken-deployment
+  template:
+    metadata:
+      labels:
+        app: broken-deployment
+    spec:
+      containers:
+      - name: nginx
+        image: nginxx:1.19
+        resources:
+          requests:
+            cpu: "100"
+            memory: "100Gi"
+          limits:
+            cpu: "200"
+            memory: "200Gi"

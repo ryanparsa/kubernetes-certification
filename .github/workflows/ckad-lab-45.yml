@@ -1,0 +1,41 @@
+name: CKAD Lab 45
+
+on:
+  push:
+    paths: ['ckad/45/**', '.github/workflows/ckad-lab-45.yml']
+  pull_request:
+    paths: ['ckad/45/**', '.github/workflows/ckad-lab-45.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/45/assets/kind-config.yaml
+          cluster_name: ckad-lab-45
+
+      - name: Provision lab
+        run: |
+          # Use the kubeconfig provided by the action
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash ckad/45/assets/setup.sh
+
+      - name: Apply solution
+        run: |
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash ckad/45/assets/fix.sh
+
+      - name: Run checks
+        run: |
+          export KUBECONFIG="${HOME}/.kube/config"
+          bash ckad/45/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/45/assets/cleanup.sh

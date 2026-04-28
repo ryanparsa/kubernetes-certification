@@ -2,16 +2,16 @@
 
 > **Solve this question on:** `ckad-lab-45`
 
-There is a deployment named `broken-deployment` in the `troubleshooting` namespace that is not functioning correctly. The deployment should have `3` replicas of `nginx:1.19` pods, but it's failing.
+There is a *Deployment* named `broken-deployment` in the `troubleshooting` *Namespace* that is not functioning correctly. The *Deployment* should have `3` replicas of `nginx:1.19` *Pods*, but it's failing.
 
-Find and fix the issue(s) with the deployment. Possible issues might include:
+Find and fix the issue(s) with the *Deployment*. Possible issues might include:
 
 - Incorrect image name or tag
 - Resource constraints that can't be satisfied
-- Configuration problems with the pod template
-- Network policy restrictions
+- Configuration problems with the *Pod* template
+- *NetworkPolicy* restrictions
 
-Ensure the deployment functions correctly with 3 replicas running.
+Ensure the *Deployment* functions correctly with 3 replicas running.
 
 ---
 
