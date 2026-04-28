@@ -1,0 +1,37 @@
+name: CKA Lab 102
+
+on:
+  push:
+    paths: ['cka/102/**', '.github/workflows/cka-lab-102.yml']
+  pull_request:
+    paths: ['cka/102/**', '.github/workflows/cka-lab-102.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/102/assets/kind-config.yaml
+          cluster_name: cka-lab-102
+
+      - name: Setup environment
+        run: |
+          mkdir -p cka/102/lab
+          kind get kubeconfig --name cka-lab-102 > cka/102/lab/kubeconfig.yaml
+          bash cka/102/assets/setup.sh
+
+      - name: Apply solution
+        run: bash cka/102/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/102/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/102/assets/cleanup.sh
