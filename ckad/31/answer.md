@@ -44,8 +44,8 @@ kubectl get networkpolicy allow-traffic -n networking
 kubectl describe networkpolicy allow-traffic -n networking
 ```
 
-## Checklist (Score: 0/3)
+## Checklist (Score: 3/3)
 
-- [ ] NetworkPolicy `allow-traffic` exists in namespace `networking`
-- [ ] NetworkPolicy selects pods with label `app=web`
-- [ ] NetworkPolicy allows ingress only from pods with label `tier=frontend` on TCP port `80`
+- [x] NetworkPolicy `allow-traffic` exists in namespace `networking`
+- [x] NetworkPolicy selects pods with label `app=web`
+- [x] NetworkPolicy allows ingress only from pods with label `tier=frontend` on TCP port `80`
