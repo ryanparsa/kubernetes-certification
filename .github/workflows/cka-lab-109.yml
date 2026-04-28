@@ -1,0 +1,35 @@
+name: CKA Lab 109
+
+on:
+  push:
+    paths: ['cka/109/**', '.github/workflows/cka-lab-109.yml']
+  pull_request:
+    paths: ['cka/109/**', '.github/workflows/cka-lab-109.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/109/assets/kind-config.yaml
+          cluster_name: cka-lab-109
+
+      - name: Setup lab
+        run: |
+          kind get kubeconfig --name cka-lab-109 > cka/109/assets/kubeconfig.yaml
+          # Pre-seed workloads
+          kubectl apply -f cka/109/assets/workloads.yaml
+
+      - name: Apply solution
+        run: bash cka/109/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/109/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/109/assets/cleanup.sh
