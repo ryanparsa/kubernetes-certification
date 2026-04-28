@@ -18,6 +18,9 @@ jobs:
           config: cka/196/assets/kind-config.yaml
           cluster_name: cka-lab-196
 
+      - name: Setup lab resources
+        run: bash cka/196/assets/setup.sh
+
       - name: Apply solution
         run: bash cka/196/assets/fix.sh
 
