@@ -6,7 +6,7 @@
 
 ```bash
 kubectl set image deployment/api-new-c32 \
-  <container-name>=httpd:2.4.41-alpine \
+  httpd=httpd:2.4.41-alpine \
   -n neptune
 
 kubectl rollout status deployment/api-new-c32 -n neptune
