@@ -2,13 +2,13 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/workloads/controllers/job/
 
-### Create the namespace (if not present)
+### Create the *Namespace* (if not present)
 
 ```bash
 kubectl create namespace networking --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-### Create the Job
+### Create the *Job*
 
 ```yaml
 # lab/hello-job.yaml
@@ -43,6 +43,6 @@ kubectl logs -n networking -l job-name=hello-job
 
 ## Checklist (Score: 0/3)
 
-- [ ] Job `hello-job` exists in namespace `networking`
-- [ ] Job uses image `busybox`, has `activeDeadlineSeconds: 30`, and `restartPolicy: Never`
-- [ ] Job completes successfully and logs show `Hello from Kubernetes job!`
+- [ ] *Job* `hello-job` exists in *Namespace* `networking`
+- [ ] *Job* uses image `busybox`, has `activeDeadlineSeconds: 30`, and `restartPolicy: Never`
+- [ ] *Job* completes successfully and logs show `Hello from Kubernetes job!`
