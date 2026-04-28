@@ -4,12 +4,20 @@ import subprocess
 import unittest
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-KUBECONFIG = os.path.join(SCRIPT_DIR, "kubeconfig.yaml")
+# Use local kubeconfig if it exists, otherwise rely on environment (CI)
+KUBECONFIG = os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml")
+if not os.path.exists(KUBECONFIG):
+    KUBECONFIG = os.environ.get("KUBECONFIG", "")
+
 LAB_DIR = os.path.join(SCRIPT_DIR, "..", "lab")
 
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if KUBECONFIG:
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        cmd,
         capture_output=True, text=True,
     )
     return result
