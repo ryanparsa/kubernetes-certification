@@ -2,13 +2,13 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/configuration/configmap/
 
-### Create the namespace
+### Create the *Namespace*
 
 ```bash
 kubectl create namespace configuration
 ```
 
-### Create the ConfigMap
+### Create the *ConfigMap*
 
 ```bash
 kubectl create configmap app-config -n configuration \
@@ -17,7 +17,7 @@ kubectl create configmap app-config -n configuration \
   --from-literal=DB_NAME=myapp
 ```
 
-### Create the Secret
+### Create the *Secret*
 
 ```bash
 kubectl create secret generic app-secret -n configuration \
@@ -25,7 +25,7 @@ kubectl create secret generic app-secret -n configuration \
   --from-literal=DB_PASSWORD=s3cr3t
 ```
 
-### Create the Pod using ConfigMap and Secret
+### Create the *Pod* using *ConfigMap* and *Secret*
 
 ```yaml
 # lab/40.yaml
@@ -65,8 +65,8 @@ kubectl exec app-pod -n configuration -- ls /etc/app-secret
 
 ## Checklist (Score: 0/5)
 
-- [ ] Namespace `configuration` exists
-- [ ] ConfigMap `app-config` has correct data (`DB_HOST`, `DB_PORT`, `DB_NAME`)
-- [ ] Secret `app-secret` has correct data (`DB_USER`, `DB_PASSWORD`)
-- [ ] Pod `app-pod` uses ConfigMap as environment variables
-- [ ] Pod `app-pod` mounts Secret as volume at `/etc/app-secret`
+- [ ] *Namespace* `configuration` exists
+- [ ] *ConfigMap* `app-config` has correct data (`DB_HOST`, `DB_PORT`, `DB_NAME`)
+- [ ] *Secret* `app-secret` has correct data (`DB_USER`, `DB_PASSWORD`)
+- [ ] *Pod* `app-pod` uses *ConfigMap* as environment variables
+- [ ] *Pod* `app-pod` mounts *Secret* as *Volume* at `/etc/app-secret`
