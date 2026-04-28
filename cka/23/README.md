@@ -13,4 +13,4 @@ Create a *Pod* called `success` in `default` *Namespace* of image `nginx:1-alpin
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

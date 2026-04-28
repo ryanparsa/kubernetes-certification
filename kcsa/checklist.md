@@ -1,8 +1,8 @@
 # KCSA Exam Checklist: 310 Items
 
-**60 questions · 90 minutes · 75% passing score · $250 USD (one free retake) · 2-year validity**
+**60 questions ? 90 minutes ? 75% passing score ? $250 USD (one free retake) ? 2-year validity**
 
-Domain weights: Cluster Component Security 22% · Security Fundamentals 22% · Threat Model 16% · Platform Security 16% · Cloud Native Security Overview 14% · Compliance 10%
+Domain weights: Cluster Component Security 22% ? Security Fundamentals 22% ? Threat Model 16% ? Platform Security 16% ? Cloud Native Security Overview 14% ? Compliance 10%
 
 Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
@@ -12,7 +12,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 ### The 4Cs of Cloud Native Security
 
-- [ ]  001. Understand the 4Cs layered model: Cloud → Cluster → Container → Code
+- [ ]  001. Understand the 4Cs layered model: Cloud -> Cluster -> Container -> Code
 - [ ]  002. Know that each outer layer protects inner layers, but inner-layer security cannot compensate for outer-layer vulnerabilities
 - [ ]  003. Understand defense in depth as applying multiple independent security controls at every layer
 - [ ]  004. Know the Cloud layer responsibilities: physical security, hypervisor, network infrastructure, IAM
@@ -33,12 +33,12 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 ### Security Principles and Paradigms
 
-- [ ]  016. Understand zero trust: never trust, always verify — all communication authenticated and authorized
+- [ ]  016. Understand zero trust: never trust, always verify -- all communication authenticated and authorized
 - [ ]  017. Know identity-based security vs. network-perimeter-based security
 - [ ]  018. Understand microsegmentation of network traffic as a zero trust implementation
 - [ ]  019. Know shift-left security: applying security early in the development lifecycle
-- [ ]  020. Understand "Security by Design" — security as a requirement from project inception
-- [ ]  021. Know DevSecOps principles: security integrated into every SDLC phase (Develop → Distribute → Deploy → Runtime)
+- [ ]  020. Understand "Security by Design" -- security as a requirement from project inception
+- [ ]  021. Know DevSecOps principles: security integrated into every SDLC phase (Develop -> Distribute -> Deploy -> Runtime)
 - [ ]  022. Understand shared responsibility between Dev, Sec, and Ops teams
 - [ ]  023. Know automated security gates in CI/CD pipelines
 - [ ]  024. Understand immutable infrastructure and configuration drift reconciliation
@@ -75,7 +75,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 ### API Server Security
 
 - [ ]  041. Know that the kube-apiserver is the only component communicating directly with etcd
-- [ ]  042. Understand the API request pipeline: Authentication → Authorization → Admission Control
+- [ ]  042. Understand the API request pipeline: Authentication -> Authorization -> Admission Control
 - [ ]  043. Know flag `--anonymous-auth=false` to disable unauthenticated access
 - [ ]  044. Know flag `--insecure-port=0` to disable the insecure HTTP port
 - [ ]  045. Know flag `--secure-port=6443` as the default HTTPS API port
@@ -94,7 +94,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 ### etcd Security
 
-- [ ]  058. Know that etcd stores ALL cluster state — access to etcd equals root access to the cluster
+- [ ]  058. Know that etcd stores ALL cluster state -- access to etcd equals root access to the cluster
 - [ ]  059. Know client-to-server TLS flags: `--cert-file`, `--key-file`, `--client-cert-auth=true`, `--trusted-ca-file`
 - [ ]  060. Know peer-to-peer TLS flags: `--peer-cert-file`, `--peer-key-file`, `--peer-client-cert-auth`, `--peer-trusted-ca-file`
 - [ ]  061. Know that etcd should be isolated behind a firewall with only API server access
@@ -109,7 +109,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 - [ ]  068. Know the kubelet is the node agent managing pods and exposing a REST API
 - [ ]  069. Know flag `--anonymous-auth=false` (kubelet default allows unauthenticated access)
-- [ ]  070. Know flag `--authorization-mode=Webhook` (kubelet default is AlwaysAllow — dangerous)
+- [ ]  070. Know flag `--authorization-mode=Webhook` (kubelet default is AlwaysAllow -- dangerous)
 - [ ]  071. Know flag `--read-only-port=0` to disable the unauthenticated read-only port (default 10255)
 - [ ]  072. Know flag `--protect-kernel-defaults=true`
 - [ ]  073. Know flag `--rotate-certificates=true` for automatic certificate rotation
@@ -136,7 +136,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 - [ ]  086. Know supported runtimes: containerd (most common), CRI-O, Docker Engine (via CRI)
 - [ ]  087. Understand the Container Runtime Interface (CRI) standard API between kubelet and runtime
-- [ ]  088. Know that the container runtime socket must be protected — restrict filesystem access to root
+- [ ]  088. Know that the container runtime socket must be protected -- restrict filesystem access to root
 - [ ]  089. Know RuntimeClass resource for configuring different runtimes per Pod (gVisor, Kata Containers)
 - [ ]  090. Understand that `runc` is the default OCI-standard runtime when no RuntimeClass is specified
 
@@ -146,7 +146,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 - [ ]  092. Know `allowPrivilegeEscalation: false` and `privileged: false`
 - [ ]  093. Know `capabilities: { drop: ["ALL"] }` and selective capability additions
 - [ ]  094. Understand `automountServiceAccountToken: false` for pods that don't need API access
-- [ ]  095. Know about static Pods: managed by kubelet, not API server — potential bypass risk
+- [ ]  095. Know about static Pods: managed by kubelet, not API server -- potential bypass risk
 
 ### Container Networking
 
@@ -158,7 +158,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 ### Client Security and Storage
 
-- [ ]  101. Know to secure kubeconfig files — they contain cluster credentials
+- [ ]  101. Know to secure kubeconfig files -- they contain cluster credentials
 - [ ]  102. Understand `imagePullSecrets` for authenticating to private registries
 - [ ]  103. Know Secrets Store CSI Driver for injecting external secrets as mounted volumes
 - [ ]  104. Know to mount secrets as volumes (preferably in-memory tmpfs) rather than environment variables
@@ -167,7 +167,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 ### Default Kubernetes Ports to Protect
 
 - [ ]  106. Know API server: 6443
-- [ ]  107. Know etcd: 2379–2380
+- [ ]  107. Know etcd: 2379-2380
 - [ ]  108. Know kubelet authenticated: 10250; read-only: 10255 (should be disabled)
 - [ ]  109. Know scheduler: 10259; controller manager: 10257
 
@@ -198,7 +198,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 - [ ]  122. Know OIDC authentication for external identity providers (Azure AD, Google, Okta)
 - [ ]  123. Know Webhook Token Authentication via `--authentication-token-webhook-config-file`
 - [ ]  124. Know that anonymous requests map to `system:unauthenticated` group
-- [ ]  125. Understand that Kubernetes does NOT store user objects — users are managed externally
+- [ ]  125. Understand that Kubernetes does NOT store user objects -- users are managed externally
 
 ### Authorization (RBAC)
 
@@ -214,7 +214,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 - [ ]  135. Know dangerous subresources: `pods/exec`, `pods/attach`, `pods/portforward`, `nodes/proxy`
 - [ ]  136. Know to use namespace-scoped Roles over ClusterRoles whenever possible
 - [ ]  137. Know to avoid wildcards (`*`) in apiGroups, resources, and verbs
-- [ ]  138. Know that `system:masters` group bypasses all RBAC — never add regular users to it
+- [ ]  138. Know that `system:masters` group bypasses all RBAC -- never add regular users to it
 - [ ]  139. Know `kubectl auth can-i --as=<user>` for permission testing
 - [ ]  140. Understand Aggregated ClusterRoles that combine multiple ClusterRoles via label selectors
 - [ ]  141. Know other authorization modes: ABAC, Webhook, Node, AlwaysAllow/AlwaysDeny
@@ -243,10 +243,10 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 - [ ]  156. Know audit log stages: RequestReceived, ResponseStarted, ResponseComplete, Panic
 - [ ]  157. Know audit levels: None, Metadata, Request, RequestResponse
-- [ ]  158. Know audit policy resource (`audit.k8s.io/v1` Kind: Policy) — rules evaluated in order, first match wins
+- [ ]  158. Know audit policy resource (`audit.k8s.io/v1` Kind: Policy) -- rules evaluated in order, first match wins
 - [ ]  159. Know audit backends: Log Backend (local filesystem) and Webhook Backend (remote HTTP API)
 - [ ]  160. Know best practices: log Secrets at Metadata level, RBAC changes at RequestResponse, skip health checks
-- [ ]  161. Understand cloud-managed audit logging: EKS → CloudWatch, GKE → Cloud Logging, AKS → Azure Monitor
+- [ ]  161. Understand cloud-managed audit logging: EKS -> CloudWatch, GKE -> Cloud Logging, AKS -> Azure Monitor
 - [ ]  162. Know log forwarding tools: Fluentd, Fluent Bit, Filebeat to centralized logging (ELK, Splunk, Loki)
 - [ ]  163. Know security monitoring alerts: unauthorized access, RBAC changes, secret access, pod exec, excessive 403 errors
 
@@ -254,7 +254,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 - [ ]  164. Know NetworkPolicy is a namespaced resource in `networking.k8s.io/v1`
 - [ ]  165. Know that network policies act as L3/L4 firewalls at the pod level using label selectors
-- [ ]  166. Know policies work additively (union) — if any policy allows traffic, it's permitted
+- [ ]  166. Know policies work additively (union) -- if any policy allows traffic, it's permitted
 - [ ]  167. Know the default-deny-all pattern: `podSelector: {}` with empty ingress/egress
 - [ ]  168. Know policy components: `podSelector`, `policyTypes`, `ingress.from`, `egress.to`, `ports`
 - [ ]  169. Know selector types: `podSelector`, `namespaceSelector`, `ipBlock` (with CIDR and `except`)
@@ -272,7 +272,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 - [ ]  174. Know node trust boundary: between control plane and worker nodes
 - [ ]  175. Know namespace trust boundary: between different namespaces
 - [ ]  176. Know pod trust boundary: between container and host kernel
-- [ ]  177. Understand critical data flows: API server ↔ etcd, kubelet ↔ API server, pod-to-pod, external-to-ingress
+- [ ]  177. Understand critical data flows: API server ? etcd, kubelet ? API server, pod-to-pod, external-to-ingress
 
 ### STRIDE Applied to Kubernetes
 
@@ -380,9 +380,9 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 - [ ]  245. Know Tetragon: eBPF-based runtime security tool from the Cilium project
 - [ ]  246. Know KubeArmor: runtime security using eBPF, AppArmor, SELinux for process/file/network monitoring
 - [ ]  247. Know Prometheus metrics for security: API request rates, auth failures, authorization denials
-- [ ]  248. Know centralized logging: Fluentd/Fluent Bit → Elasticsearch/Loki/Splunk
+- [ ]  248. Know centralized logging: Fluentd/Fluent Bit -> Elasticsearch/Loki/Splunk
 - [ ]  249. Know OpenTelemetry for correlating security alerts with traces and metrics
-- [ ]  250. Understand incident response: detect via Falco → correlate events → isolate workloads → preserve evidence
+- [ ]  250. Understand incident response: detect via Falco -> correlate events -> isolate workloads -> preserve evidence
 
 ### Service Mesh
 
@@ -464,7 +464,7 @@ Study tip: Domains 2+3 together = 44% of the exam. Prioritize those first.
 
 ### Supply Chain Compliance
 
-- [ ]  301. Know SLSA framework requirements for software artifact integrity (Levels 1–4)
+- [ ]  301. Know SLSA framework requirements for software artifact integrity (Levels 1-4)
 - [ ]  302. Know SBOM regulatory mandates: US Executive Order 14028, EU Cyber Resilience Act
 - [ ]  303. Know OpenSSF Scorecards: rates open-source projects on security practices
 

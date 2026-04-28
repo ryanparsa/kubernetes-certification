@@ -12,4 +12,4 @@ Write these information into `cka/35/lab/etcd-info.txt`
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

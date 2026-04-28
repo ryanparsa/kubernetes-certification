@@ -15,23 +15,23 @@
 
 | Domain | Weight |
 |---|---|
-| Kubernetes Fundamentals | 44%–46% |
-| Container Orchestration | 22%–28% |
-| Cloud Native Architecture (incl. Observability) | 12%–16% |
-| Cloud Native Application Delivery | 8%–16% |
+| Kubernetes Fundamentals | 44%-46% |
+| Container Orchestration | 22%-28% |
+| Cloud Native Architecture (incl. Observability) | 12%-16% |
+| Cloud Native Application Delivery | 8%-16% |
 
 > **Note:** The standalone "Cloud Native Observability" domain was merged into "Cloud Native Architecture" starting in 2025.
 
 ## Domain Topics
 
-### Kubernetes Fundamentals (44%–46%)
+### Kubernetes Fundamentals (44%-46%)
 - Cluster architecture: control plane (API server, etcd, scheduler, controller-manager) and worker nodes (kubelet, kube-proxy)
-- Pod lifecycle: Pending → Running → Succeeded / Failed / Unknown
+- Pod lifecycle: Pending -> Running -> Succeeded / Failed / Unknown
 - Workloads: Deployment, ReplicaSet, StatefulSet, DaemonSet, Job, CronJob
 - Services: ClusterIP, NodePort, LoadBalancer, ExternalName, Headless
 - Namespaces, Labels, Annotations, Label Selectors
 - Resource model: requests vs limits, LimitRange, ResourceQuota
-- Probes: liveness, readiness, startup — exec, httpGet, tcpSocket
+- Probes: liveness, readiness, startup - exec, httpGet, tcpSocket
 - ConfigMap and Secret: creation, env injection, volume mount
 - RBAC: Role, RoleBinding, ClusterRole, ClusterRoleBinding, ServiceAccount
 - Taints, tolerations, node affinity, pod affinity/anti-affinity
@@ -41,7 +41,7 @@
 - Static pods, init containers, ephemeral containers
 - Declarative vs imperative model; reconciliation loop
 
-### Container Orchestration (22%–28%)
+### Container Orchestration (22%-28%)
 - Container runtime: containerd, CRI-O, OCI spec
 - Container vs VM: namespaces, cgroups, image layers
 - Multi-container pod patterns: sidecar, init, ambassador, adapter
@@ -52,7 +52,7 @@
 - Horizontal Pod Autoscaler (HPA) and Vertical Pod Autoscaler (VPA) concepts
 - Cluster autoscaling concepts
 
-### Cloud Native Architecture (incl. Observability) (12%–16%)
+### Cloud Native Architecture (incl. Observability) (12%-16%)
 - Cloud native principles: microservices, 12-factor app, loose coupling
 - Service mesh concepts: mTLS, traffic management, observability (Istio, Linkerd)
 - Serverless concepts: FaaS, event-driven, Knative
@@ -62,7 +62,7 @@
 - Alerting, dashboards (Grafana)
 - Cloud native storage: object storage, block storage, CSI drivers
 
-### Cloud Native Application Delivery (8%–16%)
+### Cloud Native Application Delivery (8%-16%)
 - Helm: install, upgrade, rollback, uninstall; `helm repo add/update`; `values.yaml` vs `--set`
 - CI/CD pipeline concepts: build, test, deploy stages
 - GitOps workflow: PR-based deployments, drift detection

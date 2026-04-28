@@ -10,4 +10,4 @@ Write the result into file `lab/result.json`.
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

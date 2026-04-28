@@ -1,6 +1,6 @@
 ## Answer
 
-### Step 1 — Stop the Scheduler
+### Step 1 - Stop the Scheduler
 
 First we find the controlplane *Node*:
 
@@ -34,7 +34,7 @@ kubectl -n kube-system get pod | grep schedule
 > [!NOTE]
 > In this environment `docker exec` is used to access the kind node. In the real exam you would use `ssh` and `sudo -i`.
 
-### Step 2 — Create a *Pod*
+### Step 2 - Create a *Pod*
 
 Now we create the *Pod*:
 
@@ -51,7 +51,7 @@ NAME              READY   STATUS    RESTARTS   AGE   IP       NODE    ...
 manual-schedule   0/1     Pending   0          14s   <none>   <none>  ...
 ```
 
-### Step 3 — Manually Schedule the *Pod*
+### Step 3 - Manually Schedule the *Pod*
 
 Let's play the scheduler now:
 
@@ -111,7 +111,7 @@ manual-schedule   1/1     Running   ...   cka-lab-control-plane
 
 It looks like our *Pod* is running on the controlplane now as requested, although no tolerations were specified. Only the scheduler takes taints/tolerations/affinity into account when finding the correct *Node* name. That's why it's still possible to assign *Pods* manually directly to a controlplane *Node* and skip the scheduler.
 
-### Step 4 — Start the Scheduler Again
+### Step 4 - Start the Scheduler Again
 
 Move the manifest back:
 

@@ -43,7 +43,7 @@ service kubelet status
 ```
 
 ```
-○ kubelet.service - kubelet: The Kubernetes Node Agent
+o kubelet.service - kubelet: The Kubernetes Node Agent
      Loaded: loaded (/usr/lib/systemd/system/kubelet.service; enabled; preset: enabled)
     Drop-In: /usr/lib/systemd/system/kubelet.service.d
              └─10-kubeadm.conf
@@ -69,7 +69,7 @@ service kubelet status
 ```
 
 ```
-● kubelet.service - kubelet: The Kubernetes Node Agent
+* kubelet.service - kubelet: The Kubernetes Node Agent
      Loaded: loaded (/usr/lib/systemd/system/kubelet.service; enabled; preset: enabled)
     Drop-In: /usr/lib/systemd/system/kubelet.service.d
              └─10-kubeadm.conf
@@ -173,7 +173,7 @@ service kubelet status
 ```
 
 ```
-● kubelet.service - kubelet: The Kubernetes Node Agent
+* kubelet.service - kubelet: The Kubernetes Node Agent
      Loaded: loaded (/usr/lib/systemd/system/kubelet.service; enabled; preset: enabled)
     Drop-In: /usr/lib/systemd/system/kubelet.service.d
              └─10-kubeadm.conf

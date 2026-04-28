@@ -12,7 +12,7 @@ and jq patterns for common Kubernetes objects.
 | `-o wide` | Extra columns (node, IP, nominated node, etc.) |
 | `-o yaml` | Full resource as YAML |
 | `-o json` | Full resource as JSON |
-| `-o name` | Just `kind/name` — useful for scripting |
+| `-o name` | Just `kind/name` - useful for scripting |
 | `-o jsonpath='...'` | Extract specific fields with JSONPath |
 | `-o jsonpath-file=file` | Read JSONPath expression from a file |
 | `-o custom-columns=...` | Table with custom column definitions |
@@ -48,7 +48,7 @@ kubectl get pod -A --sort-by=.metadata.name
 # Sort pods by uid
 kubectl get pod -A --sort-by=.metadata.uid
 
-# Sort nodes by memory capacity (descending not supported natively — pipe to sort)
+# Sort nodes by memory capacity (descending not supported natively - pipe to sort)
 kubectl get nodes --sort-by=.status.capacity.memory
 
 # Sort events by last timestamp
@@ -226,7 +226,7 @@ kubectl get pods -A -o json | \
 
 ---
 
-## 7. `kubectl top` — Resource Usage
+## 7. `kubectl top` - Resource Usage
 
 `kubectl top` shows live CPU and memory consumption from **metrics-server**. If
 metrics-server is not installed the command fails with `Metrics API not available`.
@@ -252,7 +252,7 @@ kubectl top pod -n kube-system
 # Show containers individually within each pod
 kubectl top pod -A --containers
 
-# Sort by CPU (highest first) — pipe to sort; --sort-by not supported for top
+# Sort by CPU (highest first) - pipe to sort; --sort-by not supported for top
 kubectl top pod -A --no-headers | sort -k3 -rn | head -10
 
 # Sort by memory
@@ -283,9 +283,9 @@ kubectl get apiservice v1beta1.metrics.k8s.io -o yaml
 | Field | `kubectl top node` | `kubectl top pod` |
 |---|---|---|
 | `CPU(cores)` | millicores used by all processes | millicores used by all containers |
-| `CPU%` | % of node allocatable CPU | — |
+| `CPU%` | % of node allocatable CPU | - |
 | `MEMORY(bytes)` | working set memory | working set memory |
-| `MEMORY%` | % of node allocatable memory | — |
+| `MEMORY%` | % of node allocatable memory | - |
 
 > `kubectl top` reflects the **current instant** (a scrape from metrics-server).
 > For trends and history, use Prometheus + Grafana or `kubectl describe node` for

@@ -14,8 +14,8 @@ Update the *ConfigMap* used by the *Deployment* with the correct FQDN values for
 Ensure the *Deployment* works with the updated values.
 
 > [!NOTE]
-> ℹ️ You can use `nslookup` or `dig` inside a *Pod* of the `controller` *Deployment*
+> [i] You can use `nslookup` or `dig` inside a *Pod* of the `controller` *Deployment*
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

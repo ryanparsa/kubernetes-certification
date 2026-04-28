@@ -1,4 +1,4 @@
-# KCNA Progression Checklist: 78% → 90%
+# KCNA Progression Checklist: 78% -> 90%
 
 For candidates who already passed the basics. Focus on these 70 topics to close the gap from a passing score to a strong score.
 

@@ -21,7 +21,7 @@ spec:
   path: "/Volumes/Data"
 ```
 
-> ℹ️ Using the `hostPath` volume type presents many security risks, avoid if possible. Be aware that data stored in the hostPath directory will not be shared across nodes. The data available for a Pod depends on which node the Pod is scheduled.
+> [i] Using the `hostPath` volume type presents many security risks, avoid if possible. Be aware that data stored in the hostPath directory will not be shared across nodes. The data available for a Pod depends on which node the Pod is scheduled.
 
 Then create it:
 

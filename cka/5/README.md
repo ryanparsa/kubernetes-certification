@@ -18,4 +18,4 @@ Using the Kustomize config at `cka/5/lab/api-gateway` do the following:
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

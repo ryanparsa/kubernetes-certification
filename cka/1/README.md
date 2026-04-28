@@ -10,4 +10,4 @@ You're asked to extract the following information out of kubeconfig file `cka/1/
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

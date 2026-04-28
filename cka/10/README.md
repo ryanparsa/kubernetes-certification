@@ -6,4 +6,4 @@ Create a new *ServiceAccount* `processor` in *Namespace* `project-hamster`. Crea
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

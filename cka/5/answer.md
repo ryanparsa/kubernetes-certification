@@ -49,7 +49,7 @@ spec:
 
 Running `kubectl kustomize DIR` will build the whole Yaml based on whatever is defined in the `kustomization.yaml`.
 
-In the case above we did build for the base directory, which produces Yaml that is not expected to be deployed just like that. The base has no namespace set — the staging and prod overlays use a *NamespaceTransformer* to inject the correct namespace.
+In the case above we did build for the base directory, which produces Yaml that is not expected to be deployed just like that. The base has no namespace set - the staging and prod overlays use a *NamespaceTransformer* to inject the correct namespace.
 
 But for debugging it can be useful to build the base Yaml.
 

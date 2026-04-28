@@ -18,4 +18,4 @@ Deploy your changes, verify the *Job* completed once and the *PVC* was bound to 
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

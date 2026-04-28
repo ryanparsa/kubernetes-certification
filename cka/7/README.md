@@ -9,4 +9,4 @@ The metrics-server has been installed in the cluster. Write two bash scripts whi
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

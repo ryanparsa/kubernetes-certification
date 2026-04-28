@@ -63,7 +63,7 @@ N           " previous match
 " Search and replace
 :%s/old/new/g      " replace all occurrences in file
 :%s/old/new/gc     " replace all, ask for confirmation each time
-:10,20s/old/new/g  " replace in lines 10–20
+:10,20s/old/new/g  " replace in lines 10-20
 
 " Indentation (useful for YAML)
 >>          " indent line right (normal mode)
@@ -71,7 +71,7 @@ N           " previous match
 >}          " indent paragraph
 =G          " auto-indent from cursor to end of file
 
-" Multiple lines — visual block
+" Multiple lines - visual block
 Ctrl-v      " enter visual block mode
 <select lines with j/k>
 I           " insert at start of each selected line (press Esc when done)
@@ -126,7 +126,7 @@ grep -v "pattern" file.txt
 # Extended regex (|, +, ?, groups)
 grep -E "error|warning|failed" /var/log/syslog
 
-# Fixed string (no regex — faster for literal matches)
+# Fixed string (no regex - faster for literal matches)
 grep -F "192.168.1.1" file.txt
 
 # Count matching lines
@@ -140,7 +140,7 @@ grep -C 3 "pattern" file.txt   # 3 lines before and after
 # Match whole word only
 grep -w "port" file.txt
 
-# Quiet — exit code only (0 = found, 1 = not found)
+# Quiet - exit code only (0 = found, 1 = not found)
 grep -q "pattern" file.txt && echo "found"
 
 # Multiple patterns
@@ -212,7 +212,7 @@ find /var/log -name "*.log" -mmin -30
 ```bash
 # Print specific line(s)
 sed -n '10p' file.txt           # print line 10
-sed -n '10,20p' file.txt        # print lines 10–20
+sed -n '10,20p' file.txt        # print lines 10-20
 
 # In-place substitution
 sed -i 's/old/new/' file.txt            # replace first occurrence per line
@@ -278,7 +278,7 @@ tail -f /var/log/syslog /var/log/auth.log
 # First N lines
 head -n 20 file.txt
 
-# Combined: lines 10–30 of a file
+# Combined: lines 10-30 of a file
 sed -n '10,30p' file.txt
 ```
 
@@ -375,7 +375,7 @@ command 2>/dev/null            # discard stderr
 
 ## 9. Bash shortcuts and CLI productivity
 
-### Command-line editing (readline / emacs mode — default)
+### Command-line editing (readline / emacs mode - default)
 
 | Shortcut | Action |
 |---|---|
@@ -392,13 +392,13 @@ command 2>/dev/null            # discard stderr
 | `Ctrl+L` | **Clear** the screen (same as `clear`) |
 | `Ctrl+C` | **Cancel** current command |
 | `Ctrl+D` | **Logout** / send EOF (exits shell or ends input) |
-| `Ctrl+Z` | **Suspend** current foreground process → `fg` to resume |
+| `Ctrl+Z` | **Suspend** current foreground process -> `fg` to resume |
 
 ### History navigation
 
 | Shortcut | Action |
 |---|---|
-| `Ctrl+R` | **Reverse search** through history — type to filter, `Ctrl+R` again for next match, `Enter` to run, `Ctrl+G` to cancel |
+| `Ctrl+R` | **Reverse search** through history - type to filter, `Ctrl+R` again for next match, `Enter` to run, `Ctrl+G` to cancel |
 | `Ctrl+S` | Forward search through history (may need `stty -ixon` to enable) |
 | `Up` / `Down` | Walk through history one command at a time |
 | `!!` | Repeat **last command** |
@@ -441,7 +441,7 @@ Ctrl+Z             # suspend foreground process
 wait               # wait for all background jobs to finish
 ```
 
-### Multiplexing — tmux (available in exam environment)
+### Multiplexing - tmux (available in exam environment)
 
 ```bash
 # Start a new session (named)
@@ -518,7 +518,7 @@ kubectl run test --image=nginx --dry-run=client -o yaml | kubectl apply -f -
 
 ---
 
-## 10. Quick reference — exam tips
+## 10. Quick reference - exam tips
 
 ```bash
 # Open vim with YAML-friendly settings immediately

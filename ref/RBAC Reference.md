@@ -2,7 +2,7 @@
 
 RBAC (Role-Based Access Control) is the authorisation mechanism that controls what a
 subject (user, group, ServiceAccount) is allowed to do in the cluster. Every API request
-goes through: Authentication → Authorisation (RBAC) → Admission Control.
+goes through: Authentication -> Authorisation (RBAC) -> Admission Control.
 
 ---
 
@@ -22,7 +22,7 @@ goes through: Authentication → Authorisation (RBAC) → Admission Control.
 | `Role` | `RoleBinding` | Permissions in one Namespace only |
 | `ClusterRole` | `ClusterRoleBinding` | Permissions cluster-wide |
 | `ClusterRole` | `RoleBinding` | ClusterRole reused, but applied in one Namespace only |
-| `Role` | `ClusterRoleBinding` | **Not possible** — a namespaced Role cannot be applied cluster-wide |
+| `Role` | `ClusterRoleBinding` | **Not possible** - a namespaced Role cannot be applied cluster-wide |
 
 > Use `ClusterRole` + `RoleBinding` to avoid duplicating the same Role definition across many Namespaces.
 
@@ -42,11 +42,11 @@ goes through: Authentication → Authorisation (RBAC) → Admission Control.
 | `patch` | PATCH | Partial update |
 | `delete` | DELETE single | Delete one resource |
 | `deletecollection` | DELETE collection | Delete all matching resources |
-| `use` | — | Special: use a PodSecurityPolicy or StorageClass |
-| `bind` | — | Special: bind a Role/ClusterRole (used by RoleBindings) |
-| `escalate` | — | Special: allow granting permissions the subject doesn't hold |
-| `impersonate` | — | Special: act as another user/group/SA |
-| `*` | — | Wildcard — all verbs |
+| `use` | - | Special: use a PodSecurityPolicy or StorageClass |
+| `bind` | - | Special: bind a Role/ClusterRole (used by RoleBindings) |
+| `escalate` | - | Special: allow granting permissions the subject doesn't hold |
+| `impersonate` | - | Special: act as another user/group/SA |
+| `*` | - | Wildcard - all verbs |
 
 ### Common API groups
 
@@ -182,13 +182,13 @@ kubectl -n project-hamster create rolebinding read-pods \
 
 ---
 
-## 5. ServiceAccount → RBAC → Pod Token Flow
+## 5. ServiceAccount -> RBAC -> Pod Token Flow
 
 ```
 1. Pod is created with spec.serviceAccountName: processor
 2. kubelet mounts a projected volume into the pod at:
-     /var/run/secrets/kubernetes.io/serviceaccount/token   ← auto-rotated JWT
-     /var/run/secrets/kubernetes.io/serviceaccount/ca.crt  ← cluster CA
+     /var/run/secrets/kubernetes.io/serviceaccount/token   <- auto-rotated JWT
+     /var/run/secrets/kubernetes.io/serviceaccount/ca.crt  <- cluster CA
      /var/run/secrets/kubernetes.io/serviceaccount/namespace
 3. Pod reads the token and calls the API server:
      curl https://kubernetes.default.svc/api/v1/namespaces/... \
@@ -249,11 +249,11 @@ kubectl auth can-i get nodes --as jane
 
 | ClusterRole | Grants |
 |---|---|
-| `cluster-admin` | Full access to everything — all verbs on all resources |
+| `cluster-admin` | Full access to everything - all verbs on all resources |
 | `admin` | Full namespace access except ResourceQuota and Namespace itself |
 | `edit` | Read/write to most namespaced resources; no RBAC management |
 | `view` | Read-only to most namespaced resources; no Secrets |
-| `system:node` | Used by kubelets — access to pods and node objects |
+| `system:node` | Used by kubelets - access to pods and node objects |
 | `system:kube-scheduler` | Permissions the scheduler needs |
 | `system:kube-controller-manager` | Permissions the controller manager needs |
 
@@ -267,7 +267,7 @@ kubectl get clusterrole cluster-admin -o yaml
 
 ## 8. Common Patterns
 
-### Pattern 1 — Namespace-scoped read-only access for a ServiceAccount
+### Pattern 1 - Namespace-scoped read-only access for a ServiceAccount
 
 ```bash
 kubectl create sa reader -n my-app
@@ -276,7 +276,7 @@ kubectl -n my-app create rolebinding reader \
   --serviceaccount=my-app:reader
 ```
 
-### Pattern 2 — Grant cross-namespace access (one SA reads pods in another NS)
+### Pattern 2 - Grant cross-namespace access (one SA reads pods in another NS)
 
 ```bash
 # Allow SA in ns-a to list pods in ns-b
@@ -285,7 +285,7 @@ kubectl -n ns-b create rolebinding cross-ns-read \
   --serviceaccount=ns-a:my-sa
 ```
 
-### Pattern 3 — Minimal permissions (least privilege)
+### Pattern 3 - Minimal permissions (least privilege)
 
 ```yaml
 rules:
@@ -301,7 +301,7 @@ rules:
   verbs: ["get"]
 ```
 
-### Pattern 4 — Operator / controller permissions
+### Pattern 4 - Operator / controller permissions
 
 ```yaml
 rules:

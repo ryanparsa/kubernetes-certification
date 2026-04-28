@@ -183,7 +183,7 @@ patches:
 |---|---|---|
 | Format | Partial resource YAML | Operations list |
 | List handling | Smart (merge by key) | Replace entire list by default |
-| Removing fields | Tricky — use `$patch: delete` | Clean: `op: remove` |
+| Removing fields | Tricky - use `$patch: delete` | Clean: `op: remove` |
 | Cross-kind patches | No | Yes (target specifies kind/name) |
 | Readability | High | Lower |
 | Use case | Field overrides, replica counts, image tags | Precise array manipulation, deletions |
@@ -255,7 +255,7 @@ images:
 
 | Command | Effect |
 |---|---|
-| `kubectl kustomize <dir>` | Build and print YAML to stdout — does NOT apply to cluster |
+| `kubectl kustomize <dir>` | Build and print YAML to stdout - does NOT apply to cluster |
 | `kubectl apply -k <dir>` | Build and apply to cluster in one step |
 | `kubectl kustomize <dir> \| kubectl apply -f -` | Equivalent to `apply -k` but allows `--dry-run` or `diff` in between |
 | `kubectl kustomize <dir> \| kubectl diff -f -` | Preview what would change |
@@ -328,14 +328,14 @@ transformers:
 
 **Kustomize does not track state.** It does not know which resources it previously created.
 
-- Adding a resource to kustomize YAML and applying → resource is created
-- Removing a resource from kustomize YAML and applying → resource is **NOT deleted**
+- Adding a resource to kustomize YAML and applying -> resource is created
+- Removing a resource from kustomize YAML and applying -> resource is **NOT deleted**
   (you must delete it manually with `kubectl delete`)
 
 This is different from Helm, which tracks state in a release and deletes removed resources.
 
 ```bash
-# Kustomize won't delete this — must be done manually
+# Kustomize won't delete this - must be done manually
 kubectl delete configmap horizontal-scaling-config -n api-gateway-staging
 kubectl delete configmap horizontal-scaling-config -n api-gateway-prod
 ```
@@ -349,7 +349,7 @@ kubectl delete configmap horizontal-scaling-config -n api-gateway-prod
 kubectl kustomize staging
 
 # Common error: patch target not found in base
-# → The resource referenced by the patch doesn't exist in resources
+# -> The resource referenced by the patch doesn't exist in resources
 # Fix: make sure the resource is in base/ and patch metadata.name matches exactly
 
 # Check what a full build produces for an overlay

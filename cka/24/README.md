@@ -11,4 +11,4 @@ Make a snapshot of etcd and save it at `cka/24/lab/etcd-snapshot.db`
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

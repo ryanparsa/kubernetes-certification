@@ -20,4 +20,4 @@ Choices of `[TYPE]` are: `not-installed`, `process`, `static-pod`, `pod`
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

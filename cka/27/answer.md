@@ -4,7 +4,7 @@ The *StorageClass* should use provider `rancher.io/local-path`, which is of the 
 
 Cloud companies like AWS or GCP provide their own *StorageClasses* and providers, which if used for *PVCs* create *PVs* backed by actual volumes in the cloud account.
 
-### Step 1 — Create StorageClass
+### Step 1 - Create StorageClass
 
 First we can have a look at existing ones:
 
@@ -44,7 +44,7 @@ local-path     rancher.io/local-path   Delete          WaitForFirstConsumer   ..
 
 This looks like what we want. Now we have the choice between two *StorageClasses*.
 
-### Step 2 — Check Existing Job
+### Step 2 - Check Existing Job
 
 Let's have a look at the existing *Job*:
 
@@ -96,7 +96,7 @@ pod/backup-pll27   0/1     Completed   0          21s
 
 Looks like it completed without errors.
 
-### Step 3 — Adjust Job Template
+### Step 3 - Adjust Job Template
 
 For this we first need to create a *PVC* and then use in the *Job* template:
 
@@ -152,7 +152,7 @@ spec:
 
 We first made a backup of the provided file, which is always a good idea. Then we added the new *PVC* and referenced the *PVC* in the *Pod* `volumes:` section.
 
-### Step 4 — Deploy Changes and Verify
+### Step 4 - Deploy Changes and Verify
 
 First we delete the existing *Job* because we did create it once before without any changes. And then we deploy:
 

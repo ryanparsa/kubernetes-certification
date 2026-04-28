@@ -21,7 +21,7 @@ This determines eviction order when a node is under memory pressure.
 ### Examples
 
 ```yaml
-# Guaranteed — requests == limits for ALL containers
+# Guaranteed - requests == limits for ALL containers
 resources:
   requests:
     cpu: "500m"
@@ -32,7 +32,7 @@ resources:
 ```
 
 ```yaml
-# Burstable — requests set but not matching limits
+# Burstable - requests set but not matching limits
 resources:
   requests:
     cpu: "100m"
@@ -43,7 +43,7 @@ resources:
 ```
 
 ```yaml
-# BestEffort — nothing set
+# BestEffort - nothing set
 resources: {}
 ```
 
@@ -144,14 +144,14 @@ Manages stateful applications where each pod needs:
 ### Key characteristics
 
 - Pods are named `<name>-0`, `<name>-1`, `<name>-2`, etc.
-- Scale-up is sequential (0 → 1 → 2); scale-down is reverse (2 → 1 → 0)
+- Scale-up is sequential (0 -> 1 -> 2); scale-down is reverse (2 -> 1 -> 0)
 - Each pod gets its own PVC from `volumeClaimTemplates`
 - Requires a **Headless Service** for stable DNS names
 
 ### StatefulSet + Headless Service
 
 ```yaml
-# Headless Service — required for stable pod DNS names
+# Headless Service - required for stable pod DNS names
 apiVersion: v1
 kind: Service
 metadata:
@@ -412,7 +412,7 @@ spec:
   initContainers:
   - name: log-shipper
     image: fluentbit:latest
-    restartPolicy: Always       # marks this as a sidecar — starts before app containers
+    restartPolicy: Always       # marks this as a sidecar - starts before app containers
     volumeMounts:
     - name: logs
       mountPath: /var/log/app
@@ -429,8 +429,8 @@ spec:
 ## 10. Pod Lifecycle Events
 
 ```
-Pending → (init containers) → Running → Succeeded / Failed
-                                ↑
+Pending -> (init containers) -> Running -> Succeeded / Failed
+                                ^
                            (CrashLoopBackOff if container keeps failing)
 ```
 
@@ -494,18 +494,18 @@ spec:
 # View all pod conditions (including custom gates)
 kubectl get pod my-pod -o jsonpath='{.status.conditions}' | jq .
 
-# Example output — pod waits for the custom condition:
+# Example output - pod waits for the custom condition:
 # [
 #   {"type":"Initialized","status":"True"},
-#   {"type":"Ready","status":"False"},           ← still False
+#   {"type":"Ready","status":"False"},           <- still False
 #   {"type":"ContainersReady","status":"True"},
 #   {"type":"PodScheduled","status":"True"},
-#   {"type":"target-health.elbv2.k8s.aws/tg-abc123","status":"False"}  ← gate not met
+#   {"type":"target-health.elbv2.k8s.aws/tg-abc123","status":"False"}  <- gate not met
 # ]
 
 # After the external controller sets the condition to True:
 # {"type":"target-health.elbv2.k8s.aws/tg-abc123","status":"True"}
-# → pod.status.conditions[?type=="Ready"].status becomes "True"
+# -> pod.status.conditions[?type=="Ready"].status becomes "True"
 
 # Check if the ready gate is blocking readiness
 kubectl describe pod my-pod | grep -A 10 "Conditions:"

@@ -1,4 +1,4 @@
-# KCSA — Kubernetes and Cloud Native Security Associate
+# KCSA -- Kubernetes and Cloud Native Security Associate
 
 ## Exam Overview
 
@@ -80,7 +80,7 @@
 ### Compliance and Security Frameworks (10%)
 - CIS Kubernetes Benchmark: control areas, `kube-bench` tool, PASS/FAIL/WARN output
 - NIST SP 800-190: application container security guide
-- PCI DSS, SOC 2, ISO 27001 — relevance to container and Kubernetes environments
+- PCI DSS, SOC 2, ISO 27001 -- relevance to container and Kubernetes environments
 - Pod Security Standards (PSS): baseline vs restricted profiles; migration from PodSecurityPolicy
 - OWASP Top 10 for containers and Kubernetes
 - Incident response: detection (Falco alerts, audit logs), containment (cordon node, delete pod), investigation (forensics), remediation

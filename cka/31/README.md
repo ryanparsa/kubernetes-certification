@@ -23,4 +23,4 @@ Write your answers into file `cka/31/lab/cluster-info`, structured like this:
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

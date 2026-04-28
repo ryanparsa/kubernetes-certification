@@ -42,7 +42,7 @@ spec:
 ```
 
 > Use for manual scheduling (e.g. when kube-scheduler is stopped) or for debugging.
-> Not recommended in production — the scheduler's resource checks are bypassed.
+> Not recommended in production - the scheduler's resource checks are bypassed.
 
 ---
 
@@ -76,7 +76,7 @@ kubectl label node worker-1 disktype-
 More expressive than `nodeSelector`. Supports `In`, `NotIn`, `Exists`, `DoesNotExist`,
 `Gt`, `Lt` operators.
 
-### Required (hard rule — pod not scheduled if not met)
+### Required (hard rule - pod not scheduled if not met)
 
 ```yaml
 spec:
@@ -92,7 +92,7 @@ spec:
             - nvme
 ```
 
-### Preferred (soft rule — scheduler tries but doesn't guarantee)
+### Preferred (soft rule - scheduler tries but doesn't guarantee)
 
 ```yaml
 spec:
@@ -115,7 +115,7 @@ spec:
             - ssd
 ```
 
-> `IgnoredDuringExecution` — already-running pods are NOT evicted if the node labels change.
+> `IgnoredDuringExecution` - already-running pods are NOT evicted if the node labels change.
 
 ---
 
@@ -123,7 +123,7 @@ spec:
 
 Schedules pods relative to **other pods** (co-location or spread).
 
-### Pod Affinity — place with matching pods
+### Pod Affinity - place with matching pods
 
 ```yaml
 spec:
@@ -136,7 +136,7 @@ spec:
         topologyKey: kubernetes.io/hostname
 ```
 
-### Pod Anti-Affinity — avoid nodes with matching pods
+### Pod Anti-Affinity - avoid nodes with matching pods
 
 ```yaml
 spec:
@@ -157,9 +157,9 @@ spec:
 ```
 
 > `topologyKey` groups nodes by a label. Common values:
-> - `kubernetes.io/hostname` — node-level
-> - `topology.kubernetes.io/zone` — availability zone
-> - `topology.kubernetes.io/region` — region
+> - `kubernetes.io/hostname` - node-level
+> - `topology.kubernetes.io/zone` - availability zone
+> - `topology.kubernetes.io/region` - region
 
 ---
 
@@ -276,8 +276,8 @@ spec:
 ```
 
 Built-in classes:
-- `system-cluster-critical` (2000000000) — used by CoreDNS, kube-dns
-- `system-node-critical` (2000001000) — used by kube-proxy, metrics-server
+- `system-cluster-critical` (2000000000) - used by CoreDNS, kube-dns
+- `system-node-critical` (2000001000) - used by kube-proxy, metrics-server
 
 ---
 
@@ -309,7 +309,7 @@ spec:
 ## 10. DaemonSet Scheduling
 
 A DaemonSet ensures exactly one pod per node (or per matching node). It bypasses the
-default scheduler for node placement — it uses its own controller.
+default scheduler for node placement - it uses its own controller.
 
 ```yaml
 apiVersion: apps/v1

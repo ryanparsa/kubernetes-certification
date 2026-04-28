@@ -52,7 +52,7 @@ status: {}
 ```
 
 > [!NOTE]
-> ℹ️ The `nodeSelector` specifies `node-role.kubernetes.io/control-plane` with no value because this is a key-only label and we want to match regardless of the value
+> [i] The `nodeSelector` specifies `node-role.kubernetes.io/control-plane` with no value because this is a key-only label and we want to match regardless of the value
 
 Important here to add the toleration for running on *Controlplane Nodes*, but also the `nodeSelector` to make sure it only runs on *Controlplane Nodes*. If we just specify a toleration the *Pod* can be scheduled on *Controlplane* or *Worker Nodes*.
 

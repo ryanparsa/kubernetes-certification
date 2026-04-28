@@ -20,7 +20,7 @@ echo "Waiting for kube-scheduler pod to disappear..."
 kubectl wait pod -n kube-system -l component=kube-scheduler \
   --for=delete --timeout=60s 2>/dev/null || true
 
-# 2. Create the first Pod — stays Pending without the scheduler
+# 2. Create the first Pod - stays Pending without the scheduler
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -66,7 +66,7 @@ echo "Waiting for kube-scheduler to restart..."
 kubectl wait pod -n kube-system -l component=kube-scheduler \
   --for=condition=Ready --timeout=120s
 
-# 5. Create a second Pod — the running scheduler places it on the worker
+# 5. Create a second Pod - the running scheduler places it on the worker
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod

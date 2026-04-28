@@ -8,7 +8,7 @@ BASE="$SCRIPT_DIR/../lab/api-gateway/base"
 STAGING="$SCRIPT_DIR/../lab/api-gateway/staging"
 PROD="$SCRIPT_DIR/../lab/api-gateway/prod"
 
-# Step 1+2: Rewrite base/api-gateway.yaml — remove ConfigMap, add HPA
+# Step 1+2: Rewrite base/api-gateway.yaml - remove ConfigMap, add HPA
 cat > "$BASE/api-gateway.yaml" <<'EOF'
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

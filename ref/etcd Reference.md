@@ -11,13 +11,13 @@ membership management, encryption at rest, and troubleshooting.
 1. [What is etcd](#1-what-is-etcd)
 2. [Role in Kubernetes](#2-role-in-kubernetes)
 3. [How etcd Runs in Kubernetes](#3-how-etcd-runs-in-kubernetes)
-4. [Static Pod Manifest — Key Flags](#4-static-pod-manifest--key-flags)
+4. [Static Pod Manifest - Key Flags](#4-static-pod-manifest--key-flags)
 5. [etcd PKI / TLS](#5-etcd-pki--tls)
-6. [etcdctl — Tool Setup and Usage](#6-etcdctl--tool-setup-and-usage)
+6. [etcdctl - Tool Setup and Usage](#6-etcdctl--tool-setup-and-usage)
 7. [Health Checks and Member Operations](#7-health-checks-and-member-operations)
 8. [Inspecting Keys (Reading Cluster State)](#8-inspecting-keys-reading-cluster-state)
-9. [Backup — Snapshot Save](#9-backup--snapshot-save)
-10. [Restore — Full Procedure](#10-restore--full-procedure)
+9. [Backup - Snapshot Save](#9-backup--snapshot-save)
+10. [Restore - Full Procedure](#10-restore--full-procedure)
 11. [HA Clusters and Raft Quorum](#11-ha-clusters-and-raft-quorum)
 12. [Encryption at Rest](#12-encryption-at-rest)
 13. [Common Failure Modes and Troubleshooting](#13-common-failure-modes-and-troubleshooting)
@@ -43,9 +43,9 @@ Leader election:
     (majority) of nodes acknowledge it
 
 Quorum (minimum nodes needed to commit a write):
-  3-node cluster → 2  (tolerates 1 failure)
-  5-node cluster → 3  (tolerates 2 failures)
-  7-node cluster → 4  (tolerates 3 failures)
+  3-node cluster -> 2  (tolerates 1 failure)
+  5-node cluster -> 3  (tolerates 2 failures)
+  7-node cluster -> 4  (tolerates 3 failures)
 ```
 
 > A cluster with an **even** number of members has the same fault tolerance as one
@@ -60,8 +60,8 @@ etcd is the **single source of truth** for all cluster state. Every object the A
 server creates, updates, or deletes is persisted to etcd.
 
 ```
-kubectl → kube-apiserver → etcd
-                     ↑
+kubectl -> kube-apiserver -> etcd
+                     ^
 kube-scheduler, controller-manager, kubelet all watch etcd via the API server
 (they never connect to etcd directly)
 ```
@@ -91,18 +91,18 @@ managed directly by kubelet from the manifest at:
 
 | Port | Protocol | Purpose |
 |---|---|---|
-| `2379` | HTTPS | Client API — used by kube-apiserver to read/write data |
-| `2380` | HTTPS | Peer API — used for Raft replication between etcd members (HA only) |
+| `2379` | HTTPS | Client API - used by kube-apiserver to read/write data |
+| `2380` | HTTPS | Peer API - used for Raft replication between etcd members (HA only) |
 
 ### Data directory
 
 ```
-/var/lib/etcd/       ← default data directory; contains the Raft WAL and snapshots
+/var/lib/etcd/       <- default data directory; contains the Raft WAL and snapshots
 ```
 
 ---
 
-## 4. Static Pod Manifest — Key Flags
+## 4. Static Pod Manifest - Key Flags
 
 ```yaml
 # /etc/kubernetes/manifests/etcd.yaml
@@ -116,11 +116,11 @@ spec:
     # Identity
     - --name=<node-name>                          # member name, unique per node
 
-    # Client communication (kube-apiserver ↔ etcd)
+    # Client communication (kube-apiserver <-> etcd)
     - --listen-client-urls=https://127.0.0.1:2379,https://<node-ip>:2379
     - --advertise-client-urls=https://<node-ip>:2379
 
-    # Peer communication (etcd ↔ etcd, HA only)
+    # Peer communication (etcd <-> etcd, HA only)
     - --listen-peer-urls=https://<node-ip>:2380
     - --initial-advertise-peer-urls=https://<node-ip>:2380
 
@@ -132,13 +132,13 @@ spec:
     # Storage
     - --data-dir=/var/lib/etcd
 
-    # TLS — server (presented to kube-apiserver)
+    # TLS - server (presented to kube-apiserver)
     - --cert-file=/etc/kubernetes/pki/etcd/server.crt
     - --key-file=/etc/kubernetes/pki/etcd/server.key
     - --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
     - --client-cert-auth=true                      # require client certs
 
-    # TLS — peer (etcd-to-etcd)
+    # TLS - peer (etcd-to-etcd)
     - --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt
     - --peer-key-file=/etc/kubernetes/pki/etcd/peer.key
     - --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
@@ -190,14 +190,14 @@ not connect to etcd directly.
 
 ```
 kube-apiserver
-  → presents apiserver-etcd-client.crt (signed by etcd CA)
-  → connects to etcd server.crt:2379
-  → etcd verifies: cert signed by etcd/ca.crt ✓
+  -> presents apiserver-etcd-client.crt (signed by etcd CA)
+  -> connects to etcd server.crt:2379
+  -> etcd verifies: cert signed by etcd/ca.crt [ok]
 
 etcd-node-1 (HA)
-  → presents peer.crt (signed by etcd CA)
-  → connects to etcd-node-2:2380
-  → etcd-node-2 verifies: cert signed by etcd/ca.crt ✓
+  -> presents peer.crt (signed by etcd CA)
+  -> connects to etcd-node-2:2380
+  -> etcd-node-2 verifies: cert signed by etcd/ca.crt [ok]
 ```
 
 ### Finding cert paths from the running pod
@@ -210,7 +210,7 @@ grep -E 'cert|key|ca' /etc/kubernetes/manifests/etcd.yaml
 
 ---
 
-## 6. etcdctl — Tool Setup and Usage
+## 6. etcdctl - Tool Setup and Usage
 
 `etcdctl` is the CLI client for etcd. Always set `ETCDCTL_API=3` (v2 is deprecated and
 uses a different data model).
@@ -358,7 +358,7 @@ ETCDCTL_API=3 etcdctl get / --prefix --keys-only \
 # List all pods in the default namespace
 etcdctl get /registry/pods/default --prefix --keys-only
 
-# Read a specific key (value is protobuf-encoded — use apiserver for human-readable output)
+# Read a specific key (value is protobuf-encoded - use apiserver for human-readable output)
 etcdctl get /registry/pods/default/my-pod
 
 # Count all keys (cluster size indicator)
@@ -373,7 +373,7 @@ etcdctl watch /registry/pods/default --prefix
 
 ---
 
-## 9. Backup — Snapshot Save
+## 9. Backup - Snapshot Save
 
 A snapshot is a **consistent, point-in-time copy** of the etcd keyspace. It captures
 all keys at the revision at which the snapshot was taken.
@@ -418,13 +418,13 @@ kubectl -n kube-system cp etcd-<node>:/tmp/backup.db /tmp/etcd-backup.db
 
 ---
 
-## 10. Restore — Full Procedure
+## 10. Restore - Full Procedure
 
 Restoring from a snapshot **replaces all current cluster state** with the snapshot.
 
 ### Single-node restore
 
-#### Step 1 — Stop the API server
+#### Step 1 - Stop the API server
 
 ```bash
 # Prevent writes while etcd is being replaced
@@ -434,7 +434,7 @@ mv /etc/kubernetes/manifests/kube-apiserver.yaml /tmp/
 watch crictl ps
 ```
 
-#### Step 2 — Restore the snapshot to a new data directory
+#### Step 2 - Restore the snapshot to a new data directory
 
 ```bash
 ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
@@ -446,10 +446,10 @@ ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
 # {"level":"info","msg":"adding member","member":"..."}
 ```
 
-> **Do not** restore into `/var/lib/etcd` while etcd is running — always use a new
+> **Do not** restore into `/var/lib/etcd` while etcd is running - always use a new
 > directory first, then swap.
 
-#### Step 3 — Point etcd at the new data directory
+#### Step 3 - Point etcd at the new data directory
 
 Edit `/etc/kubernetes/manifests/etcd.yaml` and update **two places**:
 
@@ -465,13 +465,13 @@ volumes:
   name: etcd-data
 ```
 
-#### Step 4 — Restore the API server
+#### Step 4 - Restore the API server
 
 ```bash
 mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/
 ```
 
-#### Step 5 — Verify recovery
+#### Step 5 - Verify recovery
 
 ```bash
 # Watch pods restart
@@ -510,7 +510,7 @@ ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
   --initial-cluster-token=etcd-cluster-restored \
   --initial-advertise-peer-urls=https://10.0.0.2:2380
 
-# Member 3 — same pattern
+# Member 3 - same pattern
 ```
 
 > Use a **new `--initial-cluster-token`** (e.g. append `-restored`) to prevent the
@@ -532,7 +532,7 @@ ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup.db \
 | 5 | 3 | 2 |
 | 7 | 4 | 3 |
 
-**If quorum is lost**, the cluster enters a **read-only state** — no writes are accepted.
+**If quorum is lost**, the cluster enters a **read-only state** - no writes are accepted.
 Recovery requires manually starting etcd with `--force-new-cluster` on one node (last resort).
 
 ### Checking which node is the leader
@@ -633,7 +633,7 @@ kubectl get secrets -A -o json | kubectl replace -f -
 ### Verify encryption
 
 ```bash
-# Read the raw etcd value — should be opaque (not human-readable JSON/YAML)
+# Read the raw etcd value - should be opaque (not human-readable JSON/YAML)
 ETCDCTL_API=3 etcdctl get /registry/secrets/default/my-secret \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/kubernetes/pki/etcd/ca.crt \
@@ -687,7 +687,7 @@ ETCDCTL_API=3 etcdctl endpoint health \
 # Check if the data directory was accidentally reset (e.g. after a bad restore)
 ls -lah /var/lib/etcd/member/
 
-# Check etcd revision — a sudden drop indicates a restore happened
+# Check etcd revision - a sudden drop indicates a restore happened
 etcdctl endpoint status --write-out=table
 # Compare RAFT INDEX and DB SIZE against expected values
 ```
@@ -791,5 +791,5 @@ kubeadm certs check-expiration | grep etcd
 | 2 | `etcdctl snapshot restore <file> --data-dir=<new-dir>` |
 | 3 | Edit `etcd.yaml`: update `--data-dir` and `hostPath.path` |
 | 4 | `mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/` |
-| 5 | `watch crictl ps` → confirm pods come back |
+| 5 | `watch crictl ps` -> confirm pods come back |
 | 6 | `kubectl get nodes && kubectl get pods -A` |

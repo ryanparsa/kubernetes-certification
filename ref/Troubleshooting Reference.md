@@ -47,10 +47,10 @@ kubectl get node <node>       # should return to Ready
 |---|---|
 | `failed to run Kubelet: invalid kubeconfig` | Corrupted or wrong `kubelet.conf` path |
 | `connection refused` to API server | API server not running, or wrong `--server` URL |
-| `x509: certificate has expired` | Kubelet client cert expired — renew with `kubeadm certs renew all` |
+| `x509: certificate has expired` | Kubelet client cert expired - renew with `kubeadm certs renew all` |
 | `no such file or directory` for config | Config path in `kubeadm-flags.env` is wrong |
-| `failed to create containerd task` | Container runtime issue — check containerd/docker status |
-| `node not found` | Node was deleted from API while kubelet was down — re-join the node |
+| `failed to create containerd task` | Container runtime issue - check containerd/docker status |
+| `node not found` | Node was deleted from API while kubelet was down - re-join the node |
 
 ---
 
@@ -108,11 +108,11 @@ kubectl top pod <pod> -n <ns>
 kubectl describe node <node>
 
 # 2. Node Conditions to check
-# Ready: False/Unknown → kubelet not reporting
-# MemoryPressure: True → node is low on memory
-# DiskPressure: True → node is low on disk
-# PIDPressure: True → node has too many processes
-# NetworkUnavailable: True → CNI plugin not configured
+# Ready: False/Unknown -> kubelet not reporting
+# MemoryPressure: True -> node is low on memory
+# DiskPressure: True -> node is low on disk
+# PIDPressure: True -> node has too many processes
+# NetworkUnavailable: True -> CNI plugin not configured
 
 # 3. SSH to the node
 ssh <node>
@@ -163,7 +163,7 @@ mv /tmp/kube-scheduler.yaml /etc/kubernetes/manifests/
 # Watch kubelet pick up the change
 journalctl -u kubelet -f
 
-# Static pod logs (find the pod name first — it includes the node name)
+# Static pod logs (find the pod name first - it includes the node name)
 kubectl -n kube-system get pod
 kubectl -n kube-system logs kube-apiserver-<node>
 
@@ -265,7 +265,7 @@ The API server can write a structured audit log for every request. Requires:
 | Level | What is recorded |
 |---|---|
 | `None` | Do not log this event |
-| `Metadata` | Request metadata only (user, verb, resource, namespace, timestamp) — no request/response body |
+| `Metadata` | Request metadata only (user, verb, resource, namespace, timestamp) - no request/response body |
 | `Request` | Metadata + request body |
 | `RequestResponse` | Metadata + request body + response body (most verbose) |
 
@@ -372,7 +372,7 @@ cat /var/log/kubernetes/audit.log | \
 # Check how components are running (static pods vs systemd services)
 kubectl -n kube-system get pods | grep -E 'apiserver|scheduler|controller|etcd'
 
-# For kubeadm clusters — all are static pods
+# For kubeadm clusters - all are static pods
 # Check their logs
 kubectl -n kube-system logs kube-apiserver-<node>
 kubectl -n kube-system logs kube-scheduler-<node>
@@ -423,7 +423,7 @@ mv /tmp/kube-scheduler.yaml .
 # Update local kubeconfig
 cp /etc/kubernetes/admin.conf ~/.kube/config
 
-# Check kubelet client cert (auto-rotated — just verify it's current)
+# Check kubelet client cert (auto-rotated - just verify it's current)
 ls -la /var/lib/kubelet/pki/
 # kubelet-client-current.pem should point to a recent dated file
 openssl x509 -in /var/lib/kubelet/pki/kubelet-client-current.pem \

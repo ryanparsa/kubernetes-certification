@@ -1,4 +1,4 @@
-# CKAD — Certified Kubernetes Application Developer
+# CKAD -- Certified Kubernetes Application Developer
 
 ## Exam Overview
 
@@ -73,7 +73,7 @@
 - Admission controllers concept: validating vs mutating webhooks
 
 ### Services and Networking (20%)
-- Services: ClusterIP, NodePort, LoadBalancer, ExternalName — `spec.selector`, `targetPort` int vs string
+- Services: ClusterIP, NodePort, LoadBalancer, ExternalName -- `spec.selector`, `targetPort` int vs string
 - Ingress: rules, TLS, `pathType` (`Exact` / `Prefix` / `ImplementationSpecific`), `ingressClassName`
 - NetworkPolicy: `podSelector`, `namespaceSelector`, `ipBlock`, ingress/egress rules, `ports[].protocol` uppercase
 - DNS: `<service>.<namespace>.svc.cluster.local`; pod DNS policy (`ClusterFirst`, `None`)

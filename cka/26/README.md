@@ -12,4 +12,4 @@ Start the kube-scheduler again and confirm it's running correctly by creating a 
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

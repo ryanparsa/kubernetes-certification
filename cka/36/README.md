@@ -11,4 +11,4 @@ You're asked to confirm that kube-proxy is running correctly. For this perform t
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

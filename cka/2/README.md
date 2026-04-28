@@ -14,4 +14,4 @@ Install the MinIO Operator using Helm in *Namespace* `minio`. Then configure and
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

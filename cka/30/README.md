@@ -9,8 +9,8 @@ Create a *Pod* with multiple *Containers* named `multi-container-playground` in 
 - *Container* `c2` with image `busybox:1` should write the output of the `date` command every second in the shared *Volume* into file `date.log`. You can use `while true; do date >> /your/vol/path/date.log; sleep 1; done` for this.
 - *Container* `c3` with image `busybox:1` should constantly write the content of file `date.log` from the shared *Volume* to *stdout*. You can use `tail -f /your/vol/path/date.log` for this.
 
-> ℹ️ Check the logs of *Container* `c3` to confirm correct setup
+> [i] Check the logs of *Container* `c3` to confirm correct setup
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

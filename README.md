@@ -6,11 +6,11 @@ Open-source practice labs and study materials for Kubernetes certification exams
 
 | Exam | Full Name | Directory |
 |------|-----------|-----------|
-| [KCNA](kcna/) | Kubernetes and Cloud Native Associate | `kcna/` — study materials, 200 practice questions, checklists |
-| [KCSA](kcsa/) | Kubernetes and Cloud Native Security Associate | `kcsa/` — exam definition |
-| [CKAD](ckad/) | Certified Kubernetes Application Developer | `ckad/` — exam definition |
-| [CKA](cka/) | Certified Kubernetes Administrator | `cka/` — 37 hands-on practice labs + exam definition |
-| [CKS](cks/) | Certified Kubernetes Security Specialist | `cks/` — exam definition |
+| [KCNA](kcna/) | Kubernetes and Cloud Native Associate | `kcna/` - study materials, 200 practice questions, checklists |
+| [KCSA](kcsa/) | Kubernetes and Cloud Native Security Associate | `kcsa/` - exam definition |
+| [CKAD](ckad/) | Certified Kubernetes Application Developer | `ckad/` - exam definition |
+| [CKA](cka/) | Certified Kubernetes Administrator | `cka/` - 37 hands-on practice labs + exam definition |
+| [CKS](cks/) | Certified Kubernetes Security Specialist | `cks/` - exam definition |
 
 Each exam directory contains a `README.md` with the official exam overview, domain weights, and key topics. The [`prompts/`](prompts/) directory provides AI trainer prompts that reference these definitions.
 
@@ -27,7 +27,7 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 │   └── README.md         # Exam overview, domain weights, topics
 ├── ckad/
 │   └── README.md         # Exam overview, domain weights, topics
-├── cka/                  # CKA — practice labs + exam definition
+├── cka/                  # CKA - practice labs + exam definition
 │   ├── <N>/              # Each lab:
 │   │   ├── README.md     #   Question only
 │   │   ├── answer.md     #   Reference solution + killer.sh checklist
@@ -53,18 +53,18 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 
 | Simulator | Labs |
 |-----------|------|
-| Simulator A | `cka/1` – `cka/17` |
-| Simulator B | `cka/18` – `cka/34` |
+| Simulator A | `cka/1` - `cka/17` |
+| Simulator B | `cka/18` - `cka/34` |
 
 See [`cka/README.md`](cka/README.md) for the full lab index with status.
 
 ### Running a Lab Locally
 
-Most labs run on a local [kind](https://kind.sigs.k8s.io/) cluster. Labs that require real OS-level node operations (kubeadm join, kubeadm upgrade) use [Lima](https://lima-vm.io/) VMs instead. Each lab's `setup.sh` handles the difference — the workflow is the same either way.
+Most labs run on a local [kind](https://kind.sigs.k8s.io/) cluster. Labs that require real OS-level node operations (kubeadm join, kubeadm upgrade) use [Lima](https://lima-vm.io/) VMs instead. Each lab's `setup.sh` handles the difference - the workflow is the same either way.
 
-**Prerequisites — kind-based labs:** `docker`, `kind`, `kubectl`, `python3`
+**Prerequisites - kind-based labs:** `docker`, `kind`, `kubectl`, `python3`
 
-**Prerequisites — Lima-based labs:** `limactl`, `kubectl`, `python3`
+**Prerequisites - Lima-based labs:** `limactl`, `kubectl`, `python3`
 
 ```bash
 # 1. Enter the lab directory
@@ -114,21 +114,21 @@ See [`prompts/README.md`](prompts/README.md) for usage instructions.
 
 The [`ref/`](ref/) directory contains concise command and concept references useful during exam preparation:
 
-- **Kubernetes Commands Reference** — essential `kubectl` commands
-- **RBAC Reference** — roles, bindings, and service accounts
-- **Networking Reference** — services, ingress, and network policies
-- **Storage Reference** — PVs, PVCs, and storage classes
-- **TLS** — certificate management and kubeadm PKI
-- **Helm Reference** — chart lifecycle commands
-- **Scheduling Reference** — taints, tolerations, affinity
-- **Troubleshooting Reference** — common failure patterns
-- And more…
+- **Kubernetes Commands Reference** - essential `kubectl` commands
+- **RBAC Reference** - roles, bindings, and service accounts
+- **Networking Reference** - services, ingress, and network policies
+- **Storage Reference** - PVs, PVCs, and storage classes
+- **TLS** - certificate management and kubeadm PKI
+- **Helm Reference** - chart lifecycle commands
+- **Scheduling Reference** - taints, tolerations, affinity
+- **Troubleshooting Reference** - common failure patterns
+- And more...
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full lab structure, file templates, CI setup, and conventions.
 
-Contributions are welcome — feel free to open an issue or pull request.
+Contributions are welcome - feel free to open an issue or pull request.
 
 ## License
 

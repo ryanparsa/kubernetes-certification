@@ -51,7 +51,7 @@ helm search repo minio
 # Search with version info
 helm search repo nginx --versions
 
-# Search Artifact Hub (public registry — requires internet)
+# Search Artifact Hub (public registry - requires internet)
 helm search hub <keyword>
 
 # Show all available chart versions
@@ -81,7 +81,7 @@ helm show all bitnami/nginx
 ## 5. Installing a Chart
 
 ```bash
-# Basic install — release name + chart
+# Basic install - release name + chart
 helm install <release-name> <chart>
 helm install my-nginx bitnami/nginx
 
@@ -263,7 +263,7 @@ helm template my-nginx bitnami/nginx \
 ```bash
 # Download a chart tarball to current directory
 helm pull bitnami/nginx
-# → nginx-15.1.0.tgz
+# -> nginx-15.1.0.tgz
 
 # Download and extract
 helm pull bitnami/nginx --untar
@@ -273,7 +273,7 @@ helm pull bitnami/nginx --version 15.0.0
 
 # Create a new chart scaffold
 helm create my-chart
-# → my-chart/
+# -> my-chart/
 #     Chart.yaml
 #     values.yaml
 #     templates/
@@ -289,11 +289,11 @@ helm package ./my-chart/
 | Feature | Helm | Kustomize |
 |---|---|---|
 | Packaging | Self-contained chart tarballs with versioning | Plain YAML patches on top of existing manifests |
-| State tracking | Stores release state as Secrets in the cluster | Stateless — no cluster state |
+| State tracking | Stores release state as Secrets in the cluster | Stateless - no cluster state |
 | Templating | Go templates with full logic | Strategic merge patches and JSON patches |
 | Rollback | Built-in `helm rollback` per revision | No native rollback (use `git revert`) |
 | Values | `values.yaml` + `--set` overrides | `kustomization.yaml` patches |
-| Upgrade tracking | Tracks old → new resources and deletes removed ones | `kubectl apply` — does not delete removed resources |
+| Upgrade tracking | Tracks old -> new resources and deletes removed ones | `kubectl apply` - does not delete removed resources |
 
 ---
 

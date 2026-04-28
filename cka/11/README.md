@@ -6,4 +6,4 @@ Use *Namespace* `project-tiger` for the following. Create a *DaemonSet* named `d
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

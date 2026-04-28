@@ -1,4 +1,4 @@
-# CKA — Certified Kubernetes Administrator
+# CKA - Certified Kubernetes Administrator
 
 ## Exam Overview
 
@@ -27,7 +27,7 @@
 ### Cluster Architecture, Installation & Configuration (25%)
 - kubeadm init: `--pod-network-cidr`, `--apiserver-advertise-address`, `--config` file
 - kubeadm join: worker nodes, control plane nodes, token creation
-- kubeadm upgrade: plan → apply → node upgrade sequence
+- kubeadm upgrade: plan -> apply -> node upgrade sequence
 - kubeadm reset
 - RBAC: ClusterRole, ClusterRoleBinding, Role, RoleBinding
 - ServiceAccount permissions across namespaces; `kubectl auth can-i --as`
@@ -39,7 +39,7 @@
 
 ### Workloads & Scheduling (15%)
 - Deployments: rolling update (`maxSurge`, `maxUnavailable`), rollback, pause/resume
-- DaemonSet, StatefulSet, Job, CronJob — choosing the right workload
+- DaemonSet, StatefulSet, Job, CronJob - choosing the right workload
 - ConfigMap and Secret: creation, env injection, volume mount
 - Resource requests and limits; how requests drive scheduling decisions
 - nodeSelector: key/value label matching
@@ -51,7 +51,7 @@
 - Static pod manifests in `/etc/kubernetes/manifests/`
 
 ### Services & Networking (20%)
-- Services: ClusterIP, NodePort, LoadBalancer — `spec.selector`, `targetPort` int vs string
+- Services: ClusterIP, NodePort, LoadBalancer - `spec.selector`, `targetPort` int vs string
 - Ingress: rules, `pathType` (`Exact` / `Prefix`), `ingressClassName`
 - NetworkPolicy: `podSelector`, `namespaceSelector`, `ipBlock`, ingress/egress, `ports[].protocol` uppercase
 - DNS: `<service>.<namespace>.svc.cluster.local`; `resolv.conf` in pods; `ndots`
@@ -65,7 +65,7 @@
 - StorageClass: `provisioner`, `reclaimPolicy`, `volumeBindingMode`
 - Dynamic provisioning vs static binding
 - Volume types: `emptyDir`, `hostPath`, `configMap`, `secret`, `persistentVolumeClaim`
-- `kubectl get pv / pvc` — Bound vs Pending, capacity, access modes
+- `kubectl get pv / pvc` - Bound vs Pending, capacity, access modes
 
 ### Troubleshooting (30%)
 - kubelet: `/var/lib/kubelet/config.yaml`; `systemctl status/restart/daemon-reload kubelet`

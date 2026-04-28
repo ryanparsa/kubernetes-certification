@@ -74,13 +74,13 @@ spec:
   externalName: my-database.corp.example.com   # DNS CNAME target
 ```
 
-No selector, no endpoints — DNS query returns a CNAME.
+No selector, no endpoints - DNS query returns a CNAME.
 
 ### Headless Service
 
 ```yaml
 spec:
-  clusterIP: None   # no VIP — DNS returns Pod IPs directly
+  clusterIP: None   # no VIP - DNS returns Pod IPs directly
   selector:
     app: my-statefulset
 ```
@@ -102,7 +102,7 @@ CoreDNS resolves these names inside the cluster:
 | `kubernetes` API service | `kubernetes.default.svc.cluster.local` | API server ClusterIP |
 
 > **Short names work too but are not FQDNs:**
-> `SERVICE` (same namespace), `SERVICE.NAMESPACE` — avoid in configs that need reliability.
+> `SERVICE` (same namespace), `SERVICE.NAMESPACE` - avoid in configs that need reliability.
 
 ### Examples
 
@@ -144,8 +144,8 @@ a pod, **only explicitly allowed traffic is permitted** for the matched policy t
 
 - `podSelector`: which pods this policy applies to (empty = all pods in namespace)
 - `policyTypes`: `Ingress`, `Egress`, or both
-- If `Ingress` in `policyTypes` but no `ingress:` rules → all ingress is denied
-- If `Egress` in `policyTypes` but no `egress:` rules → all egress is denied
+- If `Ingress` in `policyTypes` but no `ingress:` rules -> all ingress is denied
+- If `Egress` in `policyTypes` but no `egress:` rules -> all egress is denied
 - Multiple rules in a list are OR-ed together
 - Within a single rule, `from`/`to` + `ports` conditions are AND-ed together
 
@@ -188,7 +188,7 @@ spec:
   policyTypes:
     - Egress
   egress:
-  -                          # rule 1: backend → db1:1111
+  -                          # rule 1: backend -> db1:1111
     to:
     - podSelector:
         matchLabels:
@@ -196,7 +196,7 @@ spec:
     ports:
     - protocol: TCP
       port: 1111
-  -                          # rule 2: backend → db2:2222
+  -                          # rule 2: backend -> db2:2222
     to:
     - podSelector:
         matchLabels:
@@ -208,11 +208,11 @@ spec:
 
 Reads as: allow egress if **(to=db1 AND port=1111) OR (to=db2 AND port=2222)**
 
-### ⚠️ Common mistake — wrong AND/OR
+### [!] Common mistake - wrong AND/OR
 
 ```yaml
-# WRONG — this means: (to=db1 OR to=db2) AND (port=1111 OR port=2222)
-# Allows backend→db2:1111 which should be forbidden
+# WRONG - this means: (to=db1 OR to=db2) AND (port=1111 OR port=2222)
+# Allows backend->db2:1111 which should be forbidden
 egress:
 - to:
   - podSelector:
@@ -238,8 +238,8 @@ from:
       app: prometheus
 ```
 
-> `namespaceSelector` and `podSelector` in the same list item → AND (same pod in that namespace)
-> In separate list items → OR (either condition grants access)
+> `namespaceSelector` and `podSelector` in the same list item -> AND (same pod in that namespace)
+> In separate list items -> OR (either condition grants access)
 
 ### Allow all egress to a CIDR (e.g. for DNS)
 

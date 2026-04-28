@@ -6,4 +6,4 @@ There are two *Pods* named `o3db-*` in *Namespace* `project-h800`. The Project H
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

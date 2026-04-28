@@ -1,6 +1,6 @@
 # Cloud Native Security
 
-Security is layered — each outer layer protects the inner layers, but inner-layer security
+Security is layered - each outer layer protects the inner layers, but inner-layer security
 cannot compensate for outer-layer vulnerabilities. Defence-in-depth applies across Cloud,
 Cluster, Container, and Code.
 
@@ -9,7 +9,7 @@ Cluster, Container, and Code.
 ## 1. The 4Cs of Cloud Native Security
 
 ```
-Cloud → Cluster → Container → Code
+Cloud -> Cluster -> Container -> Code
 ```
 
 | Layer | Responsibilities |
@@ -26,10 +26,10 @@ Shared responsibility model: the cloud provider owns the Cloud layer for managed
 
 ## 2. Pod Security Architecture (5 Layers)
 
-Think of pod security as an onion across the pod lifecycle — each layer adds an independent
+Think of pod security as an onion across the pod lifecycle - each layer adds an independent
 control.
 
-### Layer 1 — Supply Chain (Build Phase)
+### Layer 1 - Supply Chain (Build Phase)
 
 Security begins before the pod exists. The goal: ensure the image is not compromised.
 
@@ -37,7 +37,7 @@ Security begins before the pod exists. The goal: ensure the image is not comprom
 - **Image signing:** Cosign/Sigstore signs images; admission controllers verify signatures before deployment
 - **SBOM:** Syft generates a bill of materials (SPDX or CycloneDX) for rapid CVE response (e.g., Log4Shell)
 
-### Layer 2 — Admission Control (Deploy Phase)
+### Layer 2 - Admission Control (Deploy Phase)
 
 The API server gatekeeper. The cluster decides whether the pod meets security standards
 before it starts.
@@ -45,14 +45,14 @@ before it starts.
 - **Built-in:** Pod Security Admission (PSA) enforces PSS levels (`privileged` / `baseline` / `restricted`) per namespace
 - **Policy engines:** Kyverno or OPA Gatekeeper as validating/mutating webhooks for complex rules (e.g., "images must come from internal registry")
 
-### Layer 3 — Runtime Security (Execution Phase)
+### Layer 3 - Runtime Security (Execution Phase)
 
 The pod is running. Watch OS-level behavior to detect or prevent escape and abuse.
 
-- **Preventive:** seccomp (filter syscalls), AppArmor/SELinux (MAC — restrict file and process access)
+- **Preventive:** seccomp (filter syscalls), AppArmor/SELinux (MAC - restrict file and process access)
 - **Detective:** Falco (eBPF-based runtime monitor, alerts on shell spawning, file access, privilege escalation), Tetragon (eBPF with active enforcement)
 
-### Layer 4 — Network Security
+### Layer 4 - Network Security
 
 Zero trust: a pod should not talk to anything it doesn't need to.
 
@@ -60,7 +60,7 @@ Zero trust: a pod should not talk to anything it doesn't need to.
 - **Cilium:** eBPF-based CNI with FQDN-aware policy and kernel-level enforcement
 - **Service mesh:** Istio or Linkerd for automatic mTLS between all pods
 
-### Layer 5 — Identity & Access Management
+### Layer 5 - Identity & Access Management
 
 What is this pod, and what can it access?
 
@@ -71,7 +71,7 @@ What is this pod, and what can it access?
 
 ## 3. Hardened Deployment Reference
 
-Full example — namespace with PSA restricted + secure Deployment + NetworkPolicy + RBAC.
+Full example - namespace with PSA restricted + secure Deployment + NetworkPolicy + RBAC.
 
 ### Namespace (PSA enforce: restricted)
 
@@ -433,7 +433,7 @@ kubectl get clusterroles -o json | \
 
 | Level | Restrictions | Use case |
 |---|---|---|
-| `privileged` | None — all capabilities allowed | Trusted system workloads (CNI, Falco) |
+| `privileged` | None - all capabilities allowed | Trusted system workloads (CNI, Falco) |
 | `baseline` | Blocks known privilege escalation (hostPID, hostNetwork, privileged containers) | Most workloads |
 | `restricted` | Baseline + must be non-root, drop ALL caps, read-only root FS, seccomp required | Security-sensitive workloads |
 
@@ -467,6 +467,6 @@ kubectl get clusterroles -o json | \
 | Grype | Vulnerability scanner (images, SBOMs) |
 | Cosign | Image signing and verification (Sigstore) |
 | Syft | SBOM generation (SPDX, CycloneDX) |
-| Kyverno | Policy engine — validating and mutating admission webhooks |
-| OPA Gatekeeper | Policy engine — Rego-based validating webhooks |
+| Kyverno | Policy engine - validating and mutating admission webhooks |
+| OPA Gatekeeper | Policy engine - Rego-based validating webhooks |
 | Falco | Runtime threat detection (eBPF/syscall-based) |

@@ -12,8 +12,8 @@ Find the *Issuer* and *Extended Key Usage* values on `cka-lab-worker` for:
 Write the information into file `cka/20/lab/certificate-info.txt`.
 
 > [!NOTE]
-> ℹ️ You can connect to the worker node using `docker exec -it cka-lab-worker bash`
+> [i] You can connect to the worker node using `docker exec -it cka-lab-worker bash`
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

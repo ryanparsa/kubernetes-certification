@@ -7,8 +7,8 @@ Create a *Static Pod* named `my-static-pod` in *Namespace* `default` on the *Nod
 Create a *NodePort Service* named `static-pod-service` which exposes that *Static Pod* on port `80`.
 
 > [!NOTE]
-> ℹ️ For verification check if the new *Service* has one *Endpoint*. In the kind lab you can access the *Node* `cka-lab-control-plane` with `docker exec -it cka-lab-control-plane bash`
+> [i] For verification check if the new *Service* has one *Endpoint*. In the kind lab you can access the *Node* `cka-lab-control-plane` with `docker exec -it cka-lab-control-plane bash`
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

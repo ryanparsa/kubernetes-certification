@@ -7,8 +7,8 @@
 3.  Change the Service CIDR to `11.96.0.0/12` for the cluster
 4.  Create a second *Service* named `check-ip-service2` pointing to the same *Pod*
 
-> ℹ️ The second *Service* should get an IP address from the new CIDR range
+> [i] The second *Service* should get an IP address from the new CIDR range
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

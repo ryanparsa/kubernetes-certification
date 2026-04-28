@@ -8,4 +8,4 @@ Write the *Pod* names into `cka/4/lab/pods-terminated-first.txt`.
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

@@ -10,4 +10,4 @@ Finally create a new *Deployment* `safari` in *Namespace* `project-t230` which m
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

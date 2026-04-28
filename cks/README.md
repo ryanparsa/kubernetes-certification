@@ -1,4 +1,4 @@
-# CKS — Certified Kubernetes Security Specialist
+# CKS -- Certified Kubernetes Security Specialist
 
 ## Exam Overview
 
@@ -60,19 +60,19 @@
   - `kubectl label namespace <ns> pod-security.kubernetes.io/enforce=restricted`
   - `enforce`, `warn`, `audit` modes
 - SecurityContext: `runAsNonRoot`, `runAsUser`, `fsGroup`, `allowPrivilegeEscalation: false`
-- `readOnlyRootFilesystem: true` — `emptyDir` volumes for paths that need writes
+- `readOnlyRootFilesystem: true` -- `emptyDir` volumes for paths that need writes
 - `capabilities: drop ALL`, add only what's required
 - Avoiding `hostPID`, `hostIPC`, `hostNetwork` unless explicitly required
 - Secrets management:
   - etcd encryption at rest: `EncryptionConfiguration`, `--encryption-provider-config` on kube-apiserver
   - Secret types: `Opaque`, `kubernetes.io/tls`, `kubernetes.io/dockerconfigjson`
   - Verifying encryption: `etcdctl get /registry/secrets/<ns>/<name> | hexdump`
-  - Volume mount vs env var injection (prefer mounts — env vars leak into child processes)
+  - Volume mount vs env var injection (prefer mounts -- env vars leak into child processes)
 - OPA/Gatekeeper and Kyverno: constraint templates, enforcing policies cluster-wide
 - mTLS concept: service mesh (Istio/Linkerd) providing mutual TLS between pods
 
 ### Supply Chain Security (20%)
-- Image scanning: `trivy image <image>` — reading CVE severity output, identifying critical/high vulns
+- Image scanning: `trivy image <image>` -- reading CVE severity output, identifying critical/high vulns
 - Allowed registries: OPA/Gatekeeper or Kyverno policies to block images from untrusted sources
 - Image digest pinning: `image: nginx@sha256:...` vs tag (tags are mutable)
 - Dockerfile best practices: non-root `USER`, minimal base image, no build tools in final stage

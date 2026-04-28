@@ -7,16 +7,16 @@ worker nodes. Covers pre-flight checks, draining, and post-upgrade validation.
 
 ## 1. Upgrade Overview
 
-Kubernetes supports upgrading **one minor version at a time** (e.g. 1.29 → 1.30).
+Kubernetes supports upgrading **one minor version at a time** (e.g. 1.29 -> 1.30).
 Skipping minor versions is not supported.
 
 ```
 1. Upgrade kubeadm on the control-plane node
-2. Run kubeadm upgrade plan   → review what will change
-3. Run kubeadm upgrade apply  → upgrade control-plane components
+2. Run kubeadm upgrade plan   -> review what will change
+3. Run kubeadm upgrade apply  -> upgrade control-plane components
 4. Upgrade kubelet + kubectl on the control-plane node
-5. Repeat steps 1, 3–4 on each additional control-plane node (HA clusters)
-6. For each worker node: drain → upgrade kubeadm/kubelet/kubectl → uncordon
+5. Repeat steps 1, 3-4 on each additional control-plane node (HA clusters)
+6. For each worker node: drain -> upgrade kubeadm/kubelet/kubectl -> uncordon
 ```
 
 ---
@@ -41,7 +41,7 @@ yum list --showduplicates kubeadm  # RHEL/CentOS
 
 ## 3. Upgrade the Control-Plane Node
 
-### Step 1 — Upgrade kubeadm
+### Step 1 - Upgrade kubeadm
 
 ```bash
 # Debian/Ubuntu
@@ -54,7 +54,7 @@ apt-mark hold kubeadm
 kubeadm version
 ```
 
-### Step 2 — Plan the upgrade
+### Step 2 - Plan the upgrade
 
 ```bash
 kubeadm upgrade plan
@@ -64,7 +64,7 @@ kubeadm upgrade plan
 #  - API Server, Controller Manager, Scheduler, etcd, CoreDNS, kube-proxy versions
 ```
 
-### Step 3 — Apply the upgrade
+### Step 3 - Apply the upgrade
 
 ```bash
 # Upgrade to the specific version shown in the plan
@@ -74,7 +74,7 @@ kubeadm upgrade apply v1.30.0
 kubeadm upgrade node
 ```
 
-### Step 4 — Drain the control-plane node
+### Step 4 - Drain the control-plane node
 
 ```bash
 # Evict workloads (DaemonSet pods are left in place)
@@ -83,7 +83,7 @@ kubectl drain <control-plane-node> \
   --delete-emptydir-data
 ```
 
-### Step 5 — Upgrade kubelet and kubectl
+### Step 5 - Upgrade kubelet and kubectl
 
 ```bash
 # Debian/Ubuntu
@@ -96,7 +96,7 @@ systemctl daemon-reload
 systemctl restart kubelet
 ```
 
-### Step 6 — Uncordon the control-plane node
+### Step 6 - Uncordon the control-plane node
 
 ```bash
 kubectl uncordon <control-plane-node>
@@ -111,7 +111,7 @@ kubectl get nodes
 
 Repeat these steps for **each worker node** one at a time.
 
-### Step 1 — Drain the worker node (from any node with kubectl access)
+### Step 1 - Drain the worker node (from any node with kubectl access)
 
 ```bash
 kubectl drain <worker-node> \
@@ -119,7 +119,7 @@ kubectl drain <worker-node> \
   --delete-emptydir-data
 ```
 
-### Step 2 — SSH to the worker node and upgrade kubeadm
+### Step 2 - SSH to the worker node and upgrade kubeadm
 
 ```bash
 ssh <worker-node>
@@ -131,14 +131,14 @@ apt-get install -y kubeadm=1.30.0-1.1
 apt-mark hold kubeadm
 ```
 
-### Step 3 — Upgrade the node configuration
+### Step 3 - Upgrade the node configuration
 
 ```bash
 # This upgrades the local kubelet config managed by kubeadm
 kubeadm upgrade node
 ```
 
-### Step 4 — Upgrade kubelet and kubectl
+### Step 4 - Upgrade kubelet and kubectl
 
 ```bash
 apt-mark unhold kubelet kubectl
@@ -149,7 +149,7 @@ systemctl daemon-reload
 systemctl restart kubelet
 ```
 
-### Step 5 — Uncordon the worker node (from the control-plane / kubectl)
+### Step 5 - Uncordon the worker node (from the control-plane / kubectl)
 
 ```bash
 kubectl uncordon <worker-node>
@@ -180,12 +180,12 @@ kubectl delete pod smoke
 
 ---
 
-## 6. Reference — Version Skew Policy
+## 6. Reference - Version Skew Policy
 
 | Component | Allowed skew from API server version |
 |---|---|
 | kubelet | Up to 3 minor versions behind API server |
-| kubectl | ±1 minor version from API server |
+| kubectl | +/-1 minor version from API server |
 | kube-controller-manager, kube-scheduler | Must not be newer than API server |
 | kubeadm | Same minor version as the target Kubernetes version |
 

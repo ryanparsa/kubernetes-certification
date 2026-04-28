@@ -8,4 +8,4 @@ Find the `project-*` *Namespace* with the highest number of *Roles* defined in i
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

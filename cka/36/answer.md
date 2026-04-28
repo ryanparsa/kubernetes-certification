@@ -45,7 +45,7 @@ This could be repeated on each controlplane and worker node where the result sho
 
 Now we check the iptables rules on the node.
 
-> ℹ️ In kind, exec into the control-plane container to run iptables commands:
+> [i] In kind, exec into the control-plane container to run iptables commands:
 > `docker exec -it cka-lab-36-control-plane bash`
 
 ```bash

@@ -10,4 +10,4 @@ Write a command into `cka/22/lab/find_pods_uid.sh` which lists all *Pods* in all
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

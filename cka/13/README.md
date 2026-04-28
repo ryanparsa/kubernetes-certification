@@ -20,4 +20,4 @@ curl http://r500.gateway:30080/auto --resolve r500.gateway:30080:127.0.0.1
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

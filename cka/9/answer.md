@@ -47,7 +47,7 @@ pod/api-contact created
 
 Once in the container we can connect to the K8s Api using `curl`, it's usually available via the *Service* named `kubernetes` in *Namespace* `default`. Because of K8s internal DNS resolution we can use the url `kubernetes.default`.
 
-> ℹ️ Otherwise we can find the K8s Api IP via environment variables inside the *Pod*, simply run `env`
+> [i] Otherwise we can find the K8s Api IP via environment variables inside the *Pod*, simply run `env`
 
 So we can try to contact the K8s Api:
 

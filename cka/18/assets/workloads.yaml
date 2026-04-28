@@ -116,7 +116,7 @@ spec:
   - name: pod
     image: nginx:alpine
 ---
-# Section pod 100 — hostname + subdomain enable FQDN: section100.section.lima-workload.svc.cluster.local
+# Section pod 100 - hostname + subdomain enable FQDN: section100.section.lima-workload.svc.cluster.local
 apiVersion: v1
 kind: Pod
 metadata:
@@ -131,7 +131,7 @@ spec:
   - name: pod
     image: httpd:2-alpine
 ---
-# Section pod 200 — hostname + subdomain enable FQDN: section200.section.lima-workload.svc.cluster.local
+# Section pod 200 - hostname + subdomain enable FQDN: section200.section.lima-workload.svc.cluster.local
 apiVersion: v1
 kind: Pod
 metadata:

@@ -30,7 +30,7 @@ On the worker node, run the join command printed above:
 kubeadm join 192.168.100.31:6443 --token xpexct.yefojay1ejbq8akx --discovery-token-ca-cert-hash sha256:...
 ```
 
-> ℹ️ If you have troubles with `kubeadm join` you might need to run `kubeadm reset` before.
+> [i] If you have troubles with `kubeadm join` you might need to run `kubeadm reset` before.
 
 ### Verify
 

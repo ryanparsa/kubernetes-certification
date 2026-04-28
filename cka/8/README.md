@@ -9,4 +9,4 @@ Your coworker notified you that node `cka-lab-8-worker` is running an older Kube
 
 ---
 
-**Setup:** `bash assets/setup.sh` · **Cleanup:** `bash assets/cleanup.sh`
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`

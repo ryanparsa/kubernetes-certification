@@ -67,7 +67,7 @@ data:
 ## 2. Secrets
 
 Secrets store sensitive data (passwords, tokens, certificates). Values are base64-encoded
-at rest (not encrypted by default — enable encryption-at-rest separately).
+at rest (not encrypted by default - enable encryption-at-rest separately).
 
 ### Create imperatively
 
@@ -113,7 +113,7 @@ data:
 ```
 
 ```yaml
-# Using stringData (plain text — easier for humans)
+# Using stringData (plain text - easier for humans)
 apiVersion: v1
 kind: Secret
 metadata:
@@ -129,7 +129,7 @@ stringData:
 
 | Type | Used for |
 |---|---|
-| `Opaque` | Generic — any key/value data (default) |
+| `Opaque` | Generic - any key/value data (default) |
 | `kubernetes.io/tls` | TLS certificate + private key |
 | `kubernetes.io/dockerconfigjson` | Docker registry auth credentials |
 | `kubernetes.io/service-account-token` | Service account tokens (legacy) |
@@ -149,7 +149,7 @@ immutable: true
 
 ## 3. Consuming as Environment Variables
 
-### Individual keys — `valueFrom`
+### Individual keys - `valueFrom`
 
 ```yaml
 spec:
@@ -169,7 +169,7 @@ spec:
           key: DB_PASSWORD
 ```
 
-### All keys at once — `envFrom`
+### All keys at once - `envFrom`
 
 ```yaml
 spec:
@@ -317,7 +317,7 @@ kubectl delete secret db-credentials -n my-app
 | Inject all keys as env vars | `envFrom.configMapRef` | `envFrom.secretRef` |
 | Inject single key as env var | `env[].valueFrom.configMapKeyRef` | `env[].valueFrom.secretKeyRef` |
 | Mount as files | `volumes[].configMap` | `volumes[].secret` |
-| Decode value | — | `kubectl get secret ... -o jsonpath='{.data.KEY}' \| base64 --decode` |
+| Decode value | - | `kubectl get secret ... -o jsonpath='{.data.KEY}' \| base64 --decode` |
 
 > **Important:** Pods do **not** automatically pick up ConfigMap or Secret changes
 > when using `envFrom`/`env`. The pod must be restarted. Volume-mounted files update

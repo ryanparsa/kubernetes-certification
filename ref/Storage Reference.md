@@ -1,7 +1,7 @@
 # Kubernetes Storage Reference
 
 Reference for Persistent Volumes, Persistent Volume Claims, StorageClasses, volume
-types, and CSI — everything that keeps data alive beyond a pod's lifetime.
+types, and CSI - everything that keeps data alive beyond a pod's lifetime.
 
 ---
 
@@ -26,7 +26,7 @@ A PersistentVolume is a cluster-level storage resource provisioned by an adminis
 
 | Policy | Effect after PVC is deleted |
 |---|---|
-| `Retain` | PV stays, status → `Released`; admin must manually reclaim or delete |
+| `Retain` | PV stays, status -> `Released`; admin must manually reclaim or delete |
 | `Delete` | PV and the underlying storage asset are automatically deleted |
 | `Recycle` (deprecated) | Basic scrub (`rm -rf /data/*`) then makes PV available again |
 
@@ -66,10 +66,10 @@ A PVC is a request for storage by a user. Kubernetes binds the PVC to a matching
 ### Binding rules
 
 A PVC binds to a PV when **all** of the following match:
-1. `accessModes` — PV must support all access modes requested by PVC
-2. `storage` — PV capacity ≥ PVC request
-3. `storageClassName` — must match exactly (both empty, or same class name)
-4. `selector` — optional label selector on PV metadata
+1. `accessModes` - PV must support all access modes requested by PVC
+2. `storage` - PV capacity >= PVC request
+3. `storageClassName` - must match exactly (both empty, or same class name)
+4. `selector` - optional label selector on PV metadata
 
 ### PVC YAML
 
@@ -152,10 +152,10 @@ kubectl get sc -o wide
 
 ```
 PVC created (with storageClassName: fast)
-  → StorageClass controller calls provisioner
-    → Provisioner creates the actual storage (disk, directory, etc.)
-      → PV is auto-created and bound to the PVC
-        → Pod can mount the PVC
+  -> StorageClass controller calls provisioner
+    -> Provisioner creates the actual storage (disk, directory, etc.)
+      -> PV is auto-created and bound to the PVC
+        -> Pod can mount the PVC
 ```
 
 ### PVC with dynamic provisioning
@@ -206,7 +206,7 @@ volumes:
     type: DirectoryOrCreate   # Directory | File | Socket | CharDevice | BlockDevice
 ```
 
-> ⚠️ Security risk: gives pod access to node filesystem. Avoid in production.
+> [!] Security risk: gives pod access to node filesystem. Avoid in production.
 
 ### configMap
 
@@ -324,7 +324,7 @@ kubectl edit pvc my-pvc
 
 # Check expansion status
 kubectl describe pvc my-pvc
-# Conditions: FileSystemResizePending → resize happens on next pod mount
+# Conditions: FileSystemResizePending -> resize happens on next pod mount
 ```
 
 ---
@@ -359,7 +359,7 @@ kubectl delete pv safari-pv
 | PVC not binding? | Check |
 |---|---|
 | Wrong storageClassName | Both PV and PVC must have identical `storageClassName` |
-| Insufficient capacity | PV size must be ≥ PVC request |
+| Insufficient capacity | PV size must be >= PVC request |
 | Access mode mismatch | PV must include all access modes in PVC |
 | PV already bound | Each PV can only bind to one PVC |
 | Selector mismatch | Check `spec.selector` on PVC and labels on PV |
