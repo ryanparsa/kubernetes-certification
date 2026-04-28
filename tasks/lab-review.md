@@ -30,14 +30,6 @@ Once you have loaded the context, process the target lab by strictly following t
 - **`assets/check.sh` / `assets/_check.py`**: Do the checks accurately validate the checklist requirements? Are they written robustly?
 - **CI Workflow**: If it's a `kind` lab, does it have a `.github/workflows/<exam>-lab-<N>.yml` file? If it's a `lima` lab, is it correctly excluded from CI?
 
-### 4. Sequential Lab Numbering
-- Labs should be numbered sequentially with no gaps (e.g., `1`, `2`, `3`, etc.).
-- Scan the existing lab directories in the exam folder to find the lowest available positive integer.
-- If the current lab directory number is not the lowest available number, rename the directory to that lowest available number.
-- **IMPORTANT**: If you rename the directory, you must also:
-  - Rename and update the `.github/workflows/<exam>-lab-<N>.yml` file (if applicable) to match the new `<N>`.
-  - Update any references to the lab number within the `README.md` and other lab files.
-
 ### 5. Execution Verification (Testing)
 - Before concluding your review, you MUST actually test the lab scripts locally to ensure they work:
   1. Run `bash assets/setup.sh` and export the `KUBECONFIG`.
