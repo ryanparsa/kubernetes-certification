@@ -1,6 +1,6 @@
-# Question 123
+# Question 89
 
-> **Solve this question on:** `ckad-lab-04`
+> **Solve this question on:** `ckad-lab-89`
 
 Kubernetes allows you to run calculator jobs. In *Namespace* `default`:
 
@@ -9,3 +9,7 @@ Kubernetes allows you to run calculator jobs. In *Namespace* `default`:
 2. There seems to be a *Docker* image which is not tagged with any label. Find it and delete it.
 
 Use the `crictl` command to list images available on the cluster node. Write the list to `/opt/course/4/images`.
+
+---
+
+**Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`
