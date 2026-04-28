@@ -1,8 +1,8 @@
 # Question 40
 
-> **Solve this question on:** `ckad-lab-40`
+> **Solve this question on:** the "ckad-lab-40" *Kind* cluster
 
-Create a ConfigMap named `app-config` in the `configuration` namespace with the following data:
+Create a *ConfigMap* named `app-config` in the `configuration` *Namespace* with the following data:
 
 ```
 DB_HOST=mysql
@@ -10,18 +10,18 @@ DB_PORT=3306
 DB_NAME=myapp
 ```
 
-Then create a Secret named `app-secret` with the following data:
+Then create a *Secret* named `app-secret` with the following data:
 
 ```
 DB_USER=admin
 DB_PASSWORD=s3cr3t
 ```
 
-Finally, create a Pod named `app-pod` using the `nginx` image that uses both the ConfigMap and Secret.
+Finally, create a *Pod* named `app-pod` using the `nginx` image that uses both the *ConfigMap* and *Secret*.
 
-Mount the ConfigMap as environment variables and the Secret as a volume at `/etc/app-secret`.
+Mount the *ConfigMap* as environment variables and the *Secret* as a *Volume* at `/etc/app-secret`.
 
-Ensure the namespace exists before creating the resources.
+Ensure the *Namespace* exists before creating the resources.
 
 ---
 

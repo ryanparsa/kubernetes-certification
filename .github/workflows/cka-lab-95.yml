@@ -1,0 +1,39 @@
+name: CKA Lab 95
+
+on:
+  push:
+    paths: ['cka/95/**', '.github/workflows/cka-lab-95.yml']
+  pull_request:
+    paths: ['cka/95/**', '.github/workflows/cka-lab-95.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/95/assets/kind-config.yaml
+          cluster_name: cka-lab-95
+
+      - name: Setup environment
+        run: |
+          mkdir -p cka/95/lab
+          kind get kubeconfig --name cka-lab-95 > cka/95/lab/kubeconfig.yaml
+          # Pre-seed the course directory on the node as setup.sh would do
+          docker exec cka-lab-95-control-plane mkdir -p /opt/course/95
+
+      - name: Apply solution
+        run: bash cka/95/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/95/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/95/assets/cleanup.sh
