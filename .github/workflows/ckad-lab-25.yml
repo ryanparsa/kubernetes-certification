@@ -1,0 +1,31 @@
+name: CKAD Lab 25
+
+on:
+  push:
+    paths: ['ckad/25/**', '.github/workflows/ckad-lab-25.yml']
+  pull_request:
+    paths: ['ckad/25/**', '.github/workflows/ckad-lab-25.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/25/assets/kind-config.yaml
+          cluster_name: ckad-lab-25
+
+      - name: Apply solution
+        run: bash ckad/25/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/25/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/25/assets/cleanup.sh
