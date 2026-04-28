@@ -1,0 +1,38 @@
+name: CKA Lab 72
+
+on:
+  push:
+    paths: ['cka/72/**', '.github/workflows/cka-lab-72.yml']
+  pull_request:
+    paths: ['cka/72/**', '.github/workflows/cka-lab-72.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/72/assets/kind-config.yaml
+          cluster_name: cka-lab-72
+
+      - name: Setup environment
+        run: |
+          mkdir -p cka/72/course
+          # Create a dummy context
+          kubectl config set-context other-context --cluster=kind-cka-lab-72 --user=kind-cka-lab-72 --namespace=default
+          # The fix script expects assets/kubeconfig.yaml if KUBECONFIG is not set
+          # In CI, helm/kind-action sets KUBECONFIG, so we should be fine.
+          # But for consistency, let's make sure it works.
+
+      - name: Apply solution
+        run: bash cka/72/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/72/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/72/assets/cleanup.sh
