@@ -18,9 +18,12 @@ def docker_exec(*args):
     return result
 
 class TestCrictlImages(unittest.TestCase):
-    def test_image_list_file_exists(self):
-        result = docker_exec("ls", "/opt/course/4/images")
-        self.assertEqual(result.returncode, 0, "File /opt/course/4/images does not exist on the node")
+    def test_image_list_file_content(self):
+        result = docker_exec("cat", "/opt/course/123/images")
+        self.assertEqual(result.returncode, 0, "File /opt/course/123/images does not exist on the node")
+        content = result.stdout
+        self.assertIn("IMAGE ID", content, "File /opt/course/123/images does not seem to contain crictl images output (missing 'IMAGE ID' header)")
+        self.assertIn("IMAGE", content, "File /opt/course/123/images does not seem to contain crictl images output (missing 'IMAGE' header)")
 
     def test_nginx_images_removed(self):
         result = docker_exec("sh", "-c", "crictl images -o json")
@@ -31,6 +34,7 @@ class TestCrictlImages(unittest.TestCase):
     def test_untagged_images_removed(self):
         result = docker_exec("sh", "-c", "crictl images -o json")
         data = json.loads(result.stdout)
+        # Check for images with no tags or just <none>:<none>
         untagged_images = [img for img in data['images'] if not img.get('repoTags') or img.get('repoTags') == ["<none>:<none>"]]
         self.assertEqual(len(untagged_images), 0, f"Found {len(untagged_images)} untagged images on the node")
 

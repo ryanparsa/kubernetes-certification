@@ -8,7 +8,7 @@ CLUSTER_NAME="$EXAM-lab-$LAB_ID"
 NODE_NAME="$CLUSTER_NAME-control-plane"
 
 # We use docker exec to run crictl on the node because crictl is only available inside the kind node
-docker exec "$NODE_NAME" sh -c "crictl images > /opt/course/4/images"
+docker exec "$NODE_NAME" sh -c "crictl images > /opt/course/123/images"
 
 NGINX_IDS=$(docker exec "$NODE_NAME" sh -c "crictl images -o json" | jq -r '.images[] | select(.repoTags[] | contains("nginx")) | .id')
 for ID in $NGINX_IDS; do

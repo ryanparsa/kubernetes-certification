@@ -5,8 +5,8 @@
 ### List images with crictl
 
 ```bash
-crictl images > /opt/course/4/images
-cat /opt/course/4/images
+crictl images > /opt/course/123/images
+cat /opt/course/123/images
 ```
 
 ### Remove nginx images
@@ -32,6 +32,6 @@ crictl images | grep "<none>"  # should return nothing
 
 ## Checklist (Score: 0/3)
 
-- [ ] Image list written to `/opt/course/4/images`
+- [ ] Image list written to `/opt/course/123/images`
 - [ ] All `nginx` images removed from the node
 - [ ] Untagged (`<none>`) image removed from the node
