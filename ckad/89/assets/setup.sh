@@ -47,7 +47,13 @@ spec:
 EOF
 
 # Wait for deployment
-kubectl rollout status deployment/api-new-c32 -n neptune --timeout=300s
+if ! kubectl rollout status deployment/api-new-c32 -n neptune --timeout=300s; then
+  echo "Deployment failed to roll out. Debug info:"
+  kubectl describe deployment api-new-c32 -n neptune
+  kubectl get pods -n neptune
+  kubectl describe pods -n neptune
+  exit 1
+fi
 
 mkdir -p "$SCRIPT_DIR/../lab"
 echo "Lab ready! Run: export KUBECONFIG=$KUBECONFIG_FILE"
