@@ -45,7 +45,6 @@ class TestKubectlTopOutput(unittest.TestCase):
             if len(parts) >= 2:
                 pod_names.append(parts[1])
         self.assertGreater(len(pod_names), 0, "No pod data rows found in pods.txt")
-        # Pod names repeat for multi-container pods; only check unique transitions
         self.assertEqual(pod_names, sorted(pod_names),
                          "Pod names in pods.txt are not sorted alphabetically (use --sort-by=name)")
 

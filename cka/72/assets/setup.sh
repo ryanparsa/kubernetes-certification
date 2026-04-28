@@ -30,14 +30,20 @@ kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" \
   -n kube-system deployment/metrics-server --timeout=120s
 
 echo "Waiting for node metrics to become available..."
+METRICS_READY=0
 for i in $(seq 1 30); do
   if kubectl --kubeconfig "$KUBECONFIG_FILE" top node &>/dev/null; then
     echo "Metrics available."
+    METRICS_READY=1
     break
   fi
   echo "  Attempt $i/30 - metrics not yet available, retrying in 10s..."
   sleep 10
 done
+if [ "$METRICS_READY" -eq 0 ]; then
+  echo "Error: metrics-server did not become available after 300s"
+  exit 1
+fi
 
 echo ""
 echo "Lab ready!"
