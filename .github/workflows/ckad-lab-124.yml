@@ -1,0 +1,32 @@
+name: CKAD Lab 124
+
+on:
+  push:
+    paths: ['ckad/124/**', '.github/workflows/ckad-lab-124.yml']
+  pull_request:
+    paths: ['ckad/124/**', '.github/workflows/ckad-lab-124.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/124/assets/kind-config.yaml
+          cluster_name: ckad-lab-124
+
+      - name: Setup lab environment
+        run: bash ckad/124/assets/setup.sh
+
+      - name: Apply solution
+        run: bash ckad/124/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/124/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/124/assets/cleanup.sh
