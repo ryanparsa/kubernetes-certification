@@ -1,22 +1,19 @@
-## Answer
+#!/usr/bin/env bash
+set -euo pipefail
 
-**Reference:** https://kubernetes.io/docs/concepts/services-networking/network-policies/
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/../lab/kubeconfig.yaml}"
 
-### Create the *Namespace*
-
-```bash
-kubectl create namespace networking
-```
-
-### Create *Pods* and *NetworkPolicy*
-
-```yaml
-# lab/46.yaml
+# 1. Create namespace
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Namespace
 metadata:
   name: networking
----
+EOF
+
+# 2. Create pods
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
 metadata:
@@ -55,7 +52,10 @@ spec:
   containers:
   - name: nginx
     image: nginx
----
+EOF
+
+# 3. Create NetworkPolicy
+kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -84,24 +84,7 @@ spec:
     ports:
     - protocol: TCP
       port: 8080
-```
+EOF
 
-```bash
-kubectl apply -f lab/46.yaml
-```
-
-### Verify
-
-```bash
-kubectl get pods -n networking
-kubectl get networkpolicy -n networking
-kubectl describe networkpolicy db-network-policy -n networking
-```
-
-## Checklist (Score: 0/5)
-
-- [ ] *Namespace* `networking` exists
-- [ ] All three *Pods* (`secure-db`, `frontend`, `monitoring`) are created correctly
-- [ ] *NetworkPolicy* `db-network-policy` exists and targets *Pods* with label `app=db`
-- [ ] *NetworkPolicy* allows ingress only from *Pods* with `role=frontend` on port `5432`
-- [ ] *NetworkPolicy* allows egress only to *Pods* with `role=monitoring` on port `8080`
+# 4. Wait for pods to be ready
+kubectl wait --for=condition=Ready pod/secure-db pod/frontend pod/monitoring -n networking --timeout=60s
