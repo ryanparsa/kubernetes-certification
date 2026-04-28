@@ -4,28 +4,23 @@ import subprocess
 import unittest
 import json
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-KUBECONFIG = os.getenv("KUBECONFIG", os.path.join(SCRIPT_DIR, "kubeconfig.yaml"))
-
-def kubectl(*args):
-    cmd = ["kubectl", *args]
-    if os.path.exists(KUBECONFIG) and not os.getenv("KUBECONFIG"):
-        cmd.extend(["--kubeconfig", KUBECONFIG])
-    result = subprocess.run(
-        cmd,
-        capture_output=True, text=True,
-    )
-    return result.stdout.strip()
-
 class TestWebServices(unittest.TestCase):
+    def kubectl(self, *args):
+        cmd = ["kubectl", *args]
+        result = subprocess.run(
+            cmd,
+            capture_output=True, text=True,
+        )
+        return result.stdout.strip()
+
     def test_namespace_exists(self):
         """Verify the 'services' namespace exists."""
-        namespaces = kubectl("get", "ns", "-o", "jsonpath={.items[*].metadata.name}")
+        namespaces = self.kubectl("get", "ns", "-o", "jsonpath={.items[*].metadata.name}")
         self.assertIn("services", namespaces.split())
 
     def test_deployment_config(self):
         """Verify web-app deployment in services namespace."""
-        output = kubectl("get", "deployment", "web-app", "-n", "services", "-o", "json")
+        output = self.kubectl("get", "deployment", "web-app", "-n", "services", "-o", "json")
         if not output:
             self.fail("Deployment web-app not found in services namespace")
 
@@ -36,7 +31,7 @@ class TestWebServices(unittest.TestCase):
 
     def test_clusterip_service(self):
         """Verify web-svc-cluster service."""
-        output = kubectl("get", "svc", "web-svc-cluster", "-n", "services", "-o", "json")
+        output = self.kubectl("get", "svc", "web-svc-cluster", "-n", "services", "-o", "json")
         if not output:
             self.fail("Service web-svc-cluster not found")
 
@@ -46,7 +41,7 @@ class TestWebServices(unittest.TestCase):
 
     def test_nodeport_service(self):
         """Verify web-svc-nodeport service."""
-        output = kubectl("get", "svc", "web-svc-nodeport", "-n", "services", "-o", "json")
+        output = self.kubectl("get", "svc", "web-svc-nodeport", "-n", "services", "-o", "json")
         if not output:
             self.fail("Service web-svc-nodeport not found")
 
@@ -57,7 +52,7 @@ class TestWebServices(unittest.TestCase):
 
     def test_loadbalancer_service(self):
         """Verify web-svc-lb service."""
-        output = kubectl("get", "svc", "web-svc-lb", "-n", "services", "-o", "json")
+        output = self.kubectl("get", "svc", "web-svc-lb", "-n", "services", "-o", "json")
         if not output:
             self.fail("Service web-svc-lb not found")
 
