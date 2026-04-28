@@ -1,0 +1,37 @@
+name: CKAD Lab 79
+
+on:
+  push:
+    paths: ['ckad/79/**', '.github/workflows/ckad-lab-79.yml']
+  pull_request:
+    paths: ['ckad/79/**', '.github/workflows/ckad-lab-79.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/79/assets/kind-config.yaml
+          cluster_name: ckad-lab-79
+
+      - name: Export KUBECONFIG
+        run: |
+          kind get kubeconfig --name ckad-lab-79 > ckad/79/assets/kubeconfig.yaml
+          echo "KUBECONFIG=$(pwd)/ckad/79/assets/kubeconfig.yaml" >> $GITHUB_ENV
+
+      - name: Apply solution
+        run: bash ckad/79/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/79/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/79/assets/cleanup.sh
