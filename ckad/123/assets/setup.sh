@@ -32,8 +32,10 @@ docker exec "$NODE_NAME" crictl pull nginx:1.21
 # We use sed to filter out potential log messages (lines starting with EMMDD or level=...)
 UNTAGGED_IMAGE="busybox:1.36.1"
 docker exec "$NODE_NAME" crictl pull "$UNTAGGED_IMAGE"
-JSON_OUTPUT=$(docker exec "$NODE_NAME" sh -c "crictl images --repo $UNTAGGED_IMAGE -o json")
-DIGEST=$(echo "$JSON_OUTPUT" | sed '/^[EWI][0-9]\{4\}/d; /^time=/d; /^level=/d' | jq -r '.images[0].repoDigests[0]')
+JSON_OUTPUT=$(docker exec "$NODE_NAME" sh -c "crictl images -o json")
+# Find the image ID for busybox:1.36.1 and get its repoDigest
+CLEAN_JSON=$(echo "$JSON_OUTPUT" | sed '/^[EWI][0-9]\{4\}/d; /^time=/d; /^level=/d')
+DIGEST=$(echo "$CLEAN_JSON" | jq -r --arg IMG "$UNTAGGED_IMAGE" '.images[] | select(.repoTags[] == $IMG) | .repoDigests[0]')
 docker exec "$NODE_NAME" crictl rmi "$UNTAGGED_IMAGE"
 docker exec "$NODE_NAME" crictl pull "$DIGEST"
 
