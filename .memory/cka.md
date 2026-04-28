@@ -8,3 +8,4 @@
 
 - Any lab asking to "join a worker node running an older Kubernetes version to the cluster using kubeadm" duplicates cka/8.
   - cka/87 was deleted (2026-04-28) as a duplicate of cka/8: identical task, no assets, answer.md was "TODO".
+  - cka/194 was deleted as a duplicate of cka/15: identical task (NetworkPolicy np-backend in project-snake), no assets, answer.md was "TODO".
