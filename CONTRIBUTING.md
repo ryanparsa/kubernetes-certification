@@ -305,6 +305,8 @@ if __name__ == "__main__":
 | Convention | Rule |
 |---|---|
 | Cluster name | `<exam>-lab-<N>` |
+| Kubernetes Version | All labs, manifests, and solutions must target **Kubernetes v1.35**. Do not use deprecated APIs. |
+| Relative Paths | All file paths in `README.md`, `answer.md`, and scripts must be relative to the lab directory (e.g., `assets/setup.sh`). |
 | Manifests | Written to `lab/` while solving; `lab/` is git-ignored |
 | `fix.sh` | Idempotent - uses `kubectl apply`, not `kubectl create` |
 | `kubectl wait` | Use in any `.sh` file after applying resources to block until the expected state is reached: `kubectl wait <resource> <name> -n <namespace> --for=condition=Ready --timeout=60s` |
