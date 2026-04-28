@@ -1,0 +1,37 @@
+name: CKAD Lab 46
+
+on:
+  push:
+    paths: ['ckad/46/**', '.github/workflows/ckad-lab-46.yml']
+  pull_request:
+    paths: ['ckad/46/**', '.github/workflows/ckad-lab-46.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/46/assets/kind-config.yaml
+          cluster_name: ckad-lab-46
+
+      - name: Export KUBECONFIG
+        run: |
+          mkdir -p ckad/46/lab
+          kind get kubeconfig --name ckad-lab-46 > ckad/46/lab/kubeconfig.yaml
+
+      - name: Apply solution
+        run: bash ckad/46/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/46/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/46/assets/cleanup.sh
