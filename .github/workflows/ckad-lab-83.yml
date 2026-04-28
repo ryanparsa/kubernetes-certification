@@ -1,0 +1,36 @@
+name: CKAD Lab 83
+
+on:
+  push:
+    paths: ['ckad/83/**', '.github/workflows/ckad-lab-83.yml']
+  pull_request:
+    paths: ['ckad/83/**', '.github/workflows/ckad-lab-83.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/83/assets/kind-config.yaml
+          cluster_name: ckad-lab-83
+
+      - name: Setup environment
+        run: |
+          mkdir -p ckad/83/lab
+          kind get kubeconfig --name ckad-lab-83 > ckad/83/lab/kubeconfig.yaml
+
+      - name: Apply solution
+        run: bash ckad/83/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/83/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/83/assets/cleanup.sh
