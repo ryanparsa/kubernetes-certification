@@ -80,6 +80,9 @@ secrets/
 # CKA lab output directories
 cka/[0-9]*/lab/
 
+# CKAD lab output directories
+ckad/[0-9]*/lab/
+
 
 # Documentation build artifacts
 _build/
