@@ -22,6 +22,7 @@ kind: PersistentVolume
 metadata:
   name: db-pv
 spec:
+  storageClassName: manual
   capacity:
     storage: 1Gi
   accessModes:
@@ -36,6 +37,7 @@ metadata:
   name: db-pvc
   namespace: state
 spec:
+  storageClassName: manual
   accessModes:
   - ReadWriteOnce
   resources:

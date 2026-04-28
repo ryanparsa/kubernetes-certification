@@ -4,11 +4,15 @@ import subprocess
 import unittest
 import json
 
-KUBECONFIG = os.environ.get("KUBECONFIG") or os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+KUBECONFIG_FILE = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
 
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if os.path.exists(KUBECONFIG_FILE) and not os.environ.get("KUBECONFIG"):
+        cmd.extend(["--kubeconfig", KUBECONFIG_FILE])
+
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        [*cmd, *args],
         capture_output=True, text=True,
     )
     return result.stdout.strip()

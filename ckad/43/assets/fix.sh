@@ -2,7 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+
+if [[ -f "$KUBECONFIG_FILE" && -z "${KUBECONFIG:-}" ]]; then
+  export KUBECONFIG="$KUBECONFIG_FILE"
+fi
 
 # Ensure namespace exists
 kubectl create namespace state --dry-run=client -o yaml | kubectl apply -f -
@@ -14,6 +18,7 @@ kind: PersistentVolume
 metadata:
   name: db-pv
 spec:
+  storageClassName: manual
   capacity:
     storage: 1Gi
   accessModes:
@@ -28,6 +33,7 @@ metadata:
   name: db-pvc
   namespace: state
 spec:
+  storageClassName: manual
   accessModes:
   - ReadWriteOnce
   resources:
