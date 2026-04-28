@@ -2,13 +2,13 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 
-### Create the namespace
+### Create the *Namespace*
 
 ```bash
 kubectl create namespace state
 ```
 
-### Create PV, PVC, and Pod
+### Create *PersistentVolume*, *PersistentVolumeClaim*, and *Pod*
 
 ```yaml
 # lab/43.yaml
@@ -84,9 +84,9 @@ kubectl get pod db-pod -n state
 
 ## Checklist (Score: 0/6)
 
-- [ ] Namespace `state` exists
-- [ ] PersistentVolume `db-pv` has capacity `1Gi`, access mode `ReadWriteOnce`, hostPath `/mnt/data`, and reclaim policy `Retain`
-- [ ] PersistentVolumeClaim `db-pvc` requests `500Mi` with access mode `ReadWriteOnce`
-- [ ] Pod `db-pod` uses image `mysql:5.7`
-- [ ] Pod mounts the PVC at `/var/lib/mysql`
-- [ ] Pod has correct environment variables (`MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`)
+- [ ] *Namespace* `state` exists
+- [ ] *PersistentVolume* `db-pv` has capacity `1Gi`, access mode `ReadWriteOnce`, `hostPath` `/mnt/data`, and reclaim policy `Retain`
+- [ ] *PersistentVolumeClaim* `db-pvc` requests `500Mi` with access mode `ReadWriteOnce`
+- [ ] *Pod* `db-pod` uses image `mysql:5.7`
+- [ ] *Pod* mounts the *PersistentVolumeClaim* at `/var/lib/mysql`
+- [ ] *Pod* has correct environment variables (`MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`)
