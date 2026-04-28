@@ -37,12 +37,12 @@ spec:
 ```bash
 kubectl apply -f lab/pluto-deployment.yaml
 kubectl get pods -n pluto
-kubectl logs <pod-name> -n pluto -c sidecar
+# Example: kubectl logs pluto-deployment-xxxx -n pluto -c sidecar
 ```
 
-## Checklist (Score: 0/4)
+## Checklist (Score: 4/4)
 
-- [ ] Deployment `pluto-deployment` updated with sidecar container named `sidecar`
-- [ ] Sidecar uses image `busybox:1.31.0`
-- [ ] Sidecar runs `while true; do date >> /var/log/date.log; sleep 1; done`
-- [ ] Both containers share volume `log-data` at correct mount paths
+- [x] Deployment `pluto-deployment` updated with sidecar container named `sidecar`
+- [x] Sidecar uses image `busybox:1.31.0`
+- [x] Sidecar runs `while true; do date >> /var/log/date.log; sleep 1; done`
+- [x] Both containers share volume `log-data` at correct mount paths
