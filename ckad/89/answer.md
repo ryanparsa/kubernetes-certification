@@ -3,7 +3,7 @@
 **Reference:** <https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/>
 
 ```bash
-kubectl get namespaces > /opt/course/1/namespaces
+kubectl get namespaces -o name > /opt/course/1/namespaces
 cat /opt/course/1/namespaces
 ```
 
