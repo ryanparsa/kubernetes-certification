@@ -8,12 +8,13 @@
 kubectl create serviceaccount secret-manager -n sun
 ```
 
-### Create the ClusterRoleBinding
+### Create the RoleBinding
 
 ```bash
-kubectl create clusterrolebinding secret-manager \
+kubectl create rolebinding secret-manager \
   --clusterrole=secret-manager \
-  --serviceaccount=sun:secret-manager
+  --serviceaccount=sun:secret-manager \
+  -n sun
 ```
 
 ### Verify permissions
@@ -29,6 +30,6 @@ kubectl auth can-i get secrets -n moon --as=system:serviceaccount:sun:secret-man
 ## Checklist (Score: 0/4)
 
 - [ ] ServiceAccount `secret-manager` exists in Namespace `sun`
-- [ ] ClusterRoleBinding `secret-manager` binds ServiceAccount to ClusterRole `secret-manager`
+- [ ] RoleBinding `secret-manager` in Namespace `sun` binds ServiceAccount to ClusterRole `secret-manager`
 - [ ] ServiceAccount can `get` Secrets in Namespace `sun`
 - [ ] ServiceAccount cannot `get` Secrets in Namespace `moon`
