@@ -29,9 +29,11 @@ docker exec "$NODE_NAME" crictl pull nginx:1.21
 # Create an untagged image
 # We pull a specific image, get its digest, remove the tag, and then pull by digest.
 # This ensures an image with <none>:<none> repoTags exists.
+# We use sed to filter out potential log messages (lines starting with EMMDD or level=...)
 UNTAGGED_IMAGE="busybox:1.36.1"
 docker exec "$NODE_NAME" crictl pull "$UNTAGGED_IMAGE"
-DIGEST=$(docker exec "$NODE_NAME" sh -c "crictl images --repo $UNTAGGED_IMAGE -o json" | jq -r '.images[0].repoDigests[0]')
+JSON_OUTPUT=$(docker exec "$NODE_NAME" sh -c "crictl images --repo $UNTAGGED_IMAGE -o json")
+DIGEST=$(echo "$JSON_OUTPUT" | sed '/^[EWI][0-9]\{4\}/d; /^time=/d; /^level=/d' | jq -r '.images[0].repoDigests[0]')
 docker exec "$NODE_NAME" crictl rmi "$UNTAGGED_IMAGE"
 docker exec "$NODE_NAME" crictl pull "$DIGEST"
 
