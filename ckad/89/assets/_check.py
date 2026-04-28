@@ -19,8 +19,11 @@ class TestNeptuneMaintenance(unittest.TestCase):
         self.assertEqual(replicas, "0")
 
     def test_neptune_10ab_pods_terminated(self):
+        # We check that no pods are running or pending.
+        # Terminating pods are also acceptable to be absent from this check if we filter them out,
+        # but the task usually implies they should be gone.
         pod_count = kubectl("get", "pods", "-n", "neptune", "-l", "app=neptune-10ab", "--no-headers")
-        self.assertEqual(pod_count, "")
+        self.assertEqual(pod_count, "", f"Expected no pods for neptune-10ab, but found:\n{pod_count}")
 
     def test_neptune_20ab_annotated(self):
         annotation = kubectl("get", "deployment", "neptune-20ab", "-n", "neptune", "-o", "jsonpath={.metadata.annotations['admission\\.datree\\.io/warn']}")
