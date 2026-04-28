@@ -64,7 +64,7 @@ class TestGatewayTraffic(unittest.TestCase):
         for filter in redirect_rule.get("filters", []):
             if filter.get("type") == "RequestRedirect":
                 rr = filter.get("requestRedirect", {})
-                if rr.get("path", {}).get("value") == "/mobile":
+                if rr.get("path", {}).get("type") == "ReplaceFullPath" and rr.get("path", {}).get("replaceFullPath") == "/mobile":
                     redirect_filter = True
         self.assertTrue(redirect_filter, "RequestRedirect filter to /mobile not found")
 

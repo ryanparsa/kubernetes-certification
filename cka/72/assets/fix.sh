@@ -47,6 +47,6 @@ spec:
       requestRedirect:
         path:
           type: ReplaceFullPath
-          value: /mobile
+          replaceFullPath: /mobile
         statusCode: 302
 EOF
