@@ -97,6 +97,31 @@ Example: "Create a Pod exposed via a NodePort Service"
 
 **Rule: even on hard questions, always do the parts you know.** Never leave a question completely blank just because you can't solve all of it. A half-done answer is always better than nothing.
 
+## Write-to-File Answers
+
+The grading script looks for key values, not specific phrasing. Use the verb in the question to pick your format:
+
+| Question says | Write |
+|---------------|-------|
+| "Write the location / path" | just the path, nothing else |
+| "Provide the information" | `Label: value` pairs |
+
+When using `Label: value` format, keep it minimal - no explanatory sentences:
+
+```text
+server-private-key: /etc/kubernetes/pki/etcd/server.key
+certificate-expiration: Oct 29 14:19:27 2025 GMT
+client-auth-enabled: yes
+```
+
+For boolean fields, `yes` / `no` is the most common expected format unless the question specifies otherwise.
+
+**Always pipe or redirect output directly - never retype values.** A two-second difference in a timestamp (`14:19:27` vs `14:19:29`) is enough for the grader to mark it wrong.
+
+```bash
+echo "certificate-expiration: $(openssl x509 -noout -enddate -in /etc/kubernetes/pki/etcd/server.crt | cut -d= -f2)" >> /opt/course/35/etcd-info.txt
+```
+
 ## Verify Before Moving On
 
 Before marking a question done and moving to the next:
