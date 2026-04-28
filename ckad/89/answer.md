@@ -14,8 +14,6 @@ spec:
   parallelism: 2
   activeDeadlineSeconds: 30
   template:
-    metadata:
-      name: neb-new-job-pod
     spec:
       containers:
       - name: neb-new-job-container
@@ -34,5 +32,5 @@ kubectl get pods -n neptune
 
 - [ ] Job `neb-new-job` exists in Namespace `neptune`
 - [ ] Job configured with `completions: 3`, `parallelism: 2`, `activeDeadlineSeconds: 30`
-- [ ] Pod named `neb-new-job-pod`, container named `neb-new-job-container`
+- [ ] Container named `neb-new-job-container`
 - [ ] Container uses image `busybox:1.31.0` and runs `sleep 2 && echo done`
