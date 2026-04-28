@@ -11,12 +11,6 @@ Create a namespace `config-test`.
 
 2. Create a Pod named `config-pod` in namespace `config-test` using image `alpine` with command `sleep 3600`. Inject **all** keys from the ConfigMap as environment variables into the container using `envFrom`.
 
-3. Verify the environment variables are set:
-
-```bash
-kubectl exec config-pod -n config-test -- env | grep DATABASE
-```
-
 ---
 
 **Setup:** `bash assets/setup.sh` - **Cleanup:** `bash assets/cleanup.sh`
