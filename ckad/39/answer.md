@@ -2,13 +2,13 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 
-### Create the namespace
+### Create the *Namespace*
 
 ```bash
 kubectl create namespace pod-design
 ```
 
-### Create the deployment and service
+### Create the *Deployment* and *Service*
 
 ```yaml
 # lab/39.yaml
@@ -72,7 +72,7 @@ kubectl get service frontend-svc -n pod-design
 
 ## Checklist (Score: 0/4)
 
-- [ ] Namespace `pod-design` exists
-- [ ] Deployment `frontend` is created with 3 replicas and image `nginx:1.19.0`
-- [ ] Deployment has labels `app=frontend` and `tier=frontend`
-- [ ] Service `frontend-svc` of type `ClusterIP` exposes port `80`
+- [ ] *Namespace* `pod-design` exists
+- [ ] *Deployment* `frontend` has 3 replicas and uses image `nginx:1.19.0`
+- [ ] *Deployment* and *Pods* carry labels `app=frontend` and `tier=frontend`
+- [ ] *Service* `frontend-svc` is of type *ClusterIP* and exposes port 80

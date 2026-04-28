@@ -1,0 +1,33 @@
+name: CKAD Lab 39
+
+on:
+  push:
+    paths: ['ckad/39/**', '.github/workflows/ckad-lab-39.yml']
+  pull_request:
+    paths: ['ckad/39/**', '.github/workflows/ckad-lab-39.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: ckad/39/assets/kind-config.yaml
+          cluster_name: ckad-lab-39
+
+      - name: Apply solution
+        run: |
+          kind get kubeconfig --name ckad-lab-39 > ckad/39/assets/kubeconfig.yaml
+          bash ckad/39/assets/fix.sh
+
+      - name: Run checks
+        run: bash ckad/39/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash ckad/39/assets/cleanup.sh
