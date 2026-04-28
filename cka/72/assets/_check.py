@@ -5,11 +5,13 @@ import unittest
 import json
 
 SCRIPT_DIR = os.path.dirname(__file__)
-KUBECONFIG = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml"))
+KUBECONFIG_FILE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml"))
 
 def kubectl(*args):
     env = os.environ.copy()
-    env["KUBECONFIG"] = KUBECONFIG
+    if os.path.exists(KUBECONFIG_FILE) and "KUBECONFIG" not in env:
+        env["KUBECONFIG"] = KUBECONFIG_FILE
+
     result = subprocess.run(
         ["kubectl", *args],
         capture_output=True, text=True, env=env

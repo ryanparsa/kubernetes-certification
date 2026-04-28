@@ -2,7 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
+KUBECONFIG_FILE="$SCRIPT_DIR/../lab/kubeconfig.yaml"
+
+if [[ -f "$KUBECONFIG_FILE" && -z "${KUBECONFIG:-}" ]]; then
+  export KUBECONFIG="$KUBECONFIG_FILE"
+fi
 
 kubectl apply -f - <<EOF
 apiVersion: gateway.networking.k8s.io/v1
