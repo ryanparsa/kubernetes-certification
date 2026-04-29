@@ -2,8 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 CLUSTER_NAME="cka-lab-80"
+
+# Use local kubeconfig if it exists
+if [ -f "$SCRIPT_DIR/../lab/kubeconfig.yaml" ]; then
+  export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
+fi
 
 # 1. Write all pod names running in all namespaces, one per line, into /opt/course/1/pods.txt
 docker exec "$CLUSTER_NAME-control-plane" sh -c "kubectl get pods -A -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' > /opt/course/1/pods.txt"

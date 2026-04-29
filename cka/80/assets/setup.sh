@@ -2,26 +2,38 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LAB_ID="$(basename "$(dirname "$SCRIPT_DIR")")"
+TASK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAB_ID="$(basename "$TASK_DIR")"
 EXAM="$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")"
 CLUSTER_NAME="$EXAM-lab-$LAB_ID"
-KUBECONFIG_FILE="$SCRIPT_DIR/kubeconfig.yaml"
+KUBECONFIG_FILE="$TASK_DIR/lab/kubeconfig.yaml"
 
-# Create the course directory on host
+# 1. Check dependencies
+for cmd in kind kubectl docker; do
+  command -v "$cmd" &>/dev/null || { echo "Error: '$cmd' not found"; exit 1; }
+done
+
+# 2. Create cluster
+mkdir -p "$TASK_DIR/lab"
+# Create a local directory that will be mounted into the control-plane node
 mkdir -p "$SCRIPT_DIR/course"
 
-# Provision cluster
-kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+if ! kind get clusters | grep -q "^$CLUSTER_NAME$"; then
+  kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
+else
+  kind get kubeconfig --name "$CLUSTER_NAME" > "$KUBECONFIG_FILE"
+fi
+
 export KUBECONFIG="$KUBECONFIG_FILE"
 
-# Create some pods in different namespaces
-kubectl create ns project-a
-kubectl create ns project-b
+# 3. Apply pre-existing workloads
+kubectl create ns project-a --dry-run=client -o yaml | kubectl apply -f -
+kubectl create ns project-b --dry-run=client -o yaml | kubectl apply -f -
 
-kubectl run pod-a1 -n project-a --image=nginx:1.23.1
-kubectl run pod-a2 -n project-a --image=nginx:1.23.1
-kubectl run pod-b1 -n project-b --image=redis:7.0.5
-kubectl run pod-default -n default --image=busybox:1.35.0 -- sleep 3600
+kubectl run pod-a1 -n project-a --image=nginx:1.23.1 --overrides='{"spec": {"terminationGracePeriodSeconds": 0}}' --dry-run=client -o yaml | kubectl apply -f -
+kubectl run pod-a2 -n project-a --image=nginx:1.23.1 --overrides='{"spec": {"terminationGracePeriodSeconds": 0}}' --dry-run=client -o yaml | kubectl apply -f -
+kubectl run pod-b1 -n project-b --image=redis:7.0.5 --overrides='{"spec": {"terminationGracePeriodSeconds": 0}}' --dry-run=client -o yaml | kubectl apply -f -
+kubectl run pod-default -n default --image=busybox:1.35.0 --overrides='{"spec": {"terminationGracePeriodSeconds": 0}}' --dry-run=client -o yaml -- sleep 3600 | kubectl apply -f -
 
 # Add user accounts-432 to kubeconfig
 CERT_DIR=$(mktemp -d)
@@ -33,9 +45,9 @@ USER_CERT_B64=$(cat "$CERT_DIR/user.crt" | base64 | tr -d '\n')
 kubectl config set-credentials accounts-432 --client-certificate-data="$USER_CERT_B64" --kubeconfig="$KUBECONFIG_FILE"
 
 # Propagate kubeconfig to the control-plane node so kubectl commands inside work
+docker exec "$CLUSTER_NAME-control-plane" mkdir -p /root/.kube
 docker cp "$KUBECONFIG_FILE" "$CLUSTER_NAME-control-plane:/root/.kube/config"
 
 rm -rf "$CERT_DIR"
 
-mkdir -p "$SCRIPT_DIR/../lab"
 echo "Lab ready! Run: export KUBECONFIG=$KUBECONFIG_FILE"

@@ -3,12 +3,17 @@ import os
 import subprocess
 import unittest
 
-KUBECONFIG = os.path.join(os.path.dirname(__file__), "kubeconfig.yaml")
+SCRIPT_DIR = os.path.dirname(__file__)
+KUBECONFIG = os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml")
 CLUSTER_NAME = "cka-lab-80"
 
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if os.path.exists(KUBECONFIG):
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        cmd,
         capture_output=True, text=True,
     )
     return result.stdout.strip()
@@ -41,6 +46,7 @@ class TestClusterInfoExtraction(unittest.TestCase):
         result = docker_exec("cat /opt/course/1/context")
         self.assertEqual(result.returncode, 0, "context file not found")
         context = result.stdout.strip()
+        # In Kind node, current context might be 'default' or derived from kubeconfig we copied
         expected_context = kubectl("config", "current-context")
         self.assertEqual(context, expected_context)
 
