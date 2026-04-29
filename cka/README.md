@@ -9,7 +9,7 @@
 | **Passing score** | 66% |
 | **Cost** | $445 USD (includes one free retake) |
 | **Validity** | 2 years |
-| **Kubernetes version** | v1.35 (as of April 2026) |
+| **Kubernetes version** | v1.34 (as of April 2026) |
 | **Simulator** | 2 Killer.sh sessions included |
 | **Allowed docs** | `kubernetes.io/docs`, `kubernetes.io/blog`, `helm.sh/docs`, `github.com/kubernetes` |
 | **Official curriculum** | https://github.com/cncf/curriculum |
@@ -162,23 +162,25 @@ These subjects appear in the CKA curriculum but are omitted from CKAD:
 - CoreDNS internals and custom configuration
 - kube‑proxy mode selection and troubleshooting
 - Node‑level and control‑plane troubleshooting (kubelet, container runtime, systemd services)
+- **Cluster‑wide service & networking troubleshooting** (kube-proxy rules, CNI plugin issues, cross-namespace routing)
+- **Certificate lifecycle management** (`kubeadm certs check-expiration`, `kubeadm certs renew`, `/etc/kubernetes/pki/` structure)
 
 ---
 
 ## 2024–2026 Curriculum Changes
 
 A major curriculum reset took effect in **February 2024** and remains current for 2025/2026. Key updates:
-- **Gateway API** promoted to a first‑class topic (both CKA and CKAD) replacing Ingress‑only focus.
+- **Gateway API** promoted to a first‑class topic (CKA) replacing Ingress‑only focus.
 - **Helm** and **Kustomize** explicitly listed under Cluster Architecture.
 - **CRDs & Operators** elevated to explicit competencies.
-- **CEL‑based ValidatingAdmissionPolicy** added (GA in v1.35).
-- **User Namespaces** and **Pod Certificates** introduced for zero‑trust workloads (v1.35).
-- **In‑place Pod Resource Resize** now a required skill for both exams.
-- **Pod Security Admission** policies required for security posture.
-- **Extension interfaces** (CNI, CSI, CRI) named directly.
-- **etcd backup/restore** incorporated into cluster‑lifecycle domain.
-- **Workloads & Scheduling** weight reduced; advanced affinity/topology constraints added.
-
+- **CEL‑based ValidatingAdmissionPolicy** added (GA in v1.35) — inline CEL expressions, no external webhook needed.
+- **User Namespaces** (`hostUsers: false`) now GA in v1.35 — container UID/GID mapped to unprivileged host IDs.
+- **Pod Certificates** (`podCertificate` projected volume, beta in v1.35) — kubelet auto-issues and rotates X.509 certs for workloads.
+- **In‑place Pod Resource Resize** now a required skill (GA in v1.35) — `kubectl patch pod --subresource resize`.
+- **Pod Security Admission** policies required (`pod-security.kubernetes.io/enforce|audit|warn`).
+- **Extension interfaces** (CNI, CSI, CRI) named directly as explicit competencies.
+- **etcd backup/restore** incorporated into the cluster‑lifecycle domain.
+- **Workloads & Scheduling** weight reduced; advanced affinity/topology constraints (topology spread, PriorityClass) added.
 ---
 
 ## Labs Mapping

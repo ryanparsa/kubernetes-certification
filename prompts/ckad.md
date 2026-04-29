@@ -39,8 +39,12 @@ You MUST search in `ref/` and `ckad/` for samples and factual information. You M
 
 ### v1.35 new topics
   - **Native Sidecar Containers:** `initContainers` with `restartPolicy: Always` -- the GA sidecar pattern. Test that the sidecar starts before and runs alongside the main container.
-  - **Gateway API:** Create an `HTTPRoute` with path-based or header-based routing rules attached to an existing Gateway.
+  - **Gateway API:** Create an `HTTPRoute` with path-based or header-based routing rules attached to an existing Gateway; use `backendRefs[].weight` for canary traffic splitting.
   - **Helm/Kustomize:** `helm repo add` + `helm install` with value overrides; `kubectl apply -k <dir>` for Kustomize overlays with patches and transformers.
+  - **In-place Pod Resource Resize:** Use `kubectl patch pod <name> --subresource resize` to update CPU/memory without restarting the pod; understand `resizePolicy` per container resource (`NotRequired` vs `RestartContainer`).
+  - **User Namespaces:** Set `spec.hostUsers: false` to map container UIDs/GIDs to unprivileged host IDs — mitigates privilege escalation; understand interaction with `runAsNonRoot` and `fsGroup`.
+  - **Pod Certificates:** Configure a `projected` volume with a `podCertificate` source (`signerName`, `keyType: ED25519`) to give a workload an auto-rotated X.509 identity issued by the kubelet.
+  - **CEL ValidatingAdmissionPolicy (consumer perspective):** A namespace-scoped policy rejects your Deployment because `object.spec.replicas > 3`; diagnose the admission error and fix the Deployment without touching the policy itself.
 
 ### Developer-focused trap scenarios
   - **Probe misconfiguration:** `readinessProbe` pointing to wrong port or path -> Pod is Running but Endpoints list is empty -> Service returns no backends.
@@ -54,6 +58,11 @@ You MUST search in `ref/` and `ckad/` for samples and factual information. You M
   - **Service selector mismatch:** Service `selector` labels don't match Pod `metadata.labels` -> `kubectl get endpoints` shows no endpoints.
   - **Container command vs args:** Confusing `command` (overrides ENTRYPOINT) with `args` (overrides CMD) -> container exits immediately or runs wrong process.
   - **JSONPath / custom-columns:** Extract specific fields from `kubectl get` output using `-o jsonpath` or `-o custom-columns`. Sorting with `--sort-by`.
+  - **User Namespaces + fsGroup conflict:** Pod has `hostUsers: false` and `securityContext.fsGroup: 2000`; hostPath volume is owned by root (UID 0) on the host -> container cannot write to the mount. Fix: use an `emptyDir` or remove `hostUsers: false`.
+  - **In-place resize on `RestartContainer` policy:** Developer patches memory on a running container expecting zero downtime; the container restarts silently because `resizePolicy: RestartContainer` is in effect. Fix: check `resizePolicy` and either accept the restart or set `NotRequired` when supported.
+  - **PSA `restricted` profile blocks privileged init container:** Namespace is labeled `pod-security.kubernetes.io/enforce: restricted`; init container runs as root (no `runAsNonRoot: true`) -> admission denied. Fix: add proper `securityContext` to init container.
+  - **API deprecation silent failure:** Manifest uses `batch/v1beta1` CronJob -> `kubectl apply` on a v1.35 cluster returns `no matches for kind "CronJob" in version "batch/v1beta1"`. Fix with `kubectl convert` or update `apiVersion` to `batch/v1`.
+  - **Canary rollout stuck:** Blue/green Service selector updated (`kubectl set selector`) but the `sessionAffinity: ClientIP` on the Service causes existing clients to stay pinned to old pods. Fix: set `sessionAffinity: None` before traffic switch.
 
 ---
 
@@ -70,6 +79,7 @@ Track coverage. **Do not repeat a domain until all five are done.** Then cycle a
 ```
 
 Weight toward **Application Environment, Configuration and Security** (25%) -- it's the heaviest domain and covers ConfigMaps, Secrets, SecurityContexts, ServiceAccounts, and ResourceQuotas.
+Do NOT skip **Services and Networking** (20%) -- NetworkPolicy default-deny traps, Service selector mismatches, Ingress path-type gotchas, Gateway API HTTPRoutes, and DNS resolution (`nslookup`/`dig` inside pods) are all high-value traps.
 
 ---
 
