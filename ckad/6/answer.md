@@ -2,7 +2,7 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 
-### CronJob 1 — logger
+### CronJob 1 -- logger
 
 ```yaml
 # lab/logger.yaml
@@ -36,7 +36,7 @@ kubectl get jobs
 kubectl logs job/logger-manual
 ```
 
-### CronJob 2 — limited (startingDeadlineSeconds)
+### CronJob 2 -- limited (startingDeadlineSeconds)
 
 ```yaml
 # lab/limited.yaml

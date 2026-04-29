@@ -2,7 +2,7 @@
 
 **Reference:** https://kubernetes.io/docs/concepts/workloads/controllers/job/
 
-### Job 1 — pi
+### Job 1 -- pi
 
 ```yaml
 # lab/pi.yaml
@@ -28,7 +28,7 @@ kubectl logs job/pi
 
 The output is pi to 2000 decimal places.
 
-### Job 2 — multi (5 completions, parallelism 2)
+### Job 2 -- multi (5 completions, parallelism 2)
 
 ```yaml
 # lab/multi.yaml
@@ -56,7 +56,7 @@ kubectl get job multi
 
 The `COMPLETIONS` column should show `5/5`.
 
-### Job 3 — deadline (activeDeadlineSeconds)
+### Job 3 -- deadline (activeDeadlineSeconds)
 
 ```yaml
 # lab/deadline.yaml

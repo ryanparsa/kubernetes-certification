@@ -10,8 +10,8 @@ Create a *Secret* named `db-secret` in the `default` namespace with the followin
 
 Then create two *Pods*:
 
-1. **`nginx-secret-env`** using the `nginx` image — inject **all** keys from `db-secret` as environment variables using `envFrom`.
-2. **`nginx-secret-vol`** using the `nginx` image — mount `db-secret` as a *Volume* named `db-secret-vol` at the path `/secret` (read-only).
+1. **`nginx-secret-env`** using the `nginx` image -- inject **all** keys from `db-secret` as environment variables using `envFrom`.
+2. **`nginx-secret-vol`** using the `nginx` image -- mount `db-secret` as a *Volume* named `db-secret-vol` at the path `/secret` (read-only).
 
 ---
 
