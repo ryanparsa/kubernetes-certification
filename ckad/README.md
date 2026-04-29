@@ -219,23 +219,6 @@
 
 ---
 
-## CKAD-Only Topics (Not on CKA)
-
-These subjects appear in the CKAD curriculum but are omitted from CKA:
-
-- **Defining, building, and modifying container images** — writing `Dockerfile`s, multi-stage builds, OCI image semantics, `imagePullPolicy`, `imagePullSecrets`, private registries (CKA assumes images already exist)
-- **Multi-container Pod design patterns** — explicit emphasis on **init containers**, **sidecar containers** (native restartable sidecar with `restartPolicy: Always`), **ambassador**, and **adapter** patterns
-- **Common deployment strategies from primitives** — explicit **blue/green** (Service selector swap) and **canary** (parallel Deployments + label ratio) recipes; CKA covers rolling updates but not these patterns
-- **API deprecations** as a developer concern — identifying outdated `apiVersion`s, fixing manifests (`extensions/v1beta1` → `apps/v1`), `kubectl convert`, `kubectl api-versions`
-- **Probes and health checks** as an explicit, weighted competency — liveness/readiness/startup with `httpGet`/`tcpSocket`/`exec`/`grpc` handlers and timing tunables
-- **SecurityContext, Linux capabilities, `runAsNonRoot`, `readOnlyRootFilesystem`** as explicit, weighted developer competencies
-- **Pod Security Admission** profile selection (`privileged` / `baseline` / `restricted`) as an application-author concern
-- **Generic ephemeral volumes** and `subPath` volume mounting as a build-time concern
-- **Discovering and using CRDs as a consumer** — `kubectl get crd`, creating/updating custom resource instances (versus installing CRDs as an operator on CKA)
-- **Helm chart consumption as an app deployer** — `helm repo add`, `helm install`, `helm upgrade`, `--set` / `-f` overrides (versus using Helm to install cluster components on CKA)
-
----
-
 ## 2024–2026 Curriculum Changes
 
 A major curriculum reset took effect in **February 2024** and remains current for 2025/2026. Key CKAD updates:
