@@ -93,6 +93,9 @@ _build/
 *.tar
 *.zip
 
+.idea
+
+
 # Personal notes and drafts
 notes/
 drafts/

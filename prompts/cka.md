@@ -2,14 +2,14 @@
 
 The following provides the specific grading rubrics and parameters for the Kubernetes Certified Administrator (CKA) simulation. Combine this with the base Terminal Simulation Prompt.
 
+> **Reference:** See `cka/README.md` for the authoritative domain list, weightings, and lab mapping.
+
+
 ---
 
 ## QUICK REFERENCE
 
-If you need a Kubernetes quick reference during the simulation, you can access the reference directory at:
-`ref/`
-
-You MUST search in `ref/` and `cka/` for samples and factual information. You MUST use the `search-reference-material` and `search-k8s-docs` skills to find what you need before generating questions or scenarios.
+You MUST use the `search-reference-material` and `search-k8s-docs` skills to find what you need before generating questions or scenarios.
 
 ---
 
@@ -35,10 +35,14 @@ You MUST search in `ref/` and `cka/` for samples and factual information. You MU
   - Sidecar container failing due to a typo in a command argument or missing ConfigMap volume.
   - JSONPath / custom-columns / sort-by extraction queries.
 
-### v1.35 new topics
-  - **Helm/Kustomize:** `helm repo add` + `helm install` with flag overrides; `kubectl apply -k <dir>` for Kustomize overlays.
-  - **Gateway API:** Provisioning a `Gateway` object with listeners + attaching an `HTTPRoute` for backend traffic distribution (replacing legacy Ingress patterns).
-  - **Native Sidecar Containers:** Multi-container pods using `initContainers` with `restartPolicy: Always` -- the GA sidecar pattern in v1.35.
+### Curriculum 2024-reset additions (stable since v1.31, still fully in scope for v1.34)
+  - **Helm/Kustomize:** `helm repo add` + `helm install` with flag overrides; `kubectl apply -k <dir>` for Kustomize overlays; `helm upgrade --install` with values files; `kustomization.yaml` bases and overlays with strategic-merge patches.
+  - **Gateway API:** Provisioning a `GatewayClass`, `Gateway` object with listeners, and attaching `HTTPRoute`/`TCPRoute` for backend traffic distribution (first-class topic alongside Ingress; `ReferenceGrant` for cross-namespace routing).
+  - **Native Sidecar Containers:** Multi-container pods using `initContainers` with `restartPolicy: Always` -- the GA sidecar pattern (GA in v1.29, stable in v1.33+).
+  - **CRDs and Operators:** Installing an operator via Helm or operator manifest; creating a `CustomResourceDefinition`; `kubectl get crd`; inspecting custom resource instances.
+  - **Autoscaling:** `HorizontalPodAutoscaler` v2 (CPU/memory/custom metrics), conceptual VPA and Cluster Autoscaler; `metrics-server` prerequisite.
+  - **kubeadm upgrade chain:** `kubeadm upgrade plan` → `kubeadm upgrade apply` on control plane → `kubeadm upgrade node` on workers; drain/upgrade/uncordon sequence.
+  - **Certificate lifecycle:** `kubeadm certs check-expiration`, `kubeadm certs renew`, `openssl x509 -in -text -noout`; `/etc/kubernetes/pki/` structure.
 
 ### Systemic trap scenarios (high-value exam gotchas)
   - **Static pod vs. systemd trap:** User runs `systemctl restart kube-apiserver` -> `Unit kube-apiserver.service not found`. Control plane components are static pods, not systemd units.
@@ -58,14 +62,15 @@ You MUST search in `ref/` and `cka/` for samples and factual information. You MU
 Track coverage. **Do not repeat a domain until all five are done.** Then cycle again.
 
 ```
-[ ] Cluster Architecture, Installation & Configuration   25%
-[ ] Workloads & Scheduling                               15%
-[ ] Services & Networking                                20%
-[ ] Storage                                              10%
-[ ] Troubleshooting                                      30%
+[ ] Cluster Architecture, Installation & Configuration   25%  (kubeadm, etcd, HA, RBAC, Helm, Kustomize, CRDs, operators, CNI/CSI/CRI)
+[ ] Workloads & Scheduling                               15%  (Deployment, DaemonSet, Job, CronJob, ConfigMap, Secret, HPA, affinity, taints, PriorityClass)
+[ ] Services & Networking                                20%  (Services, Gateway API, Ingress, NetworkPolicy, CoreDNS, kube-proxy, CNI)
+[ ] Storage                                              10%  (PV, PVC, StorageClass, dynamic provisioning, access modes, reclaim policies)
+[ ] Troubleshooting                                      30%  (kubelet, crictl, static pods, control-plane components, node NotReady, service/networking failures)
 ```
 
 Weight toward **Troubleshooting** (30%) and **Cluster Architecture** (25%) -- they dominate the real exam.
+Do NOT skip **Services & Networking** (20%) -- Gateway API and NetworkPolicy are high-value traps.
 
 ---
 

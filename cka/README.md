@@ -1,84 +1,188 @@
-# CKA - Certified Kubernetes Administrator
+# CKA – Certified Kubernetes Administrator
 
 ## Exam Overview
 
 | | |
 |---|---|
-| **Format** | Performance-based (hands-on CLI tasks) |
+| **Format** | Performance‑based (hands‑on CLI tasks in a live cluster) |
 | **Duration** | 2 hours |
 | **Passing score** | 66% |
-| **Cost** | $395 USD (includes one free retake) |
+| **Cost** | $445 USD (includes one free retake) |
 | **Validity** | 2 years |
-| **Allowed docs** | kubernetes.io/docs, kubernetes.io/blog, helm.sh/docs, github.com/kubernetes |
+| **Kubernetes version** | v1.35 (as of April 2026) |
+| **Simulator** | 2 Killer.sh sessions included |
+| **Allowed docs** | `kubernetes.io/docs`, `kubernetes.io/blog`, `helm.sh/docs`, `github.com/kubernetes` |
 | **Official curriculum** | https://github.com/cncf/curriculum |
 
 ## Domains & Weights
 
 | Domain | Weight |
 |---|---|
-| Cluster Architecture, Installation & Configuration | 25% |
-| Workloads & Scheduling | 15% |
-| Services & Networking | 20% |
-| Storage | 10% |
-| Troubleshooting | 30% |
+| Cluster Architecture, Installation & Configuration | **25%** |
+| Workloads & Scheduling | **15%** |
+| Services & Networking | **20%** |
+| Storage | **10%** |
+| Troubleshooting | **30%** |
+
+---
 
 ## Domain Topics
 
-### Cluster Architecture, Installation & Configuration (25%)
-- kubeadm init: `--pod-network-cidr`, `--apiserver-advertise-address`, `--config` file
-- kubeadm join: worker nodes, control plane nodes, token creation
-- kubeadm upgrade: plan -> apply -> node upgrade sequence
-- kubeadm reset
-- RBAC: ClusterRole, ClusterRoleBinding, Role, RoleBinding
-- ServiceAccount permissions across namespaces; `kubectl auth can-i --as`
-- kubeconfig: clusters, users, contexts; `kubectl config use-context`
-- etcdctl snapshot save / restore; `--endpoints`, `--cacert`, `--cert`, `--key`
-- Restoring etcd to a new data directory; updating the static pod manifest
-- Certificate management: `kubeadm certs check-expiration`, `kubeadm certs renew`
-- `openssl x509 -in / -text / -noout`; `/etc/kubernetes/pki/` structure
+### 1. Cluster Architecture, Installation & Configuration (25%)
 
-### Workloads & Scheduling (15%)
-- Deployments: rolling update (`maxSurge`, `maxUnavailable`), rollback, pause/resume
-- DaemonSet, StatefulSet, Job, CronJob - choosing the right workload
-- ConfigMap and Secret: creation, env injection, volume mount
-- Resource requests and limits; how requests drive scheduling decisions
-- nodeSelector: key/value label matching
-- Node affinity: `requiredDuringScheduling` vs `preferred`; `matchExpressions` operators
-- Pod affinity / anti-affinity: `topologyKey`
-- Taints: `kubectl taint nodes`, effects (`NoSchedule` / `PreferNoSchedule` / `NoExecute`)
-- Tolerations: `key`, `operator` (`Equal` / `Exists`), `effect`, `value`
-- PriorityClass: `globalDefault`, `value`, `preemptionPolicy`
-- Static pod manifests in `/etc/kubernetes/manifests/`
+**Core competencies** (verbatim from curriculum):
+- Install, configure, and upgrade a Kubernetes cluster using **kubeadm**
+- Manage **RBAC** (Roles, ClusterRoles, RoleBindings, ClusterRoleBindings, ServiceAccounts)
+- Deploy and maintain **high‑availability control planes** (stacked vs. external etcd, load‑balancer front‑ends)
+- Work with **extension interfaces** – CNI, CSI, CRI, and the **Kubernetes API extensions** (CRDs, Operators)
+- Use **Helm** and **Kustomize** to install cluster‑wide components
+- Manage **certificates** and **kubeconfig** for cluster components and users
+- Understand **etcd** backup & restore, snapshots, and disaster‑recovery procedures
+- **Security & admission** – implement **Pod Security Admission** policies, **CEL‑based ValidatingAdmissionPolicy**, and runtime security contexts
+- **User Namespaces** – configure `hostUsers: false` to map container UIDs/GIDs to unprivileged host IDs (GA in v1.35)
+- **Pod Certificates** – configure projected `podCertificate` volumes for workload‑level X.509 identities (beta in v1.35)
 
-### Services & Networking (20%)
-- Services: ClusterIP, NodePort, LoadBalancer - `spec.selector`, `targetPort` int vs string
-- Ingress: rules, `pathType` (`Exact` / `Prefix`), `ingressClassName`
-- NetworkPolicy: `podSelector`, `namespaceSelector`, `ipBlock`, ingress/egress, `ports[].protocol` uppercase
-- DNS: `<service>.<namespace>.svc.cluster.local`; `resolv.conf` in pods; `ndots`
-- CNI plugin location: `/etc/cni/net.d/`, `/opt/cni/bin/`
-- kube-proxy ConfigMap, mode (`iptables` vs `ipvs`)
-- CoreDNS ConfigMap, Corefile syntax, restarting CoreDNS pods
+**Granular sub‑topics**:
+- `kubeadm init`, `kubeadm join`, `kubeadm reset`, `kubeadm upgrade plan|apply|node`
+- Static pod manifests in `/etc/kubernetes/manifests/` (kube‑apiserver, etcd, controller‑manager, scheduler)
+- HA control‑plane patterns: stacked masters, external etcd, load‑balancer HA
+- **Helm**: repo management, `helm install/upgrade/rollback/uninstall`, `helm template`, `helm show values`, values precedence (`--set` vs `-f`)
+- **Kustomize**: bases/overlays, `commonLabels`, `namePrefix`, `images:` transformer, `configMapGenerator`, `secretGenerator`, strategic‑merge & JSON‑6902 patches, `kubectl apply -k`
+- **CNI/CSI/CRI** configuration files and directories (`/etc/cni/net.d/`, `/opt/cni/bin/`, `/etc/containerd/config.toml` with `SystemdCgroup = true`)
+- **CRDs & Operators**: `kubectl get crd`, `kubectl explain <crd>.<field>`, installing operators via Helm or raw manifests
+- **RBAC**: aggregated ClusterRoles, `kubectl auth can-i --as=<user>` for permission checks
+- **Pod Security Admission** labels (`pod-security.kubernetes.io/enforce`, `audit`, `warn`)
+- **CEL ValidatingAdmissionPolicy**: write CEL expressions, bind with `ValidatingAdmissionPolicyBinding`
+- **User Namespaces**: enable via `spec.hostUsers: false`, understand UID/GID mappings
+- **Pod Certificates**: `projected` volume source `type: podCertificate`, set `signerName`, `keyType`
 
-### Storage (10%)
-- PersistentVolume: `capacity`, `accessModes` (`ReadWriteOnce` / `ReadOnlyMany` / `ReadWriteMany`), reclaim policy
-- PersistentVolumeClaim: `storageClassName`, `accessModes` array, `resources.requests.storage`
-- StorageClass: `provisioner`, `reclaimPolicy`, `volumeBindingMode`
-- Dynamic provisioning vs static binding
-- Volume types: `emptyDir`, `hostPath`, `configMap`, `secret`, `persistentVolumeClaim`
-- `kubectl get pv / pvc` - Bound vs Pending, capacity, access modes
+---
 
-### Troubleshooting (30%)
-- kubelet: `/var/lib/kubelet/config.yaml`; `systemctl status/restart/daemon-reload kubelet`
-- `journalctl -u kubelet -f`
-- Control plane as static pods: kube-apiserver, kube-scheduler, kube-controller-manager
-- Broken flags, wrong paths, missing or expired certs
-- `crictl ps` / `crictl logs` for container-level debugging when kubectl is unavailable
-- Node conditions, `kubectl cordon / drain / uncordon`; `--ignore-daemonsets`, `--delete-emptydir-data`
-- Application failures: image pull, probes, RBAC, volume mounts, OOMKilled
-- Networking failures: selector mismatch, empty Endpoints, NetworkPolicy blocking traffic
+### 2. Workloads & Scheduling (15%)
 
+**Core competencies**:
+- Deploy and manage `Deployment`, `StatefulSet`, `DaemonSet`, `Job`, `CronJob`
+- Perform **rolling updates** and **rollbacks** (maxSurge, maxUnavailable, `kubectl rollout` suite)
+- Configure **autoscaling** – HorizontalPodAutoscaler (v2), VerticalPodAutoscaler, Cluster Autoscaler concepts
+- Use **Init containers**, **Sidecar containers** (native sidecars GA in v1.29+ with `restartPolicy: Always`), **Ambassador**, and **Adapter** patterns
+- Apply **resource requests/limits**, **LimitRange**, **ResourceQuota**, and **in‑place pod resource resize** (GA in v1.35) via `kubectl patch pod <pod> --subresource resize`
+- Implement **affinity/anti‑affinity**, **taints & tolerations**, **topologySpreadConstraints**, **priority classes**, and **node selectors**
+- Understand **Pod Disruption Budgets** and graceful termination semantics
+
+**Granular sub‑topics**:
+- `kubectl create deployment …`, `kubectl set image`, `kubectl scale`, `kubectl rollout undo --to-revision=1`
+- `kubectl apply -f <manifest>` for Jobs/CronJobs with `completions`, `parallelism`, `backoffLimit`, `activeDeadlineSeconds`
+- **Sidecar containers**: declarative pattern with `restartPolicy: Always` inside `initContainers`
+- **In‑place Pod Resize**: add `resources` changes via `kubectl patch pod <name> --subresource resize --patch '{...}'`; `resizePolicy` per container (`NotRequired` vs `RestartContainer`)
+- **Autoscaling**: HPA v2 – custom metrics, external metrics, VPA – when to use each
+- **Affinity** syntax (`nodeAffinity`, `podAffinity`, `interPodAntiAffinity`), `requiredDuringSchedulingIgnoredDuringExecution` vs `preferredDuringSchedulingIgnoredDuringExecution`
+- **Taints** (`NoSchedule`, `PreferNoSchedule`, `NoExecute`) and matching tolerations
+- **PriorityClass**: `globalDefault`, `value`, `preemptionPolicy`
+
+---
+
+### 3. Services & Networking (20%)
+
+**Core competencies**:
+- Expose workloads via **ClusterIP**, **NodePort**, **LoadBalancer**, **ExternalName**, and **headless** services
+- Create and manage **Ingress** resources and **Ingress Controllers** (NGINX, Traefik, etc.)
+- Use the **Gateway API** – `GatewayClass`, `Gateway`, `HTTPRoute`, `TCPRoute`, `TLSRoute`, `ReferenceGrant`
+- Design and enforce **NetworkPolicies** (ingress/egress, podSelector, namespaceSelector, ipBlock, default‑deny)
+- Debug DNS resolution, service discovery, and cluster‑internal networking
+- Understand **kube‑proxy** modes (`iptables`, `ipvs`, `nftables`) and their impact on routing
+
+**Granular sub‑topics**:
+- `kubectl expose deployment <name> --port=80 --target-port=8080 --type=ClusterIP`
+- **Ingress**: `ingressClassName`, `pathType` (`Exact`, `Prefix`, `ImplementationSpecific`), TLS termination via secret
+- **Gateway API**:
+  - Define a `GatewayClass` (controller type)
+  - Create a `Gateway` with listeners (port, protocol, TLS)
+  - Attach `HTTPRoute` objects via `parentRefs`
+  - Traffic splitting with `backendRefs[].weight`
+  - Header‑based routing via `matches[].headers`
+- **NetworkPolicy** rules: `podSelector`, `namespaceSelector`, `ipBlock`, `ports[].protocol` (uppercase), default‑deny patterns
+- **CoreDNS**: ConfigMap `Corefile`, `dnsPolicy` (`ClusterFirst`, `Default`, `None`), custom resolvers via `dnsConfig`
+- **Service discovery**: Service DNS `<svc>.<ns>.svc.cluster.local`; Endpoint and EndpointSlice objects
+
+---
+
+### 4. Storage (10%)
+
+**Core competencies**:
+- Provision storage using **StorageClasses** (parameters, `volumeBindingMode`, `reclaimPolicy`)
+- Work with **PersistentVolumes** (PV) and **PersistentVolumeClaims** (PVC) – binding, expansion, `VolumeMode`
+- Use **Volume types** – `emptyDir`, `hostPath`, `configMap`, `secret`, `downwardAPI`, `projected`, CSI‑backed volumes, NFS, iSCSI, etc.
+- Understand **access modes** (`ReadWriteOnce`, `ReadOnlyMany`, `ReadWriteMany`, `ReadWriteOncePod`) and **reclaim policies** (`Retain`, `Delete`)
+
+**Granular sub‑topics**:
+- Create a StorageClass: `kubectl apply -f storageclass.yaml`
+- Dynamic provisioning via CSI drivers (`provisioner: kubernetes.io/aws-ebs` etc.)
+- PVC lifecycle commands: `kubectl get pvc`, `kubectl edit pvc`, `kubectl delete pvc`
+- Volume expansion: `kubectl edit pvc` with larger `storage` size, then `kubectl rollout restart` if needed
+- Static PV creation for pre‑provisioned storage
+
+---
+
+### 5. Troubleshooting (30%)
+
+**Core competencies**:
+- Diagnose node‑level issues (`kubectl get nodes`, `systemctl status kubelet`, `journalctl -u kubelet`)
+- Troubleshoot control‑plane components via static pod manifests (`/etc/kubernetes/manifests/`)
+- Use **etcdctl** for snapshot/restore and health checks
+- Analyze pod logs (`kubectl logs`), events (`kubectl get events --sort-by=.metadata.creationTimestamp`), and `kubectl describe`
+- Debug networking problems – DNS (`nslookup`, `dig`), Service/Endpoint mismatches, NetworkPolicy blocks, kube‑proxy iptables/ipvs rules
+- Leverage **ephemeral debug containers** (`kubectl debug <pod> --image=busybox --target=<container>`), node debugging (`kubectl debug node/<node> --image=busybox`)
+- Identify and remediate **API deprecations** (`kubectl explain`, `kubectl api-resources`, `kubectl convert`)
+- Monitor cluster health with **metrics‑server** (`kubectl top nodes/pods`)
+- Perform **cluster upgrades** – drain nodes, upgrade control plane, verify component health
+
+**Granular sub‑topics**:
+- Node readiness: `kubectl get nodes -o wide`, check `Ready` condition, investigate `kubelet` logs, ensure `SystemdCgroup = true` in `/etc/containerd/config.toml`
+- Control‑plane logs: `journalctl -u kube-apiserver`, `kube-controller-manager`, `kube-scheduler`
+- `etcdctl snapshot save/restore` with `--endpoints`, `--cacert`, `--cert`, `--key`
+- Debug pod failures: `ImagePullBackOff`, `CrashLoopBackOff`, probe failures, `kubectl exec` into container, `kubectl debug` for distroless images
+- Network troubleshooting: `kubectl exec -ti <pod> -- nslookup <service>`, verify `Endpoints` list, check `NetworkPolicy` effects, inspect `iptables`/`ipvs` rules via `iptables-save` or `ipvsadm -Ln`
+- Upgrade flow: `kubectl drain <node> --ignore-daemonsets`, `kubeadm upgrade plan`, `kubeadm upgrade apply v1.35.x`, `kubectl uncordon <node>`
+
+---
+
+## CKA‑Only Topics (Not on CKAD)
+
+These subjects appear in the CKA curriculum but are omitted from CKAD:
+- Full **kubeadm**‑based cluster lifecycle (install, upgrade, reset)
+- Designing and operating **high‑availability control planes**
+- **etcd** backup, restore, and snapshot management
+- Deep **RBAC** creation & management (admin‑level)
+- **Extension interfaces** configuration (CNI, CSI, CRI) and custom plugins
+- Installing and configuring **operators** and **CRDs**
+- Designing **StorageClasses** and managing PV lifecycle from the admin perspective
+- Configuring **cluster‑wide autoscaling** (Cluster Autoscaler, VPA for nodes)
+- Advanced **pod scheduling** – affinity, taints, tolerations, topology spread, priority classes
+- Full **Gateway API** implementation (including `GatewayClass` & `Gateway` objects)
+- CoreDNS internals and custom configuration
+- kube‑proxy mode selection and troubleshooting
+- Node‑level and control‑plane troubleshooting (kubelet, container runtime, systemd services)
+
+---
+
+## 2024–2026 Curriculum Changes
+
+A major curriculum reset took effect in **February 2024** and remains current for 2025/2026. Key updates:
+- **Gateway API** promoted to a first‑class topic (both CKA and CKAD) replacing Ingress‑only focus.
+- **Helm** and **Kustomize** explicitly listed under Cluster Architecture.
+- **CRDs & Operators** elevated to explicit competencies.
+- **CEL‑based ValidatingAdmissionPolicy** added (GA in v1.35).
+- **User Namespaces** and **Pod Certificates** introduced for zero‑trust workloads (v1.35).
+- **In‑place Pod Resource Resize** now a required skill for both exams.
+- **Pod Security Admission** policies required for security posture.
+- **Extension interfaces** (CNI, CSI, CRI) named directly.
+- **etcd backup/restore** incorporated into cluster‑lifecycle domain.
+- **Workloads & Scheduling** weight reduced; advanced affinity/topology constraints added.
+
+---
 
 ## Labs Mapping
+
 | Lab | Topics |
 |---|---|
 | [1](1/README.md) | Certificate, Namespace, context, kubeconfig, kubectl |
@@ -107,7 +211,7 @@
 | [24](24/README.md) | Backup, CoreDNS, Endpoint, Labels, Memory, Metrics, Namespace, Node, Pod, Resources, Restore, Snapshot, crictl, etcd, hostPath, kube-apiserver, kube-controller-manager, kube-proxy, kube-scheduler, kubectl |
 | [25](25/README.md) | CPU, CoreDNS, DNS, Deployment, Memory, Namespace, Node, Pod, Selector, Service, Troubleshoot, etcd, kube-apiserver, kube-controller-manager, kube-proxy, kube-scheduler, kubeadm, kubeconfig, kubectl, kubelet, systemd |
 | [26](26/README.md) | Affinity, Labels, Log, Namespace, Node, Pod, Resources, ServiceAccount, kube-scheduler, kubectl |
-| [27](27/README.md) | Backup, Job, Namespace, Node, PV, PVC, Pod, Provisioner, Requests, Resources, StorageClass, Volume, VolumeBindingMode, emptyDir, kubectl |
+| [27](27/README.md) | Backup, Job, Namespace, Node, PV, PVC, Pod, Provisioner, Resources, StorageClass, Volume, VolumeBindingMode, emptyDir, kubectl |
 | [28](28/README.md) | Labels, Namespace, Pod, Resources, Secret, kubectl |
 | [29](29/README.md) | Affinity, Labels, Namespace, Node, Pod, Resources, Role, Taint, Toleration, describe, kubectl, nodeSelector |
 | [30](30/README.md) | Labels, Log, Multi-container, Namespace, Node, Pod, Resources, Volume, emptyDir, kubectl |

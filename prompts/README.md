@@ -31,7 +31,7 @@ Simulates a 4-node Kubernetes 1.35 lab as a fully interactive bash terminal. Tra
 
 The LLM invents a broken scenario on session start and grades your fix when you type `grade` or `done`.
 
-![Lab topology](simulator.png)
+![Lab topology](_simulator.png)
 
 CKA
 ```bash
@@ -56,7 +56,7 @@ cat simulator.md cks.md  | claude
 
 Asks one question at a time in multiple choice, true/false, fill-in-the-blank, and short answer formats. Tracks your score, drills down on weak topics, and sources questions from the `ref/` directory.
 
-![Quiz](quiz.png)
+![Quiz](_quiz.png)
 
 CKA
 ```bash
@@ -93,7 +93,7 @@ Presents exam-style tasks and grades your search query and page choice. Teaches 
 
 **How it works:** This mode uses an offline documentation mirror to verify your answers. `.claude/settings.json` automatically fetches the `ref/kubernetes-doc` submodule on session start, and the `.claude/skills/search-k8s-docs/SKILL.md` tool allows the AI to search the offline docs to ensure the page you selected actually contains the required YAML or concepts.
 
-![Docs Speed Drill](docs.png)
+![Docs Speed Drill](_docs.png)
 
 CKA
 ```bash

@@ -1,14 +1,16 @@
-# CKAD -- Certified Kubernetes Application Developer
+# CKAD — Certified Kubernetes Application Developer
 
 ## Exam Overview
 
 | | |
 |---|---|
-| **Format** | Performance-based (hands-on CLI tasks) |
+| **Format** | Performance-based (hands-on CLI tasks in a live cluster) |
 | **Duration** | 2 hours |
 | **Passing score** | 66% |
-| **Cost** | $395 USD (includes one free retake) |
-| **Validity** | 3 years |
+| **Cost** | $445 USD (includes one free retake) |
+| **Validity** | 2 years |
+| **K8s version** | v1.35 (as of April 2026) |
+| **Simulator** | 2 Killer.sh sessions included |
 | **Allowed docs** | kubernetes.io/docs, kubernetes.io/blog, helm.sh/docs, github.com/kubernetes |
 | **Official curriculum** | https://github.com/cncf/curriculum |
 
@@ -22,66 +24,203 @@
 | Application Environment, Configuration and Security | 25% |
 | Services and Networking | 20% |
 
+---
+
 ## Domain Topics
 
 ### Application Design and Build (20%)
-- Choosing the right workload: Deployment vs StatefulSet vs DaemonSet vs Job vs CronJob
-- Job: `completions`, `parallelism`, `backoffLimit`, `activeDeadlineSeconds`, `restartPolicy: Never/OnFailure`
-- CronJob: schedule syntax, `concurrencyPolicy`, `startingDeadlineSeconds`, `successfulJobsHistoryLimit`
-- Multi-container pod patterns:
-  - Sidecar: shared volume, log shipping, proxy injection
-  - Init container: sequencing, dependency checks, one-time setup
-  - Ambassador: outbound proxy pattern
-  - Adapter: transforming output for a monitoring system
-- Container image build: multi-stage builds, non-root USER, minimal base image
-- Dockerfile best practices: layer caching, `.dockerignore`, avoiding secrets in layers
+
+**Container Images**
+- Write `Dockerfile`s: `FROM`, `RUN`, `COPY`, `WORKDIR`, `EXPOSE`, `USER`, `ENTRYPOINT`/`CMD`
+- Multi-stage builds to reduce final image size; minimal base images; `.dockerignore`
+- Non-root `USER` in Dockerfile as a security best practice
+- Image tags vs. digests; `imagePullPolicy` (`Always`, `IfNotPresent`, `Never`)
+- `imagePullSecrets` for private registries; `docker.io/library/*` OCI compliance
+
+**Workload Resources — Choosing the Right One**
+- `Deployment`: long-running, stateless, rolling updates
+- `StatefulSet`: ordered identity, stable network names, persistent storage per replica
+- `DaemonSet`: one pod per node (log agents, monitoring collectors)
+- `Job`: run-to-completion; `completions`, `parallelism`, `backoffLimit`, `activeDeadlineSeconds`, `restartPolicy: Never|OnFailure`
+- `CronJob`: schedule (cron syntax), `concurrencyPolicy` (`Allow`/`Forbid`/`Replace`), `startingDeadlineSeconds`, `successfulJobsHistoryLimit`, `failedJobsHistoryLimit`
+
+**Multi-Container Pod Patterns**
+- **Init containers**: sequential dependency checks, one-time setup; block main container until complete
+- **Sidecar containers** (native, GA in v1.29+): set `restartPolicy: Always` inside `initContainers` — runs for the full pod lifetime alongside main container; log shipping, proxy injection
+- **Ambassador**: outbound proxy pattern (route traffic to external services through a local proxy)
+- **Adapter**: transform or normalise output for a monitoring/logging system
+
+**Volumes**
+- Ephemeral: `emptyDir` (shared scratch space between containers in a pod), `hostPath`
+- Projected: `configMap`, `secret`, `downwardAPI`, `projected` (combine multiple sources)
+- Persistent: `persistentVolumeClaim`; `volumeMounts`, `subPath`
+- Generic ephemeral volumes (`ephemeral:` block in pod spec)
+
+---
 
 ### Application Deployment (20%)
-- Rolling update: `maxSurge`, `maxUnavailable`
-- `kubectl rollout`: status, undo, `history --revision`, pause, resume
-- Canary deployment: two Deployments sharing one Service, traffic split by replica ratio
-- Blue/green deployment: label swap on Service selector
-- Helm: `install`, `upgrade`, `rollback`, `uninstall`
-- `helm template --values` / `--set`; difference between `--set` and `-f values.yaml`
-- `helm repo add / update / search repo`; `helm show values / chart`
+
+**Rolling Updates & Rollbacks**
+- `strategy.type: RollingUpdate` (default) vs. `Recreate`
+- `maxSurge`, `maxUnavailable` — control pace and availability during rollout
+- `kubectl rollout status|history|undo|pause|resume|restart`
+- `--to-revision=<N>` to target a specific history entry; `revisionHistoryLimit`
+
+**Deployment Strategies (from primitives)**
+- **Canary**: two Deployments sharing one Service (matching label); control traffic split by replica count ratio
+- **Blue/Green**: two Deployments; swap Service selector (`kubectl set selector`) to cut over traffic instantly
+
+**Helm**
+- `helm repo add / update / list / search repo`
+- `helm install <release> <chart>`, `helm upgrade`, `helm rollback`, `helm uninstall`
+- `helm list`, `helm status <release>`, `helm show values <chart>`
+- Override values: `--set key=value` (inline) vs. `-f values.yaml` (file); understand precedence
+- `helm template <release> <chart>` to render manifests without installing
+- `helm get manifest <release>` to inspect what is running
+
+**Kustomize**
+- `kustomization.yaml`: `resources:`, `namespace:`, `commonLabels:`, `commonAnnotations:`, `namePrefix:`, `nameSuffix:`
+- `images:` transformer to change image tags without editing base manifests
+- `configMapGenerator:` and `secretGenerator:` with `--from-literal` / `--from-file` / `--from-env-file`
+- Bases and overlays (`dev` / `staging` / `prod`): `resources:` pointing to a base path
+- Patches: `patchesStrategicMerge:` (YAML merge) and `patches:` with JSON-6902 (`op: replace/add/remove`)
+- Apply: `kubectl apply -k <dir>`
+
+---
 
 ### Application Observability and Maintenance (15%)
-- Liveness probe: restarts unhealthy containers; exec, httpGet, tcpSocket
-- Readiness probe: gates traffic; removes pod from Service endpoints when failing
-- Startup probe: for slow-starting apps; disables liveness/readiness until it passes
-- Probe fields: `initialDelaySeconds`, `periodSeconds`, `failureThreshold`, `successThreshold`
-- `kubectl top pod / node` (requires metrics-server)
-- `kubectl describe` events as first debugging step
-- Logging: `kubectl logs`, `-f`, `--previous`, `-c <container>`
-- Debugging: `kubectl exec -it`, ephemeral containers (`kubectl debug`)
-- Deprecation handling: `kubectl explain`, API version migration
+
+**Health Probes**
+- `livenessProbe`: restarts container when it fails; use for deadlock/crash detection
+- `readinessProbe`: removes pod from Service endpoints until it passes; use for warm-up gates
+- `startupProbe`: disables liveness/readiness checks until it passes; use for slow-starting apps
+- Probe handlers: `httpGet` (path, port), `tcpSocket` (port), `exec` (command), `grpc` (port, service)
+- Timing tunables: `initialDelaySeconds`, `periodSeconds`, `timeoutSeconds`, `failureThreshold`, `successThreshold`
+
+**Monitoring**
+- `kubectl top pod|node` (requires `metrics-server`)
+- `kubectl get events --sort-by=.lastTimestamp`
+- `kubectl describe <resource>` — first debugging step; check `Events:` section
+
+**Logs**
+- `kubectl logs <pod> -c <container>`, `--previous`, `-f`, `--since`, `--tail`, `--all-containers`
+- Multi-container pods: always specify `-c <container>` when more than one container is present
+
+**Debugging**
+- `kubectl describe pod` — image pull failures, OOMKilled, probe failures
+- `kubectl exec -it <pod> -- /bin/sh` — interactive shell inside running container
+- `kubectl debug <pod> --image=busybox --copy-to=<new-pod>` — copy pod with debug container
+- Ephemeral debug containers: `kubectl debug -it <pod> --image=busybox --target=<container>` (distroless-safe)
+- `kubectl debug node/<node> --image=busybox` — attach a container in host namespaces
+- `kubectl port-forward pod/<pod> <local>:<remote>` — forward traffic for local testing
+- `kubectl cp <pod>:<path> <local>` — copy files out of a container
+
+**API Deprecations**
+- Identify outdated `apiVersion` (e.g., `extensions/v1beta1` → `apps/v1`)
+- `kubectl explain <resource>.<field>` — check current schema and apiVersion
+- `kubectl api-resources`, `kubectl api-versions` — list available APIs
+- `kubectl convert -f <manifest> --output-version <group/version>` (requires `kubectl-convert` plugin)
+
+---
 
 ### Application Environment, Configuration and Security (25%)
-- ConfigMap: `--from-file`, `--from-literal`, `envFrom`, volume mount
-- Secret: `--from-literal`, base64 encoding, volume mount vs env injection
-- Immutable ConfigMap / Secret
-- ServiceAccount: `automountServiceAccountToken`, projected volumes
-- ResourceQuota: limits total CPU/memory/object counts per namespace
-- LimitRange: sets default requests/limits per container or pod
-- SecurityContext (pod level vs container level):
-  - `runAsUser`, `runAsGroup`, `fsGroup`
-  - `runAsNonRoot: true`
-  - `allowPrivilegeEscalation: false`
-  - `readOnlyRootFilesystem: true`
-  - `capabilities: add / drop`
-- Custom Resources: `kubectl get crd`, `kubectl explain <cr>.<field>`, treating CRs like native objects
-- Admission controllers concept: validating vs mutating webhooks
+
+**ConfigMaps**
+- Create: `kubectl create configmap <name> --from-literal=key=val --from-file=path --from-env-file=.env`
+- Consume as env vars: `env[].valueFrom.configMapKeyRef` or `envFrom[].configMapRef`
+- Consume as volume: mounts each key as a file; `subPath` to mount a single key
+- Immutable ConfigMaps: `immutable: true` (changes rejected; reduces API server load)
+
+**Secrets**
+- Types: `Opaque` (default), `kubernetes.io/dockerconfigjson`, `kubernetes.io/tls`, `kubernetes.io/service-account-token`, `kubernetes.io/basic-auth`, `kubernetes.io/ssh-auth`
+- Create: `kubectl create secret generic <name> --from-literal=key=val`
+- Base64 encoding: `echo -n 'value' | base64` / `echo 'b64' | base64 -d`
+- Consume: same as ConfigMaps (env vars or volume mount)
+- Immutable Secrets: `immutable: true`
+
+**ServiceAccounts**
+- Create: `kubectl create serviceaccount <name>`
+- Attach to pod: `spec.serviceAccountName`
+- Disable auto-mount: `automountServiceAccountToken: false` (pod or SA level)
+- Projected token volumes: short-lived, audience-scoped tokens via `serviceAccountToken` projected volume source
+
+**Resource Management**
+- Container `resources.requests` (scheduling guarantee) vs. `resources.limits` (enforcement ceiling)
+- Units: CPU in millicores (`500m` = 0.5 CPU), memory in bytes (`256Mi`, `1Gi`)
+- `LimitRange`: sets default `requests`/`limits` per container or pod within a namespace
+- `ResourceQuota`: caps total CPU, memory, and object counts per namespace; triggers `403 Forbidden` on violation
+- **In-place Pod Resource Resize** (GA in v1.35): change container `requests`/`limits` without pod restart using `kubectl patch pod <name> --subresource resize --patch '{...}'`; `resizePolicy` field per resource (`NotRequired` vs. `RestartContainer`)
+
+**CRDs & Operators**
+- `kubectl get crd` — list installed Custom Resource Definitions
+- `kubectl explain <cr>.<field>` — inspect schema of a custom resource
+- Create/update/delete custom resource instances like native objects
+- Discover what operators manage (via ownerReferences, controller logs)
+
+**Authentication, Authorization & Admission**
+- RBAC (consumer perspective): `Role`, `ClusterRole`, `RoleBinding`, `ClusterRoleBinding`
+- `kubectl auth can-i <verb> <resource> --as=<user>` — check effective permissions
+- Pod Security Admission labels on namespaces:
+  - `pod-security.kubernetes.io/enforce: restricted|baseline|privileged`
+  - `pod-security.kubernetes.io/audit: restricted|baseline|privileged`
+  - `pod-security.kubernetes.io/warn: restricted|baseline|privileged`
+- Admission controllers (conceptual): `LimitRanger`, `ResourceQuota`, `PodSecurity`, mutating vs. validating webhooks
+- **CEL-based ValidatingAdmissionPolicy** (GA in v1.35): inline CEL expressions validated server-side without external webhook; bind with `ValidatingAdmissionPolicyBinding`
+
+**SecurityContext**
+- Pod level: `runAsUser`, `runAsGroup`, `fsGroup`, `runAsNonRoot`, `supplementalGroups`
+- Container level: `runAsUser`, `runAsNonRoot`, `allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`
+- Linux capabilities: `capabilities.add: [NET_ADMIN]`, `capabilities.drop: [ALL]`
+- Seccomp profiles: `seccompProfile.type: RuntimeDefault|Localhost`
+- **User Namespaces** (`hostUsers: false` in pod spec, default-enabled in v1.35): UID/GID inside container mapped to unprivileged IDs on host — mitigates privilege escalation
+- **Pod Certificates** (`podCertificate` projected volume, beta in v1.35): kubelet auto-issues and rotates X.509 certs for workloads; set `signerName` and `keyType` (e.g., `ED25519`)
+
+---
 
 ### Services and Networking (20%)
-- Services: ClusterIP, NodePort, LoadBalancer, ExternalName -- `spec.selector`, `targetPort` int vs string
-- Ingress: rules, TLS, `pathType` (`Exact` / `Prefix` / `ImplementationSpecific`), `ingressClassName`
-- NetworkPolicy: `podSelector`, `namespaceSelector`, `ipBlock`, ingress/egress rules, `ports[].protocol` uppercase
-- DNS: `<service>.<namespace>.svc.cluster.local`; pod DNS policy (`ClusterFirst`, `None`)
-- Service discovery via environment variables vs DNS
+
+**Services**
+- `ClusterIP` (default): cluster-internal VIP; set `clusterIP: None` for headless service (DNS returns pod IPs directly)
+- `NodePort`: exposes on every node at a static port (30000–32767)
+- `LoadBalancer`: provisions external LB (cloud); `externalTrafficPolicy`
+- `ExternalName`: CNAME alias to an external DNS name
+- `spec.selector` must match pod labels; `targetPort` (container port, int or named string) vs. `port` (service port)
+- `kubectl expose deployment <name> --port=80 --target-port=8080 --type=ClusterIP`
+- Troubleshoot via `Endpoints` / `EndpointSlice`: `kubectl get endpoints <svc>`
+
+**Ingress**
+- `Ingress` resource: `rules[].host`, `rules[].http.paths[].path`, `pathType` (`Exact`/`Prefix`/`ImplementationSpecific`)
+- `ingressClassName` field (replaces deprecated `kubernetes.io/ingress.class` annotation)
+- TLS termination: reference a `kubernetes.io/tls` Secret in `spec.tls`
+- Common troubleshooting: 404 (path mismatch or wrong `pathType`), 503 (backend service selector mismatch)
+
+**Gateway API** (explicit in v1.35 curriculum)
+- `GatewayClass`: defines the controller type (cluster-scoped, set by admin)
+- `Gateway`: declares listeners (port, protocol, TLS) — cluster or namespace-scoped
+- `HTTPRoute`: developer-facing; attach to a `Gateway` via `parentRefs`
+  - Path matching: `matches[].path.type: PathPrefix|Exact`
+  - Header-based routing: `matches[].headers`
+  - Traffic splitting (canary): `backendRefs[].weight` — e.g., 90% v1, 10% v2
+- `ReferenceGrant`: allows cross-namespace references (e.g., HTTPRoute → Service in another namespace)
+
+**NetworkPolicies**
+- Default: all traffic allowed; first NetworkPolicy creates implicit deny for selected pods
+- Default-deny pattern: empty `podSelector: {}` + empty `ingress: []` or `egress: []`
+- Selectors: `podSelector`, `namespaceSelector`, `ipBlock` (CIDR + `except`)
+- `ports[].port` and `ports[].protocol` (must be uppercase: `TCP`, `UDP`, `SCTP`)
+- Ingress and egress rules are independent; both directions must be explicitly allowed for bidirectional traffic
+
+**DNS**
+- Service DNS: `<svc>.<namespace>.svc.cluster.local`
+- Pod DNS: `<pod-ip-dashes>.<namespace>.pod.cluster.local`
+- `dnsPolicy`: `ClusterFirst` (default), `ClusterFirstWithHostNet`, `Default`, `None`
+- `dnsConfig` for custom nameservers and search domains
+- Service discovery: prefer DNS over env vars (env vars only set at pod start time)
 
 ---
 
 ## Labs Mapping
+
 | Lab | Topics |
 |---|---|
 | [1](1/README.md) | Namespace, Pod, image, kubectl |

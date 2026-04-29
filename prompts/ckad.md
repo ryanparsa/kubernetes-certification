@@ -3,6 +3,7 @@
 The following provides the specific grading rubrics and parameters for the Certified Kubernetes Application Developer (CKAD) simulation. Combine this with the base Terminal Simulation Prompt.
 
 ---
+> **Reference:** See `ckad/README.md` for the authoritative domain list, weightings, and lab mapping.
 
 ## QUICK REFERENCE
 
