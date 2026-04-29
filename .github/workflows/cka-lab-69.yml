@@ -1,0 +1,36 @@
+name: CKA Lab 69
+
+on:
+  push:
+    paths: ['cka/69/**', '.github/workflows/cka-lab-69.yml']
+  pull_request:
+    paths: ['cka/69/**', '.github/workflows/cka-lab-69.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/69/assets/kind-config.yaml
+          cluster_name: cka-lab-69
+
+      - name: Install Calico
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+          kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+      - name: Apply solution
+        run: bash cka/69/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/69/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/69/assets/cleanup.sh

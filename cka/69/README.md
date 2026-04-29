@@ -1,6 +1,6 @@
 # Question 69
 
-> **Solve this question on:** `cka-lab-69`
+> **Solve this question on:** the `cka-lab-69` kind cluster
 
 Create three *Pods* in the `default` namespace, each exposed via a *ClusterIP* service on port `80`:
 
