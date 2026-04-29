@@ -30,7 +30,7 @@ ALLOW_LIST: set[int] = {
 }
 
 SCAN_EXTENSIONS = {".md", ".txt", ".yaml", ".yml", ".sh"}
-SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv"}
+SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "kubernetes-doc"}
 
 
 def scan_file(path: str) -> list[tuple[int, int, str, str]]:
