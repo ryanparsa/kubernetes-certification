@@ -4,7 +4,7 @@ description: Search the offline Kubernetes documentation for specific keywords, 
 allowed-tools: Grep Glob Bash
 ---
 
-Search the offline Kubernetes documentation at `ref/kubernetes-doc/content/en/`.
+Search the offline Kubernetes documentation (https://kubernetes.io/docs/) at `ref/kubernetes-doc/content/en/`.
 
 The user wants to find information about: $ARGUMENTS
 

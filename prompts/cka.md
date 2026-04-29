@@ -7,9 +7,9 @@ The following provides the specific grading rubrics and parameters for the Kuber
 ## QUICK REFERENCE
 
 If you need a Kubernetes quick reference during the simulation, you can access the reference directory at:
-`/Users/ryan/Projects/kubernetes-certification/ref`
+`ref/`
 
-If you need to search each time for a sample or more info, you can search in `/Users/ryan/Projects/kubernetes-certification/ref` and `/Users/ryan/Projects/kubernetes-certification/cka`. Use the `grep -i -A10` command to find what you need.
+If you need to search each time for a sample or more info, you can search in `ref/` and `cka/`. Use the `search-reference-material` and `search-k8s-docs` skills to find what you need.
 
 ---
 

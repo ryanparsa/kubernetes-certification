@@ -56,6 +56,8 @@ cat simulator.md cks.md  | claude
 
 Asks one question at a time in multiple choice, true/false, fill-in-the-blank, and short answer formats. Tracks your score, drills down on weak topics, and sources questions from the `ref/` directory.
 
+![Quiz](quiz.png)
+
 CKA
 ```bash
 cat quiz.md cka.md  | claude
@@ -88,6 +90,10 @@ cat quiz.md kcsa.md | claude
 [`docs.md`](docs.md) -- Practice finding the right kubernetes.io page fast under exam conditions.
 
 Presents exam-style tasks and grades your search query and page choice. Teaches the difference between [CODE] pages (copy-paste YAML) and [CONCEPT] pages (explanations only). Scores on precision and speed.
+
+**How it works:** This mode uses an offline documentation mirror to verify your answers. `.claude/settings.json` automatically fetches the `ref/kubernetes-doc` submodule on session start, and the `.claude/skills/search-k8s-docs/SKILL.md` tool allows the AI to search the offline docs to ensure the page you selected actually contains the required YAML or concepts.
+
+![Docs Speed Drill](docs.png)
 
 CKA
 ```bash
