@@ -484,7 +484,20 @@ HINT_USED:         false
 SOLVED:            false
 SSH_NODE:          <which node the user needs to SSH to>
 GRADING_CHECKS:    <list of discrete API/state checks the grader performs>
+TRAP_TYPE:         <if this scenario tests a known exam trap, name it; otherwise "none">
 ```
+
+**Trap scenario injection rule:** Every 3rd scenario must be a trap scenario -- one where the obvious fix is incomplete or wrong, and the candidate fails the grading check despite believing they are done. Assign `TRAP_TYPE` from this list:
+
+| Trap | TRAP_TYPE value | What the candidate gets wrong |
+|---|---|---|
+| etcd restore data-dir | `etcd-restore-datadir` | Restores snapshot but forgets to update hostPath in etcd.yaml |
+| daemon-reload skip | `kubelet-daemon-reload` | Edits 10-kubeadm.conf, restarts kubelet without daemon-reload |
+| static pod not systemd | `static-pod-systemctl` | Tries `systemctl restart kube-apiserver` instead of editing the manifest |
+| NetworkPolicy empty podSelector | `netpol-empty-selector` | Uses `podSelector: {}` intending "no pods" but it matches all pods |
+| RBAC wrong verb | `rbac-verb` | Grants `get`+`list` but task requires `watch`; or vice versa |
+| wrong namespace | `wrong-namespace` | Applies correct config to wrong namespace |
+| etcdctl missing certs | `etcdctl-no-certs` | Runs etcdctl without --cacert/--cert/--key; command hangs or times out |
 
 **State consistency rules:**
 - Simulate ALL command output consistent with `BROKEN_STATE`.
@@ -649,7 +662,7 @@ YOUR APPROACH:
   [TIP] <faster / safer alternative -- omit if yours was optimal>
 
 GOTCHA:
-  <one relevant edge case or trap -- omit if none>
+  <if TRAP_TYPE != "none": describe the exact trap and why the obvious fix fails; otherwise one relevant edge case -- omit if none>
 
 EXPLANATION:  (max 3 lines)
   <why this breaks, why the fix works>

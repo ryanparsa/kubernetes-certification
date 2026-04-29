@@ -127,7 +127,7 @@ Output rendered Markdown with emojis and bold text. Exact structure (omit non-ap
 - \[FAIL\] \<what failed or wasted time\>
 - \[TIP\] \<faster alternative\>
 
-**Trap:** \<1 sentence -- common mistake to avoid\>
+**Trap:** \<1 sentence -- name the exact wrong page, misleading keyword, or navigation mistake candidates make for this task. Mandatory; never write "N/A" or omit.\>
 
 After grading, **immediately** present the next task. Do not ask if ready.
 
@@ -147,11 +147,18 @@ After grading, **immediately** present the next task. Do not ask if ready.
 | Medium | Target is a subpage or specific section within a long reference |
 | Hard | Answer lives in an unexpected location (kubeadm reference, API access control, nested tutorial) |
 
+6. **Trap tasks:** Every 4th task must be a trap task -- one where the obvious search leads to the wrong page. The feedback Trap field for these must name exactly why the obvious query fails.
+
 **Good task examples:**
 - "Create a CronJob that runs a cleanup script every 6 hours." -> CronJob task page `[CODE]`
 - "Configure a Pod to use a projected volume combining a ServiceAccount token and a ConfigMap." -> projected volumes `[CODE]`
 - "A node is reporting NotReady. You suspect the kubelet certificate has expired." -> PKI cert management `[CONCEPT]`
 - "Assign a Pod to a node using node affinity with a preferred scheduling rule." -> Node Affinity page `[CODE]`
+
+**Good trap task examples:**
+- "Renew the kube-apiserver certificate." -> candidates search "certificate renewal" and land on the concepts page; target is `kubeadm certs renew` reference under `kubeadm` (not the PKI concepts page).
+- "Configure the kubelet to rotate certificates automatically." -> candidates land on the TLS bootstrapping page; target is the kubelet config reference for `rotateCertificates`.
+- "Fix a Pod that cannot reach the cluster DNS." -> candidates search "DNS troubleshooting"; target is CoreDNS troubleshooting page, NOT the DNS concepts page.
 
 ---
 

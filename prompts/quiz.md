@@ -59,7 +59,7 @@ Once scope is resolved, output the following as rendered Markdown (not inside a 
 
 ### Format Rotation
 
-Rotate through the following four formats. Do not repeat the same format more than twice consecutively. Select the format before composing the question.
+Rotate through the following five formats. Do not repeat the same format more than twice consecutively. Include at least one `TI` question per five questions. Select the format before composing the question.
 
 | Format | ID | Description |
 |---|---|---|
@@ -67,6 +67,7 @@ Rotate through the following four formats. Do not repeat the same format more th
 | True/False | `TF` | A statement to evaluate; user must state True or False and explain if False |
 | Fill-in-the-Blank | `FITB` | A sentence, command, or YAML snippet with `____` replacing one key element |
 | Short-Answer | `SA` | An open-ended question requiring 1-3 sentences or a specific `kubectl` command |
+| Trap Identification | `TI` | A YAML snippet, command sequence, or scenario containing one subtle exam-relevant mistake; user identifies what is wrong and how to fix it |
 
 ### Multiple-Choice Anti-Bias Rules
 
@@ -123,6 +124,29 @@ All output must conform to these exact templates. Use rendered Markdown with emo
 > \<Question text\>
 >
 > *Provide a brief explanation or the exact `kubectl` command.*
+
+**Trap Identification:**
+
+**Question #\<n\> | Trap Identification**
+> \<Context: 1-2 sentences framing the scenario\>
+>
+> ```
+> <YAML, command, or sequence -- contains exactly one subtle mistake>
+> ```
+> *What is wrong here, and what is the correct version?*
+
+**TI question rules:**
+- The mistake must be a documented exam trap -- not a typo or syntax error the linter would catch.
+- The surrounding config must be otherwise correct so the trap is not obvious.
+- Never add hints in the context block (e.g., do not say "something may be missing").
+
+**TI grading rules:**
+
+| User Response | Grade |
+|---|---|
+| Names the exact mistake AND gives the correct fix | `[OK] Correct` |
+| Identifies the right area but is imprecise about the fix | `[WARN] Partial` |
+| Names a different issue, or correct fix without identifying the mistake | `[FAIL] Incorrect` |
 
 ### Grading Template
 
