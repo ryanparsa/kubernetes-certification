@@ -44,6 +44,13 @@ You MUST use the `search-reference-material` and `search-k8s-docs` skills to fin
   - **kubeadm upgrade chain:** `kubeadm upgrade plan` → `kubeadm upgrade apply` on control plane → `kubeadm upgrade node` on workers; drain/upgrade/uncordon sequence.
   - **Certificate lifecycle:** `kubeadm certs check-expiration`, `kubeadm certs renew`, `openssl x509 -in -text -noout`; `/etc/kubernetes/pki/` structure.
 
+### v1.35 additions (new exam-eligible topics from v1.35)
+  - **CEL ValidatingAdmissionPolicy:** Write a `ValidatingAdmissionPolicy` with inline CEL expressions (e.g., `object.spec.replicas <= 5`); bind it with a `ValidatingAdmissionPolicyBinding`; verify that a rejected resource returns a meaningful admission error. No external webhook required.
+  - **User Namespaces:** Enable `spec.hostUsers: false` in a Pod spec; understand that container UIDs/GIDs are remapped to unprivileged host IDs; diagnose `hostUsers` conflicts with hostPath volumes or `hostNetwork: true`.
+  - **Pod Certificates:** Configure a `projected` volume with `sources[].serviceAccountToken` replaced by `sources[].clusterTrustBundle` or `sources[].podCertificate`; set `signerName` and `keyType: ED25519`; verify the kubelet auto-issues and rotates the X.509 cert.
+  - **In-place Pod Resource Resize:** Use `kubectl patch pod <name> --subresource resize --patch '{"spec":{"containers":[{"name":"app","resources":{"requests":{"cpu":"500m"}}}]}}'`; understand `resizePolicy` per resource (`NotRequired` vs `RestartContainer`); verify resize without pod deletion.
+  - **Pod Security Admission (PSA):** Apply namespace labels `pod-security.kubernetes.io/enforce: restricted`, `audit`, and `warn`; deploy a pod that violates the policy and read the admission error; fix the pod spec (add `securityContext.runAsNonRoot`, drop capabilities, set `readOnlyRootFilesystem`).
+
 ### Systemic trap scenarios (high-value exam gotchas)
   - **Static pod vs. systemd trap:** User runs `systemctl restart kube-apiserver` -> `Unit kube-apiserver.service not found`. Control plane components are static pods, not systemd units.
   - **etcdctl location trap:** User runs `etcdctl` from `dev` -> `command not found`. Must SSH to `controlplane`.
@@ -54,6 +61,10 @@ You MUST use the `search-reference-material` and `search-k8s-docs` skills to fin
   - **SSH environment trap:** User defines `alias k=kubectl` or `export do="--dry-run=client -o yaml"` on `dev`, SSHes to `controlplane`, types `k get pods` -> `command not found`. Or edits YAML with vim using tabs (no `.vimrc`) -> YAML parse error.
   - **crictl debugging:** Use `crictl ps` and `crictl inspect <id>` on a cluster node to debug failing containers below the API layer.
   - **Certificate path mismatch:** API server or etcd cert/key paths in static pod manifest don't match actual files in `/etc/kubernetes/pki/`.
+  - **CEL expression syntax trap:** `ValidatingAdmissionPolicy` created with a malformed CEL expression (e.g., comparing string to int without type coercion) -> all matching resources fail admission with a confusing error. Fix by editing the CEL rule and re-testing with `kubectl apply --dry-run=server`.
+  - **User Namespaces + hostPath conflict:** Pod with `hostUsers: false` mounts a `hostPath` volume owned by root on the host -> container sees the path as unreadable (UID mismatch). Fix by either using `fsGroup` to set group ownership or removing `hostUsers: false` when host filesystem access is required.
+  - **In-place resize `RestartContainer` gotcha:** User patches CPU/memory on a container whose `resizePolicy` is `RestartContainer` expecting no disruption -> container restarts silently. Must inspect `resizePolicy` before patching.
+  - **PSA violation silent warn vs enforce:** Namespace has `audit` label but not `enforce` -> pod with privileged containers is created without error but audit logs show policy violations. User is confused why `kubectl apply` succeeded but security team reports violations. Fix by switching to `enforce`.
 
 ---
 
