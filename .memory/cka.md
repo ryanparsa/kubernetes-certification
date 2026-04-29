@@ -2,7 +2,7 @@
 
 ## Known Labs
 
-- cka/8: lima-based lab — worker node not joined, older K8s version; task = upgrade worker to match CP version + join via kubeadm. Complete with full assets.
+- cka/8: lima-based lab -- worker node not joined, older K8s version; task = upgrade worker to match CP version + join via kubeadm. Complete with full assets.
 
 ## Duplicate Detection Notes
 

@@ -2,11 +2,11 @@
 
 ## Known Labs
 
-- ckad/78: kind-based lab — deployment rollout and rollback; task = create deploy with labels, update image, scale, rollback. Complete with full assets + CI.
+- ckad/78: kind-based lab -- deployment rollout and rollback; task = create deploy with labels, update image, scale, rollback. Complete with full assets + CI.
 
 ## Duplicate Detection Notes
 
-- ckad/65 covers rolling back a pre-existing broken deployment. ckad/78 covers the full lifecycle (create → image update → scale → rollback) and is not a duplicate.
+- ckad/65 covers rolling back a pre-existing broken deployment. ckad/78 covers the full lifecycle (create -> image update -> scale -> rollback) and is not a duplicate.
 
 ## Patterns
 
