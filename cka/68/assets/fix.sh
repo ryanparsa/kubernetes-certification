@@ -2,7 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+
+# Use local kubeconfig if it exists, otherwise rely on environment (CI)
+if [ -f "$SCRIPT_DIR/../lab/kubeconfig.yaml" ]; then
+  export KUBECONFIG="$SCRIPT_DIR/../lab/kubeconfig.yaml"
+fi
 
 # Create Namespace
 kubectl create namespace ci --dry-run=client -o yaml | kubectl apply -f -

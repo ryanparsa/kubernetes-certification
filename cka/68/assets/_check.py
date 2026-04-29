@@ -5,7 +5,9 @@ import unittest
 import json
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-KUBECONFIG = os.environ.get("KUBECONFIG", os.path.join(SCRIPT_DIR, "kubeconfig.yaml"))
+KUBECONFIG = os.environ.get("KUBECONFIG")
+if not KUBECONFIG:
+    KUBECONFIG = os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml")
 
 def kubectl(*args):
     result = subprocess.run(
