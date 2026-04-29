@@ -1,17 +1,15 @@
-## Answer
+#!/usr/bin/env bash
+set -euo pipefail
 
-**Reference:** https://kubernetes.io/docs/concepts/services-networking/network-policies/
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Use KUBECONFIG if set, otherwise default to assets/kubeconfig.yaml
+export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
 
-### Create the namespace
+# Create the namespace (idempotent)
+kubectl create namespace network --dry-run=client -o yaml | kubectl apply -f -
 
-```bash
-kubectl create namespace network
-```
-
-### Create Deployments, Services, and NetworkPolicies
-
-```yaml
-# lab/64-netpol.yaml
+# Apply Deployments and NetworkPolicies
+cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -130,26 +128,6 @@ spec:
     - podSelector:
         matchLabels:
           app: api
-```
+EOF
 
-```bash
-kubectl apply -f lab/64-netpol.yaml
 kubectl wait deployment web api db -n network --for=condition=Available --timeout=60s
-```
-
-### Verify
-
-```bash
-kubectl get networkpolicies -n network
-kubectl get deployments -n network
-```
-
-## Checklist (Score: 0/7)
-
-- [ ] Deployment `web` (nginx) exists in `network` namespace
-- [ ] Deployment `api` (nginx) exists in `network` namespace
-- [ ] Deployment `db` (postgres) exists in `network` namespace with `POSTGRES_HOST_AUTH_METHOD=trust`
-- [ ] NetworkPolicy `web-policy` allows `web` egress only to `api`
-- [ ] NetworkPolicy `api-policy` allows `api` ingress from `web` and egress only to `db`
-- [ ] NetworkPolicy `db-policy` allows `db` ingress only from `api`
-- [ ] All other inter-pod traffic is denied
