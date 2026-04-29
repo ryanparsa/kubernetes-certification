@@ -1,4 +1,4 @@
-# CKA & CKAD Exam Checklist: 330 Items
+# CKA & CKAD Exam Checklist: 364 Items
 **Kubernetes v1.34 (CKA) / v1.35 (CKAD) · 2026 · Performance-based · 2 hours · 66% passing score**
 
 Domain weights — CKA: Troubleshooting 30% · Cluster Architecture 25% · Services & Networking 20% · Workloads & Scheduling 15% · Storage 10%
@@ -172,6 +172,37 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 - [ ] S-098. List all CRDs installed in a cluster with `kubectl get crds` and discover their short names and API groups.
 - [ ] S-099. Create instances of a custom resource (CR) from a YAML manifest and interact with them using standard `kubectl` commands.
 - [ ] S-100. Explain the operator pattern: a controller that watches CRs and reconciles real-world state to match the CR spec.
+
+---
+
+## Pod Lifecycle Hooks
+
+- [ ] S-101. Configure a `lifecycle.postStart` exec handler that runs a command immediately after a container starts, and understand that it blocks the container from reaching `Running` state until the handler completes or times out.
+- [ ] S-102. Configure a `lifecycle.preStop` exec or sleep handler to delay SIGTERM and enable graceful shutdown (e.g., `preStop: exec: command: ["sleep","10"]`); this is essential for zero-downtime deployments behind a load balancer.
+- [ ] S-103. Explain how `terminationGracePeriodSeconds` interacts with `preStop`: the kubelet waits up to `terminationGracePeriodSeconds` for both the `preStop` handler and the main process to exit before sending SIGKILL; the `preStop` duration counts against this budget.
+
+---
+
+## StatefulSet & DaemonSet Update Strategies
+
+- [ ] S-104. Configure a `StatefulSet` with `updateStrategy.type: RollingUpdate` and understand that Pods are updated in reverse ordinal order (highest index first).
+- [ ] S-105. Set `updateStrategy.type: OnDelete` on a `StatefulSet` to require manual deletion of each Pod before the updated template is applied to it; use this when you need full control over the upgrade sequence.
+- [ ] S-106. Use `updateStrategy.rollingUpdate.partition` on a `StatefulSet` to perform a canary-style staged rollout: only Pods with an ordinal index ≥ the partition value are updated, leaving lower-indexed Pods on the old version.
+- [ ] S-107. Configure a `DaemonSet` update strategy with `rollingUpdate.maxUnavailable` to control how many nodes' Pods are taken down simultaneously during a DaemonSet rolling update.
+- [ ] S-108. Understand that `kubectl rollout undo` is **not supported** for `StatefulSet` — to roll back a StatefulSet, manually set `spec.template.spec.containers[].image` back to the previous version and let the rolling update strategy apply the change.
+
+---
+
+## Job & CronJob Advanced
+
+- [ ] S-109. Set `spec.ttlSecondsAfterFinished` on a `Job` to automatically delete it (and its Pods) a fixed number of seconds after it reaches a terminal state (`Complete` or `Failed`), preventing accumulation of finished Jobs.
+- [ ] S-110. Suspend a `CronJob` by setting `spec.suspend: true` (e.g., `kubectl patch cronjob <name> -p '{"spec":{"suspend":true}}'`) and resume it by setting it back to `false`; understand that all scheduled runs are skipped while suspended.
+
+---
+
+## Resource Requests, Limits — Ephemeral Storage
+
+- [ ] S-111. Define `resources.requests.ephemeral-storage` and `resources.limits.ephemeral-storage` on a container to protect against disk-hungry containers; when the limit is exceeded the kubelet evicts the Pod from the node.
 
 ---
 
@@ -349,6 +380,58 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
+## Volume Snapshots (CSI)
+
+- [ ] C-101. Explain the three VolumeSnapshot API objects: `VolumeSnapshotClass` (defines the CSI driver and deletion policy), `VolumeSnapshot` (the user's snapshot request, analogous to a PVC), and `VolumeSnapshotContent` (the actual snapshot resource, analogous to a PV).
+- [ ] C-102. Create a `VolumeSnapshot` from an existing PVC by writing a manifest with `spec.source.persistentVolumeClaimName` and `spec.volumeSnapshotClassName`, then verify it is `readyToUse: true`.
+- [ ] C-103. Restore data from a `VolumeSnapshot` by creating a new PVC with `spec.dataSource.kind: VolumeSnapshot` and `spec.dataSource.name` pointing to the snapshot name.
+
+---
+
+## Scheduler Profiles
+
+- [ ] C-104. Assign a Pod to a non-default scheduler or scheduler profile by setting `spec.schedulerName: <profile-name>` in the Pod spec; Pods referencing an unknown scheduler name remain `Pending` indefinitely.
+- [ ] C-105. Explain how multiple scheduler profiles are defined in the `KubeSchedulerConfiguration` file under `profiles:`, each with a distinct `schedulerName` and its own plugin configuration, allowing different scheduling behaviour without running separate scheduler processes.
+
+---
+
+## Admission Controllers & Webhooks
+
+- [ ] C-106. Explain the admission control pipeline: after authentication and authorization, requests pass through mutating admission plugins (including `MutatingAdmissionWebhook`) and then validating admission plugins (including `ValidatingAdmissionWebhook`) before the object is persisted to etcd.
+- [ ] C-107. Diagnose a resource rejected by an admission webhook: read the rejection reason from the `kubectl apply` error output, identify the responsible webhook with `kubectl get validatingwebhookconfigurations` or `kubectl get mutatingwebhookconfigurations`, and check its `failurePolicy` (`Fail` blocks the request; `Ignore` allows it through on webhook error).
+
+---
+
+## Node Management
+
+- [ ] C-108. Label a node with `kubectl label nodes <node-name> <key>=<value>`, verify with `kubectl get node <name> --show-labels`, and remove a label with `kubectl label nodes <node-name> <key>-`; node labels are the foundation for `nodeSelector` and node affinity rules.
+
+---
+
+## kubeadm Advanced
+
+- [ ] C-109. Pre-pull all required control-plane container images before running `kubeadm init` using `kubeadm config images pull [--kubernetes-version v1.X.Y]`; useful on air-gapped or slow-network nodes to verify image availability before starting cluster initialization.
+
+---
+
+## CoreDNS Advanced
+
+- [ ] C-110. Add a stub zone to the CoreDNS `Corefile` ConfigMap (in `kube-system`) so that DNS queries for a specific internal domain (e.g., `corp.internal`) are forwarded to a designated upstream resolver IP, then restart the CoreDNS Pods to apply the change.
+
+---
+
+## HA etcd Restore
+
+- [ ] C-111. When restoring an etcd snapshot in a multi-member HA cluster, run `etcdctl snapshot restore` separately for each member with member-specific flags (`--name`, `--initial-cluster`, `--initial-cluster-token`, `--initial-advertise-peer-urls`, `--data-dir`), then update each node's etcd static Pod manifest to point to its restored data directory before bringing members back online.
+
+---
+
+## Storage Troubleshooting
+
+- [ ] C-112. Diagnose a PVC expansion stuck in `FileSystemResizePending` status: understand that the filesystem resize happens inside the running container and only completes after the Pod mounting the PVC is restarted; delete and recreate the Pod (or trigger a rollout restart) to allow the kubelet to expand the filesystem.
+
+---
+
 ---
 
 # ✅ CKAD — Specific Topics
@@ -467,6 +550,50 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
+## API Deprecations — kubectl convert
+
+- [ ] D-065. Use the `kubectl-convert` plugin (`kubectl convert -f <manifest.yaml> --output-version <group/version>`) to automatically rewrite a manifest from a deprecated API version to a supported one; install the plugin separately from the kubectl binary.
+
+---
+
+## Additional Secret Types
+
+- [ ] D-066. Recognize the `kubernetes.io/basic-auth` Secret type (required data keys: `username` and `password`) and the `kubernetes.io/ssh-auth` type (required key: `ssh-privatekey`); create them with `kubectl create secret` or a YAML manifest specifying `type:`.
+- [ ] D-067. Recognize the `kubernetes.io/service-account-token` Secret type as the legacy mechanism for manually creating long-lived SA tokens; in Kubernetes v1.24+ tokens are no longer auto-created as Secrets — prefer `kubectl create token <sa-name>` for short-lived tokens or a projected `serviceAccountToken` volume.
+
+---
+
+## Pod-Level Host Namespaces
+
+- [ ] D-068. Set `spec.hostNetwork: true` on a Pod to make it share the node's network namespace (the Pod uses the node's IP and ports directly) and explain why the `restricted` Pod Security Admission profile forbids this.
+- [ ] D-069. Set `spec.hostPID: true` or `spec.hostIPC: true` on a Pod to share the node's PID or IPC namespace; understand the security implications (visibility of all node processes / IPC resources) and that both PSA `baseline` and `restricted` profiles block these fields.
+
+---
+
+## AppArmor
+
+- [ ] D-070. Apply an AppArmor profile to a container by setting `securityContext.appArmorProfile.type: RuntimeDefault` (node's default profile) or `Localhost` with `localhostProfile: <profile-name>`; `Unconfined` disables AppArmor enforcement. This field is GA from Kubernetes v1.30.
+
+---
+
+## PodDisruptionBudget (Developer Perspective)
+
+- [ ] D-071. Read a `PodDisruptionBudget` status with `kubectl get pdb -n <ns>` to understand `ALLOWED` (how many Pods may currently be disrupted) versus `DISRUPTIONS` (how many are currently disrupted), and explain how a PDB protects your application from simultaneous evictions during node drains or cluster upgrades.
+
+---
+
+## Generic Ephemeral Volumes
+
+- [ ] D-072. Define a generic ephemeral volume inline in a Pod spec using the `ephemeral:` volume type with an embedded `volumeClaimTemplate`; a PVC is automatically provisioned when the Pod starts and deleted when the Pod is deleted — unlike `emptyDir`, this uses a `StorageClass` and survives container restarts within the same Pod.
+
+---
+
+## ConfigMap & Secret Volume Update Behaviour
+
+- [ ] D-073. Understand that a ConfigMap or Secret mounted via `subPath` does **not** automatically refresh inside a running container when the source data changes — only a full directory mount (without `subPath`) benefits from the kubelet's periodic refresh (~60 s); applications using `subPath` mounts require a Pod restart (e.g., `kubectl rollout restart deployment/<name>`) to pick up changes.
+
+---
+
 ---
 
 # ✅ General — kubectl Efficiency & Exam Speed
@@ -544,6 +671,13 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
-*Total: 330 checkable items*
-*S-001 to S-100: Shared (CKA & CKAD) · C-001 to C-100: CKA-specific · D-001 to D-064: CKAD-specific · G-001 to G-038: kubectl & General*
+## Common Exam Pitfalls
+
+- [ ] G-039. Remember that `kubectl rollout undo` is **not supported** for `StatefulSet` resources — attempting it returns an error; to roll back a StatefulSet patch `spec.template.spec.containers[].image` directly to the previous image and monitor the rolling update.
+- [ ] G-040. Force-delete a Pod stuck in `Terminating` state with `kubectl delete pod <name> --grace-period=0 --force`; use this only when the node is unreachable or the process is confirmed gone, as bypassing the graceful shutdown sequence can cause data corruption in stateful workloads.
+
+---
+
+*Total: 364 checkable items*
+*S-001 to S-111: Shared (CKA & CKAD) · C-001 to C-112: CKA-specific · D-001 to D-073: CKAD-specific · G-001 to G-040: kubectl & General*
 *Source: CNCF official curriculum (github.com/cncf/curriculum), Linux Foundation exam pages — April 2026*
