@@ -76,6 +76,8 @@ When referencing pages in feedback, always include both:
 If you need a Kubernetes quick reference, you can access the reference directory at:
 `ref/`
 
+*(Note: For KCNA and KCSA exams, do not check the `ref/` directory or use any skills. Just use the respective `checklist.md`.)*
+
 ---
 
 ## SESSION FLOW

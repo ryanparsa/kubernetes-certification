@@ -131,8 +131,8 @@ These define the scenario pool, syllabus domains, difficulty curve, and grading 
 | [`cka.md`](cka.md) | Certified Kubernetes Administrator | Cluster Architecture (25%), Troubleshooting (30%), Workloads (15%), Networking (20%), Storage (10%) |
 | [`ckad.md`](ckad.md) | Certified Kubernetes Application Developer | App Design (20%), Deployment (20%), Observability (15%), Environment/Config/Security (25%), Networking (20%) |
 | [`cks.md`](cks.md) | Certified Kubernetes Security Specialist | Cluster Setup (10%), Hardening (15%), System Hardening (15%), Microservice Vulns (20%), Supply Chain (20%), Monitoring/Logging (20%) |
-| [`kcna.md`](kcna.md) | Kubernetes and Cloud Native Associate | Stub -- not yet built |
-| [`kcsa.md`](kcsa.md) | Kubernetes and Cloud Native Security Associate | Stub -- not yet built |
+| [`kcna.md`](kcna.md) | Kubernetes and Cloud Native Associate | Kubernetes Fundamentals (46%), Container Orchestration (22%), Cloud Native Architecture (16%), Cloud Native App Delivery (8%), Cloud Native Observability (8%) |
+| [`kcsa.md`](kcsa.md) | Kubernetes and Cloud Native Security Associate | Cluster Component Security (22%), Security Fundamentals (22%), Threat Model (16%), Platform Security (16%), Cloud Native Security Overview (14%), Compliance (10%) |
 
 ---
 
