@@ -1,0 +1,36 @@
+name: CKA Lab 63
+
+on:
+  push:
+    paths: ['cka/63/**', '.github/workflows/cka-lab-63.yml']
+  pull_request:
+    paths: ['cka/63/**', '.github/workflows/cka-lab-63.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/63/assets/kind-config.yaml
+          cluster_name: cka-lab-63
+
+      - name: Setup environment
+        run: |
+          mkdir -p cka/63/lab
+          cp ~/.kube/config cka/63/assets/kubeconfig.yaml
+          # Create namespace as it's required for the lab
+          kubectl create namespace cluster-admin
+
+      - name: Apply solution
+        run: bash cka/63/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/63/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/63/assets/cleanup.sh

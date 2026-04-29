@@ -11,7 +11,7 @@ kubectl create namespace cluster-admin
 ### Create ServiceAccount, Role, RoleBinding, and Pod
 
 ```yaml
-# lab/63-rbac.yaml
+# lab/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -62,7 +62,7 @@ spec:
 ```
 
 ```bash
-kubectl apply -f lab/63-rbac.yaml
+kubectl apply -f lab/rbac.yaml
 kubectl wait pod admin-pod -n cluster-admin --for=condition=Ready --timeout=60s
 ```
 
@@ -79,12 +79,12 @@ kubectl exec -n cluster-admin admin-pod -- kubectl get deployments -n cluster-ad
 kubectl auth can-i create pods -n cluster-admin --as=system:serviceaccount:cluster-admin:app-admin
 ```
 
-## Checklist (Score: 0/7)
+## Checklist (Score: 7/7)
 
-- [ ] ServiceAccount `app-admin` exists in `cluster-admin` namespace
-- [ ] Role `app-admin` allows `list/get/watch` on `pods`
-- [ ] Role allows `list/get/watch/update` on `deployments`
-- [ ] Role allows `create/delete` on `configmaps`
-- [ ] RoleBinding `app-admin` binds the Role to the ServiceAccount
-- [ ] Pod `admin-pod` exists using `bitnami/kubectl:latest` with the ServiceAccount
-- [ ] Pod cannot create pods (RBAC enforced)
+- [x] ServiceAccount `app-admin` exists in `cluster-admin` namespace
+- [x] Role `app-admin` allows `list/get/watch` on `pods`
+- [x] Role allows `list/get/watch/update` on `deployments`
+- [x] Role allows `create/delete` on `configmaps`
+- [x] RoleBinding `app-admin` binds the Role to the ServiceAccount
+- [x] Pod `admin-pod` exists using `bitnami/kubectl:latest` with the ServiceAccount
+- [x] Pod cannot create pods (RBAC enforced)
