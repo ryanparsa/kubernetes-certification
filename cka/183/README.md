@@ -6,4 +6,4 @@ Check all available *Pods* in the *Namespace* `project-c13` and find the names o
 
 Write the *Pod* names into `/opt/course/4/pods-terminated-first.txt`.
 
-> [i] Consider QoS classes — BestEffort Pods are evicted first, then Burstable, then Guaranteed.
+> [i] Consider QoS classes -- BestEffort Pods are evicted first, then Burstable, then Guaranteed.

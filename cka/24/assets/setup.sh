@@ -20,6 +20,8 @@ mkdir -p "$TASK_DIR/lab"
 cd "$SCRIPT_DIR"
 kind create cluster --name "$CLUSTER_NAME" --config kind-config.yaml --kubeconfig "$KUBECONFIG_FILE"
 
+docker exec "${CLUSTER_NAME}-control-plane" bash -c "apt-get update -q && apt-get install -y -q etcd-client"
+
 # Wait for etcd to be ready
 echo "Waiting for etcd to be ready..."
 kubectl --kubeconfig "$KUBECONFIG_FILE" wait -n kube-system --for=condition=Ready pod -l component=etcd --timeout=120s

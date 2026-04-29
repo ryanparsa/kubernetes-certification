@@ -6,4 +6,4 @@ Do the following in *Namespace* `default`. Create a single *Pod* named `ready` o
 
 Create a second *Pod* named `js-l-ready` of image `nginx:1.16.1-alpine` with label `id=cross-server-ready`. The already existing *Service* `service-ws` should become ready.
 
-Now the first *Pod* should be in ready state — confirm that.
+Now the first *Pod* should be in ready state -- confirm that.
