@@ -1,4 +1,4 @@
-# CKA & CKAD Exam Checklist: 330 Items
+# CKA & CKAD Exam Checklist: 302 Items
 **Kubernetes v1.34 (CKA) / v1.35 (CKAD) · 2026 · Performance-based · 2 hours · 66% passing score**
 
 Domain weights — CKA: Troubleshooting 30% · Cluster Architecture 25% · Services & Networking 20% · Workloads & Scheduling 15% · Storage 10%
@@ -544,6 +544,6 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
-*Total: 330 checkable items*
+*Total: 302 checkable items*
 *S-001 to S-100: Shared (CKA & CKAD) · C-001 to C-100: CKA-specific · D-001 to D-064: CKAD-specific · G-001 to G-038: kubectl & General*
 *Source: CNCF official curriculum (github.com/cncf/curriculum), Linux Foundation exam pages — April 2026*
