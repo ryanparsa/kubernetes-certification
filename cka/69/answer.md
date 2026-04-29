@@ -5,16 +5,21 @@
 ### Create pods and services
 
 ```bash
-kubectl run consumer --image=nginx && kubectl expose pod consumer --port=80
-kubectl run producer --image=nginx && kubectl expose pod producer --port=80
-kubectl run web --image=nginx && kubectl expose pod web --port=80
+kubectl run consumer --image=nginx --labels="run=consumer"
+kubectl expose pod consumer --port=80
+
+kubectl run producer --image=nginx --labels="run=producer"
+kubectl expose pod producer --port=80
+
+kubectl run web --image=nginx --labels="run=web"
+kubectl expose pod web --port=80
 ```
 
 ### Verify communication before the policy
 
 ```bash
-kubectl exec producer -- curl -s http://consumer  # success
-kubectl exec web -- curl -s http://consumer        # success (should fail after policy)
+kubectl exec producer -- curl -s --max-time 5 http://consumer  # success
+kubectl exec web -- curl -s --max-time 5 http://consumer        # success (should fail after policy)
 ```
 
 ### Create the NetworkPolicy
@@ -25,6 +30,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: limit-consumer
+  namespace: default
 spec:
   podSelector:
     matchLabels:
