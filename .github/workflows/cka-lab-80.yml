@@ -1,0 +1,36 @@
+name: CKA Lab 80
+
+on:
+  push:
+    paths: ['cka/80/**', '.github/workflows/cka-lab-80.yml']
+  pull_request:
+    paths: ['cka/80/**', '.github/workflows/cka-lab-80.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/80/assets/kind-config.yaml
+          cluster_name: cka-lab-80
+
+      - name: Setup environment
+        run: |
+          bash cka/80/assets/setup.sh
+
+      - name: Apply solution
+        run: bash cka/80/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/80/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/80/assets/cleanup.sh
