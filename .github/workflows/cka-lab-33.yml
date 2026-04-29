@@ -20,6 +20,11 @@ jobs:
           config: cka/33/assets/kind-config.yaml
           cluster_name: cka-lab-33
 
+      - name: Seed environment
+        run: |
+          export KUBECONFIG="$HOME/.kube/config"
+          bash cka/33/assets/seed.sh
+
       - name: Apply solution
         run: |
           export KUBECONFIG="$HOME/.kube/config"
