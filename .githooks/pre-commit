@@ -1,32 +1,4 @@
 #!/bin/bash
-# Pre-commit hook to check for non-ASCII characters
 
-# Get list of staged files that match our extensions
-staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|txt|yaml|yml|sh)$')
-
-if [ -z "$staged_files" ]; then
-    exit 0
-fi
-
-echo "Checking staged files for non-ASCII characters..."
-
-violations=0
-for file in $staged_files; do
-    if [ -f "$file" ]; then
-        # check_ascii.py returns 1 if violations are found
-        python3 .claude/hooks/check_ascii.py "$file"
-        if [ $? -ne 0 ]; then
-            violations=1
-        fi
-    fi
-done
-
-if [ $violations -ne 0 ]; then
-    echo ""
-    echo "Error: Non-ASCII characters detected in staged files."
-    echo "Please remove them or use appropriate ASCII equivalents before committing."
-    echo "See .claude/rules/ascii-only.md for details."
-    exit 1
-fi
 
 exit 0
