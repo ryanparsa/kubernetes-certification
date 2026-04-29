@@ -15,10 +15,14 @@ done
 mkdir -p "$TASK_DIR/lab"
 
 # Only create cluster if it doesn't exist
-if ! kind get clusters | grep -q "^${CLUSTER_NAME}$"; then
+if kind get clusters | grep -q "^${CLUSTER_NAME}$"; then
+  kind export kubeconfig --name "$CLUSTER_NAME" --kubeconfig "$KUBECONFIG_FILE"
+else
   kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
-  export KUBECONFIG="$KUBECONFIG_FILE"
 fi
+
+# Ensure KUBECONFIG is set
+export KUBECONFIG="${KUBECONFIG:-$KUBECONFIG_FILE}"
 
 # Create ConfigMap (idempotent)
 kubectl create configmap web-server-conf --from-literal=custom.conf="server { listen 80; server_name localhost; location / { root /usr/share/nginx/html; index index.html; } }" --dry-run=client -o yaml | kubectl apply -f -
