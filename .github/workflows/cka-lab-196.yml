@@ -1,0 +1,32 @@
+name: CKA Lab 196
+
+on:
+  push:
+    paths: ['cka/196/**', '.github/workflows/cka-lab-196.yml']
+  pull_request:
+    paths: ['cka/196/**', '.github/workflows/cka-lab-196.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/196/assets/kind-config.yaml
+          cluster_name: cka-lab-196
+
+      - name: Setup lab resources
+        run: bash cka/196/assets/setup.sh
+
+      - name: Apply solution
+        run: bash cka/196/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/196/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/196/assets/cleanup.sh
