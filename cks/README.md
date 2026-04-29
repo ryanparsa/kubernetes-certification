@@ -92,3 +92,21 @@
 - Immutable containers: `readOnlyRootFilesystem: true` + `emptyDir` for writable paths
 - Runtime threat detection: anomalous process execution, unexpected network connections
 - Incident response: identifying the affected pod/node, preserving evidence, isolating the workload
+
+<br>
+
+## Labs Mapping
+| Lab | Topics |
+|---|---|
+| [1](1/README.md) | Ingress, Namespace, NetworkPolicy, describe, egress, ingress, kubectl |
+| [2](2/README.md) | Ingress, Namespace, Secret, Service, describe, ingress, kubectl |
+| [3](3/README.md) | Labels, Namespace, Pod, Pod Security, RBAC, Resources, Role, RoleBinding, SecurityContext, ServiceAccount, allowPrivilegeEscalation, image, kubectl, runAsNonRoot |
+| [4](4/README.md) | Endpoint, Namespace, NetworkPolicy, Node, Pod, Service, egress, image, kubectl |
+| [5](5/README.md) | Namespace, Node, Pod, RBAC, Volume, hostPath, image, kubectl, kubelet |
+| [6](6/README.md) | Namespace, RBAC, Resources, Role, RoleBinding, ServiceAccount, kubectl |
+| [7](7/README.md) | Deployment, Labels, Namespace, Pod, Selector, Service, ServiceAccount, image, kubectl |
+| [8](8/README.md) | ClusterIP, Labels, Namespace, NetworkPolicy, Pod, Role, egress, image, kubectl |
+| [9](9/README.md) | Capabilities, Namespace, Pod, SecurityContext, context, emptyDir, image, kubectl, readOnlyRootFilesystem |
+| [10](10/README.md) | Namespace, Pod, Seccomp, SecurityContext, image, kubectl |
+| [11](11/README.md) | Admission Controller, Labels, Namespace, Pod, Pod Security, SecurityContext, Volume, allowPrivilegeEscalation, context, image, kubectl, runAsNonRoot |
+| [12](12/README.md) | Namespace, Pod, Secret, Volume, image, kubectl |
