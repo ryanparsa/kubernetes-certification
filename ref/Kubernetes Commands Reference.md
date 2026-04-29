@@ -318,6 +318,7 @@ kubectl explain pod.spec.containers.securityContext --recursive  # full nested s
 kubectl config view                             # full kubeconfig (redacts certificates by default)
 kubectl config view --raw                       # include raw cert data
 kubectl config get-contexts                     # list all contexts with current marked by *
+kubectl config get-contexts -o name             # clean newline-separated names only (no table)
 kubectl config current-context                  # print current context name
 kubectl config use-context <name>               # switch to a different context
 kubectl config set-context --current --namespace=<ns>   # set default namespace for current context
@@ -427,8 +428,10 @@ kubectl port-forward pod/<name> 8080:80         # tunnel: localhost:8080 -> pod:
 kubectl port-forward svc/<name> 8080:80         # tunnel: localhost:8080 -> service:80
 kubectl port-forward deploy/<name> 8080:80
 
-kubectl cp <pod>:/path/to/file ./local-file     # copy from pod to local
-kubectl cp ./local-file <pod>:/path/in/pod      # copy from local to pod
+kubectl cp <pod>:/path/to/file ./local-file                        # copy from pod to local
+kubectl cp ./local-file <pod>:/path/in/pod                        # copy from local to pod
+kubectl cp <namespace>/<pod>:/path/to/file ./local-file           # with namespace
+kubectl cp kube-system/etcd-controlplane:/tmp/etcd-snapshot.db /opt/backup/etcd-snapshot.db
 ```
 
 ---
