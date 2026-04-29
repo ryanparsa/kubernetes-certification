@@ -41,12 +41,13 @@ openssl genrsa -out "$CERT_DIR/user.key" 2048
 openssl req -new -key "$CERT_DIR/user.key" -out "$CERT_DIR/user.csr" -subj "/CN=accounts-432"
 openssl x509 -req -in "$CERT_DIR/user.csr" -signkey "$CERT_DIR/user.key" -out "$CERT_DIR/user.crt" -days 365
 
-USER_CERT_B64=$(cat "$CERT_DIR/user.crt" | base64 | tr -d '\n')
-kubectl config set-credentials accounts-432 --client-certificate-data="$USER_CERT_B64" --kubeconfig="$KUBECONFIG_FILE"
+# Update host kubeconfig
+kubectl config set-credentials accounts-432 --client-certificate="$CERT_DIR/user.crt" --client-key="$CERT_DIR/user.key" --embed-certs=true
 
-# Propagate kubeconfig to the control-plane node so kubectl commands inside work
-docker exec "$CLUSTER_NAME-control-plane" mkdir -p /root/.kube
-docker cp "$KUBECONFIG_FILE" "$CLUSTER_NAME-control-plane:/root/.kube/config"
+# Update internal kubeconfig in the control-plane node
+docker cp "$CERT_DIR/user.crt" "$CLUSTER_NAME-control-plane:/tmp/user.crt"
+docker exec "$CLUSTER_NAME-control-plane" kubectl config set-credentials accounts-432 --client-certificate=/tmp/user.crt --embed-certs=true --kubeconfig=/etc/kubernetes/admin.conf
+docker exec "$CLUSTER_NAME-control-plane" rm /tmp/user.crt
 
 rm -rf "$CERT_DIR"
 

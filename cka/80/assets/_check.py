@@ -46,15 +46,15 @@ class TestClusterInfoExtraction(unittest.TestCase):
         result = docker_exec("cat /opt/course/1/context")
         self.assertEqual(result.returncode, 0, "context file not found")
         context = result.stdout.strip()
-        # In Kind node, current context might be 'default' or derived from kubeconfig we copied
-        expected_context = kubectl("config", "current-context")
+        # In Kind node, current context should match
+        expected_context = docker_exec("kubectl config current-context").stdout.strip()
         self.assertEqual(context, expected_context)
 
     def test_user_cert(self):
         result = docker_exec("cat /opt/course/1/cert")
         self.assertEqual(result.returncode, 0, "cert file not found")
         cert_content = result.stdout.strip()
-        expected_cert_b64 = kubectl("config", "view", "--raw", "-o", "jsonpath={.users[?(@.name=='accounts-432')].user.client-certificate-data}")
+        expected_cert_b64 = docker_exec("kubectl config view --raw -o jsonpath='{.users[?(@.name==\"accounts-432\")].user.client-certificate-data}'").stdout.strip()
         # Need to decode it to compare
         import base64
         expected_cert = base64.b64decode(expected_cert_b64).decode('utf-8').strip()
