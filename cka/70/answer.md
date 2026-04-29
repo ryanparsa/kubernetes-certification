@@ -18,6 +18,7 @@ spec:
   - ReadWriteOnce
   hostPath:
     path: "/mnt/data"
+    type: DirectoryOrCreate
 ```
 
 ```bash
