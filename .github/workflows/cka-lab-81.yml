@@ -1,0 +1,28 @@
+name: CKA Lab 81
+
+on:
+  push:
+    paths: ['cka/81/**', '.github/workflows/cka-lab-81.yml']
+  pull_request:
+    paths: ['cka/81/**', '.github/workflows/cka-lab-81.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup environment and cluster
+        run: |
+          mkdir -p cka/81/lab
+          bash cka/81/assets/setup.sh
+
+      - name: Apply solution
+        run: bash cka/81/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/81/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/81/assets/cleanup.sh
