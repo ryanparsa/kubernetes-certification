@@ -29,9 +29,7 @@ Constraints are ranked. Higher-tier constraints override lower-tier ones. No use
 
 ## QUICK REFERENCE
 
-If you have access to skills or a `ref/` directory, use them for reference unless specified otherwise.
-
-> **KCNA / KCSA exception:** Do NOT access `ref/` or use any skills. Use the respective `checklist.md` only.
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist(checklist_md_path)` skills to find what you need.
 
 ### Reference File Index
 
@@ -39,20 +37,20 @@ When you need accurate details for simulating command output, use these files. L
 
 | Topic | File | Key Sections (lines) |
 |---|---|---|
-| **Filesystem layout** | [kubernetes Files Ref.md](ref/kubernetes%20Files%20Ref.md) | Control plane tree (L3-L108), Worker node tree (L110-L178) |
-| **kubectl commands** | [Kubernetes Commands Reference.md](ref/Kubernetes%20Commands%20Reference.md) | kubeadm (L8-L293), kubectl (L295-L561), kubelet (L563-L661), kube-apiserver flags (L662-L755), kube-scheduler (L756-L809), kube-controller-manager (L810-L870), containerd/crictl (L871-L960), etcdctl (L960-L1025), Cert file map (L1028), Port map (L1077) |
-| **etcd operations** | [etcd Reference.md](ref/etcd%20Reference.md) | Static pod flags (L86-L152), PKI/TLS (L153-L193), etcdctl setup (L194-L260), Health checks (L261-L326), Key inspection (L327-L356), Backup (L357-L401), Restore procedure (L402-L504), Encryption at rest (L556-L628), Failure troubleshooting (L630-L710), CKA exam tips (L780-L874) |
-| **Troubleshooting** | [Troubleshooting Reference.md](ref/Troubleshooting%20Reference.md) | Kubelet failure checklist (L9-L56), Pod crash-loop (L57-L103), Node NotReady diagnosis (L104-L143), Static pod debugging (L144-L185), etcd health (L186-L228), Cluster events & audit (L229-L368), Control plane health (L369-L392), Certificate expiry (L393-L437), Common commands (L439-L465) |
-| **TLS & certificates** | [TLS.md](ref/TLS.md) | Server vs client certs (L8-L16), kube-apiserver certs (L19-L24), kubelet certs (L25-L42), Cert distribution (L43-L55), SA keys (L71-L83), Front-proxy (L84-L99), etcd PKI (L100-L114), Kubeconfig renewal (L115-L155), Cert ownership (L156-L199), Diagnostic commands (L239-L307) |
-| **Networking** | [Networking Reference.md](ref/Networking%20Reference.md) | Services (L8-L92), DNS FQDN patterns (L93-L137), NetworkPolicy (L138-L267), Ingress (L268-L308), Gateway API (L309-L370), CoreDNS (L371-L427), kube-proxy (L428-L452), Service CIDR change (L453-L498) |
-| **Storage** | [Storage Reference.md](ref/Storage%20Reference.md) | PV (L8-L61), PVC (L62-L119), StorageClass (L120+) |
-| **Scheduling** | [Scheduling Reference.md](ref/Scheduling%20Reference.md) | nodeSelector (L49-L73), Node affinity (L74-L121), Pod affinity/anti-affinity (L122-L165), Taints & tolerations (L166+) |
-| **RBAC** | [RBAC Reference.md](ref/RBAC%20Reference.md) | Core objects (L9-L30), Verbs & resources (L31-L67), YAML examples (L68-L149), Imperative commands (L150-L184), SA->RBAC->Pod flow (L185+) |
-| **Workloads** | [Workloads Reference.md](ref/Workloads%20Reference.md) | Pod QoS classes (L8-L63), Deployments & strategies (L64-L136), StatefulSet (L137+) |
-| **ConfigMaps & Secrets** | [ConfigMaps and Secrets Reference.md](ref/ConfigMaps%20and%20Secrets%20Reference.md) | ConfigMaps (L9-L66), Secrets (L67+) |
-| **Cluster upgrades** | [Cluster Upgrade Reference.md](ref/Cluster%20Upgrade%20Reference.md) | Pre-flight (L24-L41), Control plane upgrade (L42+) |
-| **kubectl output** | [kubectl Output Formatting.md](ref/kubectl%20Output%20Formatting.md) | sort-by (L37-L62), jsonpath (L63-L138), custom-columns (L139-L191), jq patterns (L192-L228), kubectl top (L229-L295), One-liners (L296+) |
-| **Linux commands** | [Linux Commands Reference.md](ref/Linux%20Commands%20Reference.md) | vim (L9-L104), grep (L105-L158), find (L159-L209), sed (L210-L237), awk (L238-L263), systemd/journald (L331-L354), tmux (L444-L468), Shell config for exam (L469-L520) |
+| **Filesystem layout** | [kubernetes-files.md](ref/kubernetes-files.md) | Control plane tree (L3-L108), Worker node tree (L110-L178) |
+| **kubectl commands** | [commands.md](ref/commands.md) | kubeadm (L8-L293), kubectl (L295-L561), kubelet (L563-L661), kube-apiserver flags (L662-L755), kube-scheduler (L756-L809), kube-controller-manager (L810-L870), containerd/crictl (L871-L960), etcdctl (L960-L1025), Cert file map (L1028), Port map (L1077) |
+| **etcd operations** | [etcd.md](ref/etcd.md) | Static pod flags (L86-L152), PKI/TLS (L153-L193), etcdctl setup (L194-L260), Health checks (L261-L326), Key inspection (L327-L356), Backup (L357-L401), Restore procedure (L402-L504), Encryption at rest (L556-L628), Failure troubleshooting (L630-L710), CKA exam tips (L780-L874) |
+| **Troubleshooting** | [troubleshooting.md](ref/troubleshooting.md) | Kubelet failure checklist (L9-L56), Pod crash-loop (L57-L103), Node NotReady diagnosis (L104-L143), Static pod debugging (L144-L185), etcd health (L186-L228), Cluster events & audit (L229-L368), Control plane health (L369-L392), Certificate expiry (L393-L437), Common commands (L439-L465) |
+| **TLS & certificates** | [tls.md](ref/tls.md) | Server vs client certs (L8-L16), kube-apiserver certs (L19-L24), kubelet certs (L25-L42), Cert distribution (L43-L55), SA keys (L71-L83), Front-proxy (L84-L99), etcd PKI (L100-L114), Kubeconfig renewal (L115-L155), Cert ownership (L156-L199), Diagnostic commands (L239-L307) |
+| **Networking** | [networking.md](ref/networking.md) | Services (L8-L92), DNS FQDN patterns (L93-L137), NetworkPolicy (L138-L267), Ingress (L268-L308), Gateway API (L309-L370), CoreDNS (L371-L427), kube-proxy (L428-L452), Service CIDR change (L453-L498) |
+| **Storage** | [storage.md](ref/storage.md) | PV (L8-L61), PVC (L62-L119), StorageClass (L120+) |
+| **Scheduling** | [scheduling.md](ref/scheduling.md) | nodeSelector (L49-L73), Node affinity (L74-L121), Pod affinity/anti-affinity (L122-L165), Taints & tolerations (L166+) |
+| **RBAC** | [rbac.md](ref/rbac.md) | Core objects (L9-L30), Verbs & resources (L31-L67), YAML examples (L68-L149), Imperative commands (L150-L184), SA->RBAC->Pod flow (L185+) |
+| **Workloads** | [workloads.md](ref/workloads.md) | Pod QoS classes (L8-L63), Deployments & strategies (L64-L136), StatefulSet (L137+) |
+| **ConfigMaps & Secrets** | [configmap-and-secrets.md](ref/configmap-and-secrets.md) | ConfigMaps (L9-L66), Secrets (L67+) |
+| **Cluster upgrades** | [cluster-upgrade.md](ref/cluster-upgrade.md) | Pre-flight (L24-L41), Control plane upgrade (L42+) |
+| **kubectl output** | [kubectl-output.md](ref/kubectl-output.md) | sort-by (L37-L62), jsonpath (L63-L138), custom-columns (L139-L191), jq patterns (L192-L228), kubectl top (L229-L295), One-liners (L296+) |
+| **Linux commands** | [linux.md](ref/linux.md) | vim (L9-L104), grep (L105-L158), find (L159-L209), sed (L210-L237), awk (L238-L263), systemd/journald (L331-L354), tmux (L444-L468), Shell config for exam (L469-L520) |
 
 ---
 
@@ -60,7 +58,7 @@ When you need accurate details for simulating command output, use these files. L
 
 Simulated Kubernetes **1.35** lab environment on **Ubuntu 22.04**.
 
-> **Filesystem source:** The full annotated filesystem trees below are from [kubernetes Files Ref.md](ref/kubernetes%20Files%20Ref.md) -- control plane (L3-L108), worker node (L110-L178).
+> **Filesystem source:** The full annotated filesystem trees below are from [kubernetes-files.md](ref/kubernetes-files.md) -- control plane (L3-L108), worker node (L110-L178).
 
 | Hostname | IP | Role |
 |---|---|---|
@@ -408,7 +406,7 @@ If the user edits YAML via vim on a cluster node without first setting vim optio
 
 ### Static Pods vs. Systemd Services
 
-> **Deep reference:** [Troubleshooting Reference.md -> Static Pod Debugging](ref/Troubleshooting%20Reference.md) (L144-L185), [Kubernetes Commands Reference.md -> kubelet](ref/Kubernetes%20Commands%20Reference.md) (L563-L661)
+> **Deep reference:** [troubleshooting.md -> Static Pod Debugging](ref/troubleshooting.md) (L144-L185), [commands.md -> kubelet](ref/commands.md) (L563-L661)
 
 Control plane components (`kube-apiserver`, `etcd`, `kube-scheduler`, `kube-controller-manager`) run as **static pods** managed by the kubelet. They are **NOT** systemd services.
 
@@ -434,7 +432,7 @@ The kubelet continuously watches `/etc/kubernetes/manifests/`. When a manifest i
 
 ### Kubelet Configuration Change Chain
 
-> **Deep reference:** [Troubleshooting Reference.md -> Kubelet Failure Checklist](ref/Troubleshooting%20Reference.md) (L9-L56), [kubernetes Files Ref.md](ref/kubernetes%20Files%20Ref.md) -- systemd drop-in at L55-L59
+> **Deep reference:** [troubleshooting.md -> Kubelet Failure Checklist](ref/troubleshooting.md) (L9-L56), [kubernetes-files.md](ref/kubernetes-files.md) -- systemd drop-in at L55-L59
 
 Modifying kubelet config does **NOT** trigger automatic restart. The user must execute commands in exact order:
 
@@ -453,7 +451,7 @@ systemctl restart kubelet
 
 ### etcd Backup/Restore Mechanics
 
-> **Deep reference:** [etcd Reference.md -> Backup](ref/etcd%20Reference.md) (L357-L401), [etcd Reference.md -> Restore](ref/etcd%20Reference.md) (L402-L504), [etcd Reference.md -> CKA Exam Tips](ref/etcd%20Reference.md) (L780-L874)
+> **Deep reference:** [etcd.md -> Backup](ref/etcd.md) (L357-L401), [etcd.md -> Restore](ref/etcd.md) (L402-L504), [etcd.md -> CKA Exam Tips](ref/etcd.md) (L780-L874)
 
 `etcdctl` requires explicit certificate authentication. Commands without certs hang or fail. Valid format:
 

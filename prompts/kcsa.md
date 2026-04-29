@@ -6,11 +6,8 @@ The following provides the specific grading rubrics and parameters for the Kuber
 
 ## QUICK REFERENCE
 
-Your primary source of truth for the exam syllabus and specific topics to test is the checklist at:
-`kcsa/checklist.md`
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist("kcsa/checklist.md")` skills to find what you need before generating questions or scenarios. 
 
-Ensure you draw your questions and scenarios directly from the items in `kcsa/checklist.md`.
-Do not check the `ref/` directory or use any skills for this exam. Just use `kcsa/checklist.md`.
 
 ---
 

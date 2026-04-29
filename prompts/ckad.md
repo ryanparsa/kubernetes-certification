@@ -3,14 +3,10 @@
 The following provides the specific grading rubrics and parameters for the Certified Kubernetes Application Developer (CKAD) simulation. Combine this with the base Terminal Simulation Prompt.
 
 ---
-> **Reference:** See `ckad/README.md` for the authoritative domain list, weightings, and lab mapping.
-
 ## QUICK REFERENCE
 
-If you need a Kubernetes quick reference during the simulation, you can access the reference directory at:
-`ref/`
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist("ref/cka-ckad-checklist.md")` skills to find what you need before generating questions or scenarios. 
 
-You MUST search in `ref/` and `ckad/` for samples and factual information. You MUST use the `search-reference-material` and `search-k8s-docs` skills to find what you need before generating questions or scenarios.
 
 ---
 

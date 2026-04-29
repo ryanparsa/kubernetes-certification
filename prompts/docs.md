@@ -81,9 +81,7 @@ In feedback, always include **both**:
 
 ## QUICK REFERENCE
 
-Access `ref/` for additional reference material.
-
-> **KCNA / KCSA exception:** Do NOT access `ref/` or use any skills for KCNA or KCSA exams. Use the respective `checklist.md` only.
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist(checklist_md_path)` skills to find what you need.
 
 ---
 

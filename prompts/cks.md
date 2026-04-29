@@ -6,10 +6,7 @@ The following provides the specific grading rubrics and parameters for the Certi
 
 ## QUICK REFERENCE
 
-If you need a Kubernetes quick reference during the simulation, you can access the reference directory at:
-`ref/`
-
-You MUST search in `ref/` and `cks/` for samples and factual information. You MUST use the `search-reference-material` and `search-k8s-docs` skills to find what you need before generating questions or scenarios.
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist(checklist_md_path)` skills to find what you need before generating questions or scenarios.
 
 ---
 

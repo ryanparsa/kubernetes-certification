@@ -2,14 +2,13 @@
 
 The following provides the specific grading rubrics and parameters for the Kubernetes Certified Administrator (CKA) simulation. Combine this with the base Terminal Simulation Prompt.
 
-> **Reference:** See `cka/README.md` for the authoritative domain list, weightings, and lab mapping.
-
 
 ---
 
 ## QUICK REFERENCE
 
-You MUST use the `search-reference-material` and `search-k8s-docs` skills to find what you need before generating questions or scenarios.
+You MUST use the `search-reference-material`, `search-k8s-docs`, and `search-checklist("ref/cka-ckad-checklist.md")` skills to find what you need before generating questions or scenarios. 
+
 
 ---
 
