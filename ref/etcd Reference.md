@@ -6,25 +6,6 @@ membership management, encryption at rest, and troubleshooting.
 
 ---
 
-## Table of Contents
-
-1. [What is etcd](#1-what-is-etcd)
-2. [Role in Kubernetes](#2-role-in-kubernetes)
-3. [How etcd Runs in Kubernetes](#3-how-etcd-runs-in-kubernetes)
-4. [Static Pod Manifest - Key Flags](#4-static-pod-manifest--key-flags)
-5. [etcd PKI / TLS](#5-etcd-pki--tls)
-6. [etcdctl - Tool Setup and Usage](#6-etcdctl--tool-setup-and-usage)
-7. [Health Checks and Member Operations](#7-health-checks-and-member-operations)
-8. [Inspecting Keys (Reading Cluster State)](#8-inspecting-keys-reading-cluster-state)
-9. [Backup - Snapshot Save](#9-backup--snapshot-save)
-10. [Restore - Full Procedure](#10-restore--full-procedure)
-11. [HA Clusters and Raft Quorum](#11-ha-clusters-and-raft-quorum)
-12. [Encryption at Rest](#12-encryption-at-rest)
-13. [Common Failure Modes and Troubleshooting](#13-common-failure-modes-and-troubleshooting)
-14. [Quick Reference](#14-quick-reference)
-
----
-
 ## 1. What is etcd
 
 etcd is a **distributed, consistent key-value store** built on the **Raft consensus
@@ -793,3 +774,143 @@ kubeadm certs check-expiration | grep etcd
 | 4 | `mv /tmp/kube-apiserver.yaml /etc/kubernetes/manifests/` |
 | 5 | `watch crictl ps` -> confirm pods come back |
 | 6 | `kubectl get nodes && kubectl get pods -A` |
+
+---
+
+## 15. CKA Exam Tips
+
+### No shell in the etcd pod -- run etcdctl directly on the host
+
+Recent etcd images are **Distroless** (minimal, no shell, no `tar`). Do not try to
+`exec` into the pod to take a backup.
+
+In the CKA exam environment, `etcdctl` and `etcdutl` are already installed on the
+control-plane node. Because the etcd pod runs with `hostNetwork: true`, port `2379`
+is open directly on `127.0.0.1` of the host. Run backup commands straight from the
+host terminal -- the file is created on the host immediately and needs no copy step:
+
+```bash
+# SSH to the control-plane node first, then:
+ETCDCTL_API=3 etcdctl snapshot save /opt/backup.db \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key
+```
+
+### Restore needs no cert flags
+
+`etcdutl snapshot restore` is an **offline** operation -- it extracts a backup file
+into a directory without contacting a running etcd cluster. No endpoint or certificate
+flags are required:
+
+```bash
+etcdutl snapshot restore /opt/backup.db --data-dir /var/lib/etcd-restore
+```
+
+### Find cert paths from the manifest instead of memorizing them
+
+Rather than memorizing certificate paths, grep the etcd manifest:
+
+```bash
+cat /etc/kubernetes/manifests/etcd.yaml | grep -i file
+```
+
+The output shows exactly the paths to copy/paste:
+
+```
+--cert-file=/etc/kubernetes/pki/etcd/server.crt
+--key-file=/etc/kubernetes/pki/etcd/server.key
+--trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt
+```
+
+Note the flag name mapping from manifest -> etcdctl:
+
+| Manifest flag | etcdctl flag |
+|---|---|
+| `--trusted-ca-file` | `--cacert` |
+| `--cert-file` | `--cert` |
+| `--key-file` | `--key` |
+
+### Use --help | grep when unsure of a flag name
+
+```bash
+etcdctl snapshot save --help | grep cert
+```
+
+This avoids guessing whether the flag is `--ca-cert`, `--cacert`, or `--trusted-ca-file`.
+
+### Always restore to a new directory -- never overwrite /var/lib/etcd directly
+
+Always pass a fresh path to `--data-dir` (e.g. `/var/lib/etcd-restore`). Never restore
+on top of the existing `/var/lib/etcd`. Three technical reasons:
+
+**1. The restore tool requires an empty directory.**
+`etcdutl snapshot restore` needs to create `member/wal/` and `member/snap/` from
+scratch. If any files exist in the target directory it aborts with an error.
+
+**2. Rollback safety.**
+If the backup turns out to be corrupt or is the wrong snapshot, and you already
+overwrote `/var/lib/etcd`, the original cluster data is gone permanently. Restoring
+to a new directory leaves the original data untouched. To roll back, just revert the
+path in `etcd.yaml` to `/var/lib/etcd` and restart -- the cluster comes back exactly
+as it was before the attempted restore.
+
+**3. Avoids file-lock conflicts.**
+Even after moving the manifests out, kubelet may still be attempting to restart the
+etcd container, and the OS may hold locks on files inside `/var/lib/etcd`. Writing
+into a locked directory corrupts the database. A new path has no locks.
+
+### Stop ALL control-plane components before restore -- not just etcd
+
+Before restoring, move every manifest out of the static pod directory. This brings
+down etcd, kube-apiserver, kube-scheduler, and kube-controller-manager at once.
+
+**Why all of them?**
+
+- If `kube-apiserver` is running during a restore it may write new data or read
+  mid-restore state, causing corruption.
+- If etcd's data files change while etcd is running, kubelet detects the inconsistency
+  and enters a crash-restart loop.
+
+**Step 1 -- move all manifests out**
+
+```bash
+cd /etc/kubernetes/manifests/
+mv *.yaml ../
+```
+
+Kubelet watches this directory. Removing the files causes it to immediately stop etcd,
+kube-apiserver, kube-scheduler, and kube-controller-manager.
+
+**Step 2 -- wait for all containers to stop**
+
+```bash
+watch crictl ps
+```
+
+Wait until no etcd or apiserver containers appear. This can take up to ~60 seconds.
+
+**Step 3 -- restore**
+
+```bash
+etcdutl snapshot restore /opt/backup.db --data-dir /var/lib/etcd-restore
+```
+
+**Step 4 -- update the manifest and bring everything back**
+
+Edit `etcd.yaml` (now at `/etc/kubernetes/etcd.yaml`) to point `--data-dir` and the
+`hostPath` volume to `/var/lib/etcd-restore`, then move all manifests back:
+
+```bash
+vim /etc/kubernetes/etcd.yaml   # update --data-dir and hostPath.path
+mv /etc/kubernetes/*.yaml /etc/kubernetes/manifests/
+```
+
+Kubelet picks up the files and starts all components. Allow a few minutes for etcd
+to become healthy and kube-apiserver to become reachable again.
+
+```bash
+watch crictl ps          # watch containers come up
+kubectl get nodes        # confirm cluster is reachable
+```

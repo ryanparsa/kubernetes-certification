@@ -1,8 +1,8 @@
 # KCNA Exam Checklist: 370 Items
 
-**90 questions · 90 minutes · 75% passing score · $250 USD (one free retake) · 2-year validity**
+**90 questions * 90 minutes * 75% passing score * $250 USD (one free retake) * 2-year validity**
 
-Domain weights: Kubernetes Fundamentals 46% · Container Orchestration 22% · Cloud Native Architecture 16% · Cloud Native Application Delivery 8% · Cloud Native Observability 8%
+Domain weights: Kubernetes Fundamentals 46% * Container Orchestration 22% * Cloud Native Architecture 16% * Cloud Native Application Delivery 8% * Cloud Native Observability 8%
 
 Study tip: Domain 1 alone = 46% of the exam. Master Kubernetes core architecture and kubectl commands first.
 
@@ -351,7 +351,7 @@ Study tip: Domain 1 alone = 46% of the exam. Master Kubernetes core architecture
 
 ---
 
-## Progression: 78% → 90%
+## Progression: 78% -> 90%
 
 For candidates who already passed the basics. Focus on these 70 topics to close the gap from a passing score to a strong score.
 

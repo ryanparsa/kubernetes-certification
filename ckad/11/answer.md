@@ -54,7 +54,7 @@ spec:
 ```bash
 kubectl apply -f lab/broken.yaml
 
-# Check logs — will show the error from the command
+# Check logs -- will show the error from the command
 kubectl logs broken
 
 # Check events and status

@@ -32,7 +32,7 @@ spec:
 kubectl apply -f lab/62-default-deny.yaml
 ```
 
-### Apply web → app NetworkPolicies
+### Apply web -> app NetworkPolicies
 
 ```yaml
 # lab/62-netpol.yaml

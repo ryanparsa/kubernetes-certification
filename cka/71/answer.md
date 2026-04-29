@@ -10,7 +10,7 @@ Generate a base deployment manifest and convert it to a DaemonSet:
 kubectl create deploy nginx-ds --image=nginx --dry-run=client -o yaml > lab/nginx-ds.yaml
 ```
 
-Edit to convert Deployment → DaemonSet (remove `replicas` and `strategy`, change `kind`):
+Edit to convert Deployment -> DaemonSet (remove `replicas` and `strategy`, change `kind`):
 
 ```yaml
 # lab/nginx-ds.yaml
@@ -51,7 +51,7 @@ kubectl get pods -l app=nginx-ds -o wide
 # nginx-ds-yyyyy   1/1     Running   ...   cka-lab-71-worker
 ```
 
-One pod per node — the DaemonSet does not add tolerations, so it respects existing taints (e.g. the control-plane NoSchedule taint may prevent scheduling there unless tolerated).
+One pod per node -- the DaemonSet does not add tolerations, so it respects existing taints (e.g. the control-plane NoSchedule taint may prevent scheduling there unless tolerated).
 
 ## Checklist (Score: 0/4)
 

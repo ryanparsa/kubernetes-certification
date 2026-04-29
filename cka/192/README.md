@@ -8,7 +8,7 @@ Perform the following in *Namespace* `project-r500` using the already existing *
 
 1. Create a new `HTTPRoute` named `traffic-director` which replicates the routes from the old *Ingress*
 
-1. Extend the new `HTTPRoute` with path `/api/route` which redirects to `mobile` — match this route using the `User-Agent` header exactly equal to `mobile`
+1. Extend the new `HTTPRoute` with path `/api/route` which redirects to `mobile` -- match this route using the `User-Agent` header exactly equal to `mobile`
 
 The existing Gateway is reachable at `http://1580.gateway:30000`. Your implementation should work for these commands:
 

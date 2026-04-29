@@ -52,6 +52,43 @@ If the question also specifies a namespace, either pass `-n <ns>` on every comma
 kubectl config set-context --current --namespace=<ns>
 ```
 
+## killer.sh Simulator Notes
+
+The 36-hour session timer is cosmetic -- access is not revoked when it hits zero. The automated
+scorer runs at that point, but the environment stays open. Use the reset button to restore the
+cluster to its baseline state (resets the score too).
+
+**Write outputs to `/opt/course/<question-number>/`** as the question specifies:
+
+```bash
+kubectl get ns > /opt/course/1/namespaces
+```
+
+**Make scripts executable** if the question asks you to create one -- the grader runs them directly:
+
+```bash
+chmod +x /opt/course/2/my-script.sh
+```
+
+Scoring is binary per subtask. A resource named `busybox-pod` when the question says `busybox`
+scores zero for that check regardless of everything else being correct. Match names exactly.
+
+---
+
+## Pre-Installed Tools
+
+| Domain | Tools |
+|---|---|
+| Kubernetes Core | kubectl, kubeadm, kubelet |
+| Container Runtimes | containerd, crictl, podman |
+| Package Management | helm, apt-get |
+| Data Processing | jq, yq, awk, sed, grep, tr |
+| Networking | curl, wget, netstat, ss, dig, nslookup |
+| Text & Multiplexing | vim, nano, tmux, base64 |
+| System Diagnostics | systemctl, journalctl, top, ps |
+
+No internet access, no extra installs -- only what is listed above.
+
 ## The Workflow
 
 **Never solve questions in order.** Q1-Q5 can be the hardest ones and burn your energy and time before you even reach the easy points.

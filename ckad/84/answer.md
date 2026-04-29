@@ -37,7 +37,7 @@ kubectl auth can-i delete pods -n dev --as=system:serviceaccount:dev:developer
 # Output: no
 ```
 
-### Alternative — YAML approach
+### Alternative -- YAML approach
 
 ```yaml
 # lab/pod-reader.yaml

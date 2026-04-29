@@ -13,27 +13,27 @@ kubectl describe pod -l app=broken-deployment -n troubleshooting
 
 ### Common fixes
 
-**Fix 1 — Correct the image:**
+**Fix 1 -- Correct the image:**
 
 ```bash
 kubectl set image deployment/broken-deployment nginx=nginx:1.19 -n troubleshooting
 ```
 
-**Fix 2 — Relax resource constraints (if requests are too high):**
+**Fix 2 -- Relax resource constraints (if requests are too high):**
 
 ```bash
 kubectl patch deployment broken-deployment -n troubleshooting \
   --patch '{"spec":{"template":{"spec":{"containers":[{"name":"nginx","resources":{"requests":{"cpu":"100m","memory":"128Mi"},"limits":{"cpu":"200m","memory":"256Mi"}}}]}}}}'
 ```
 
-**Fix 3 — Remove a blocking *NetworkPolicy* (if present):**
+**Fix 3 -- Remove a blocking *NetworkPolicy* (if present):**
 
 ```bash
 kubectl get networkpolicies -n troubleshooting
 kubectl delete networkpolicy <policy-name> -n troubleshooting
 ```
 
-**Fix 4 — Edit the *Deployment* directly:**
+**Fix 4 -- Edit the *Deployment* directly:**
 
 ```bash
 kubectl edit deployment broken-deployment -n troubleshooting

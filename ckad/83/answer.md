@@ -63,7 +63,7 @@ kubectl describe networkpolicy api-policy -n network-test
 
 ### Key points
 
-- Both `policyTypes: [Ingress, Egress]` are required — omitting one causes those rules to be silently ignored.
+- Both `policyTypes: [Ingress, Egress]` are required -- omitting one causes those rules to be silently ignored.
 - The DNS egress rule (`namespaceSelector: {}`) must be present or service-name resolution will break.
 - All other ingress and egress traffic is implicitly denied once a NetworkPolicy selects the Pod.
 

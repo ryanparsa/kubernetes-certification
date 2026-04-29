@@ -9,7 +9,7 @@ kubectl create configmap app-config --from-literal=ENV=production --from-literal
 kubectl describe configmap app-config
 ```
 
-### Pod cm-env — load all keys as environment variables
+### Pod cm-env -- load all keys as environment variables
 
 ```yaml
 # lab/cm-env.yaml
@@ -34,7 +34,7 @@ kubectl exec cm-env -- printenv LOG_LEVEL
 
 Expected: `production` and `info`
 
-### Pod cm-vol — mount ConfigMap as a volume
+### Pod cm-vol -- mount ConfigMap as a volume
 
 ```yaml
 # lab/cm-vol.yaml

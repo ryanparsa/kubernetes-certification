@@ -79,6 +79,6 @@ spec:
 
 - [ ] Deployment `webapp` created with `nginx:1.20` and 3 replicas
 - [ ] Image updated to `nginx:1.21` via rolling update
-- [ ] Rollback successful — image is back to `nginx:1.20`
+- [ ] Rollback successful -- image is back to `nginx:1.20`
 - [ ] Deployment scaled to 5 replicas
 - [ ] Rolling update strategy set to `maxSurge: 1`, `maxUnavailable: 0`
