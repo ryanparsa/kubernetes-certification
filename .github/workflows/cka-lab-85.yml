@@ -1,0 +1,37 @@
+name: CKA Lab 85
+
+on:
+  push:
+    paths: ['cka/85/**', '.github/workflows/cka-lab-85.yml']
+  pull_request:
+    paths: ['cka/85/**', '.github/workflows/cka-lab-85.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/85/assets/kind-config.yaml
+          cluster_name: cka-lab-85
+
+      - name: Setup environment
+        run: |
+          # The kind-action already creates a cluster, but our fix.sh and check.sh
+          # expect a kubeconfig at a specific path.
+          # Also we need the namespace.
+          kubectl create namespace project-tiger
+          kind get kubeconfig --name cka-lab-85 > cka/85/assets/kubeconfig.yaml
+
+      - name: Apply solution
+        run: bash cka/85/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/85/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/85/assets/cleanup.sh

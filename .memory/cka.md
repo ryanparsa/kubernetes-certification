@@ -1,0 +1,5 @@
+- PersistentVolume labs should always include `storageClassName: ""` if no storage class is desired, to avoid default storage class assignment.
+- PVCs must be in the same namespace as the Pods that use them.
+- PVs are cluster-scoped and do not belong to a namespace.
+- Use `kubectl wait` in `fix.sh` to ensure resources are ready before script completion.
+- CI workflows for `kind` labs require a `Setup environment` step to extract the kubeconfig to the expected `assets/kubeconfig.yaml` path.

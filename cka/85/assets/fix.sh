@@ -1,11 +1,11 @@
-## Answer
+#!/usr/bin/env bash
+set -euo pipefail
 
-**Reference:** https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export KUBECONFIG="$SCRIPT_DIR/kubeconfig.yaml"
 
-### Create PersistentVolume
-
-```yaml
-# lab/pv.yaml
+# Create PersistentVolume
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -18,16 +18,10 @@ spec:
   hostPath:
     path: /Volumes/Data
   storageClassName: ""
-```
+EOF
 
-```bash
-kubectl apply -f lab/pv.yaml
-```
-
-### Create PersistentVolumeClaim
-
-```yaml
-# lab/pvc.yaml
+# Create PersistentVolumeClaim
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -40,16 +34,10 @@ spec:
     requests:
       storage: 2Gi
   storageClassName: ""
-```
+EOF
 
-```bash
-kubectl apply -f lab/pvc.yaml
-```
-
-### Create Pod
-
-```yaml
-# lab/pod.yaml
+# Create Pod
+cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
 metadata:
@@ -66,14 +54,6 @@ spec:
   - name: safari-volume
     persistentVolumeClaim:
       claimName: safari-pvc
-```
+EOF
 
-```bash
-kubectl apply -f lab/pod.yaml
-```
-
-## Checklist (Score: 0/3)
-
-- [ ] PersistentVolume `safari-pv` created with correct specs
-- [ ] PersistentVolumeClaim `safari-pvc` created in namespace `project-tiger` and bound to `safari-pv`
-- [ ] Pod `safari` created in namespace `project-tiger` mounting `safari-pvc` at `/tmp/safari-data`
+kubectl wait pod safari -n project-tiger --for=condition=Ready --timeout=60s
