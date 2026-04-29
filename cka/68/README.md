@@ -1,6 +1,6 @@
 # Question 68
 
-> **Solve this question on:** `cka-lab-68`
+> **Solve this question on:** the "cka-lab-68" kind cluster
 
 Perform the following steps in the `ci` namespace (create it if it does not exist):
 
