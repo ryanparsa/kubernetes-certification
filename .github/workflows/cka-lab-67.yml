@@ -1,0 +1,35 @@
+name: CKA Lab 67
+
+on:
+  push:
+    paths: ['cka/67/**', '.github/workflows/cka-lab-67.yml']
+  pull_request:
+    paths: ['cka/67/**', '.github/workflows/cka-lab-67.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/67/assets/kind-config.yaml
+          cluster_name: cka-lab-67
+
+      - name: Setup lab environment
+        run: |
+          # Seed the troubleshooting scenario
+          kubectl create namespace troubleshoot
+          kubectl apply -f cka/67/assets/workloads.yaml
+
+      - name: Apply solution
+        run: bash cka/67/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/67/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/67/assets/cleanup.sh
