@@ -2,7 +2,6 @@
 import os
 import subprocess
 import unittest
-import time
 
 KUBECONFIG = os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
 LAB_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lab")
@@ -15,43 +14,42 @@ def kubectl(*args):
     result = subprocess.run(cmd, capture_output=True, text=True)
     return result.stdout.strip()
 
-class TestUpdateCoreDNSConfiguration(unittest.TestCase):
-    def test_backup_exists(self):
-        filepath = os.path.join(LAB_DIR, "coredns_backup.yaml")
+class TestResourcesAndRoles(unittest.TestCase):
+    def test_cka_master_namespace(self):
+        """Namespace cka-master exists"""
+        ns = kubectl("get", "namespace", "cka-master", "-o", "jsonpath={.metadata.name}")
+        self.assertEqual(ns, "cka-master")
+
+    def test_resources_txt_content(self):
+        """File lab/resources.txt contains namespaced resources"""
+        filepath = os.path.join(LAB_DIR, "resources.txt")
         self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
         with open(filepath, 'r') as f:
-            content = f.read()
-        self.assertIn("kind: ConfigMap", content)
-        self.assertIn("name: coredns", content)
+            lines = f.read().splitlines()
 
-    def test_dns_resolution(self):
-        # Run a temporary pod to test DNS resolution
-        pod_name = f"dns-test-pod-{time.time_ns()}"
-        kubectl("run", pod_name, "--image=busybox:1", "--restart=Never", "--", "sleep", "3600")
+        # Check for some common namespaced resources
+        self.assertIn("pods", lines)
+        self.assertIn("services", lines)
+        self.assertIn("deployments.apps", lines)
+        self.assertIn("secrets", lines)
+        self.assertIn("configmaps", lines)
 
-        # Wait for pod to be ready
-        for _ in range(30):
-            status = kubectl("get", "pod", pod_name, "-o", "jsonpath={.status.phase}")
-            if status == "Running":
-                break
-            time.sleep(2)
-        else:
-            self.fail("Test pod did not become ready in time")
+        # Check that cluster-wide resources are NOT in the list
+        self.assertNotIn("nodes", lines)
+        self.assertNotIn("namespaces", lines)
+        self.assertNotIn("persistentvolumes", lines)
 
-        expected_ip = kubectl("get", "service", "kubernetes", "-o", "jsonpath={.spec.clusterIP}")
-        self.assertTrue(expected_ip, "Could not determine kubernetes service clusterIP")
+    def test_crowded_namespace_txt_content(self):
+        """File lab/crowded-namespace.txt has correct content"""
+        filepath = os.path.join(LAB_DIR, "crowded-namespace.txt")
+        self.assertTrue(os.path.exists(filepath), f"{filepath} does not exist")
 
-        try:
-            # Test internal resolution
-            out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.cluster.local")
-            self.assertIn(f"Address: {expected_ip}", out)
+        with open(filepath, 'r') as f:
+            content = f.read().strip()
 
-            # Test custom-domain resolution
-            out = kubectl("exec", pod_name, "--", "nslookup", "kubernetes.default.svc.custom-domain")
-            self.assertIn(f"Address: {expected_ip}", out)
-        finally:
-            kubectl("delete", "pod", pod_name, "--now")
+        # Based on setup.sh, project-miami should have 300 roles
+        self.assertEqual(content, "project-miami with 300 roles")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

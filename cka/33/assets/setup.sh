@@ -17,13 +17,45 @@ done
 mkdir -p "$TASK_DIR/lab"
 kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
 
-# 4. Wait for deployments
+export KUBECONFIG="$KUBECONFIG_FILE"
+
+# 3. Create namespaces
+for ns in project-jinan project-miami project-melbourne project-seoul project-toronto; do
+  kubectl create namespace "$ns"
+done
+
+# 4. Seed roles
+# project-miami gets 300 roles - use a temporary file for speed
+echo "Seeding 300 roles into project-miami..."
+ROLES_FILE=$(mktemp)
+for i in $(seq 1 300); do
+  echo "---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: role-$i
+  namespace: project-miami
+rules: []" >> "$ROLES_FILE"
+done
+kubectl apply -f "$ROLES_FILE"
+rm "$ROLES_FILE"
+
+# project-seoul gets 10 roles
+echo "Seeding 10 roles into project-seoul..."
+for i in $(seq 1 10); do
+  kubectl create role role-$i --namespace project-seoul --verb=get --resource=pods
+done
+
+# project-melbourne gets 2 roles
+echo "Seeding 2 roles into project-melbourne..."
+kubectl create role role-1 --namespace project-melbourne --verb=get --resource=pods
+kubectl create role role-2 --namespace project-melbourne --verb=get --resource=pods
+
+# 5. Wait for CoreDNS
 echo "Waiting for CoreDNS to be ready..."
-kubectl rollout status --kubeconfig "$KUBECONFIG_FILE" -n kube-system deployment/coredns --timeout=120s
+kubectl rollout status -n kube-system deployment/coredns --timeout=120s
 
-# 5. Create the lab/ output directory
-
-# 7. Print summary
+# 6. Print summary
 echo ""
 echo "Lab ready!"
 echo ""

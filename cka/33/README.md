@@ -1,10 +1,12 @@
-# Question 16
+# Question 33
 
-> **Solve this question on:** the "cka-lab" kind cluster
+> **Solve this question on:** `cka-lab-33`
 
-Write the names of all namespaced Kubernetes resources (like *Pod*, *Secret*, *ConfigMap*...) into `cka/33/lab/resources.txt`.
+Create a new *Namespace* called `cka-master`.
 
-Find the `project-*` *Namespace* with the highest number of *Roles* defined in it and write its name and amount of *Roles* into `cka/33/lab/crowded-namespace.txt`.
+Write the names of all namespaced Kubernetes resources (e.g. *Pod*) into `lab/resources.txt`.
+
+Find the `project-*` *Namespace* with the highest number of *Roles* defined in it and write its name and the amount of *Roles* into `lab/crowded-namespace.txt`.
 
 ---
 

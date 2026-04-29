@@ -10,69 +10,24 @@ fi
 LAB_DIR="$SCRIPT_DIR/../lab"
 mkdir -p "$LAB_DIR"
 
-# 1. Make a backup of the existing configuration YAML
-kubectl -n kube-system get cm coredns -o yaml > "$LAB_DIR/coredns_backup.yaml"
+# 1. Create a new Namespace called cka-master
+kubectl create namespace cka-master --dry-run=client -o yaml | kubectl apply -f -
 
-# 2. Update the CoreDNS configuration
-# We use a python script to safely modify the ConfigMap data
-python3 - <<EOF
-import sys
-import json
-import subprocess
-import os
+# 2. Write the names of all namespaced Kubernetes resources into lab/resources.txt
+kubectl api-resources --namespaced -o name > "$LAB_DIR/resources.txt"
 
-def kubectl(*args):
-    cmd = ["kubectl"]
-    kconfig = os.environ.get("KUBECONFIG")
-    if kconfig and os.path.exists(kconfig):
-        cmd.extend(["--kubeconfig", kconfig])
-    cmd.extend(args)
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    return result.stdout
+# 3. Find the project-* Namespace with the highest number of Roles and write its name and amount
+MAX_ROLES=0
+CROWDED_NS=""
 
-# Get current config
-cm_json = kubectl("-n", "kube-system", "get", "cm", "coredns", "-o", "json")
-cm = json.loads(cm_json)
+for ns in $(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep '^project-'); do
+  COUNT=$(kubectl -n "$ns" get roles --no-headers 2>/dev/null | wc -l || echo 0)
+  if [ "$COUNT" -gt "$MAX_ROLES" ]; then
+    MAX_ROLES=$COUNT
+    CROWDED_NS=$ns
+  fi
+done
 
-# Modify Corefile
-corefile = cm["data"]["Corefile"]
-lines = corefile.splitlines(keepends=True)
-updated = False
-
-for i, line in enumerate(lines):
-    stripped = line.lstrip()
-    if not stripped.startswith("kubernetes "):
-        continue
-    if "custom-domain" in stripped:
-        continue
-    if "cluster.local" not in stripped:
-        continue
-    lines[i] = line.replace("cluster.local", "custom-domain cluster.local", 1)
-    updated = True
-    break
-
-if updated:
-    cm["data"]["Corefile"] = "".join(lines)
-
-# Apply updated config
-cmd = ["kubectl", "apply", "-f", "-"]
-kconfig = os.environ.get("KUBECONFIG")
-if kconfig and os.path.exists(kconfig):
-    cmd.insert(1, "--kubeconfig")
-    cmd.insert(2, kconfig)
-
-result = subprocess.run(
-    cmd,
-    input=json.dumps(cm),
-    capture_output=True,
-    text=True,
-)
-if result.returncode != 0:
-    if result.stderr:
-        sys.stderr.write(result.stderr)
-    sys.exit(result.returncode)
-EOF
-
-# Restart CoreDNS deployment to pick up changes
-kubectl -n kube-system rollout restart deploy coredns
-kubectl -n kube-system rollout status deploy coredns --timeout=60s
+if [ -n "$CROWDED_NS" ]; then
+  echo "$CROWDED_NS with $MAX_ROLES roles" > "$LAB_DIR/crowded-namespace.txt"
+fi
