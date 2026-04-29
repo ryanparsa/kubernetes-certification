@@ -72,12 +72,12 @@ kubectl get pods -n upgrade -o jsonpath='{.items[*].spec.containers[0].image}'
 # Should show nginx:1.19 after rollback
 ```
 
-## Checklist (Score: 0/7)
+## Checklist (Score: 7/7)
 
-- [ ] Deployment `app-v1` exists in `upgrade` namespace with `4` replicas
-- [ ] Initial image is `nginx:1.19`
-- [ ] RollingUpdate strategy with `maxUnavailable: 1` and `maxSurge: 1`
-- [ ] Rolling update to `nginx:1.20` was performed
-- [ ] Rollout history saved to `/tmp/exam/rollout-history.txt`
-- [ ] Deployment rolled back to previous version (`nginx:1.19`)
-- [ ] All 4 pods are `Running` after rollback
+- [x] Deployment `app-v1` exists in `upgrade` namespace with `4` replicas
+- [x] Initial image is `nginx:1.19`
+- [x] RollingUpdate strategy with `maxUnavailable: 1` and `maxSurge: 1`
+- [x] Rolling update to `nginx:1.20` was performed
+- [x] Rollout history saved to `/tmp/exam/rollout-history.txt`
+- [x] Deployment rolled back to previous version (`nginx:1.19`)
+- [x] All 4 pods are `Running` after rollback
