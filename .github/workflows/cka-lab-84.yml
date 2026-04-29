@@ -1,0 +1,40 @@
+name: CKA Lab 84
+
+on:
+  push:
+    paths: ['cka/84/**', '.github/workflows/cka-lab-84.yml']
+  pull_request:
+    paths: ['cka/84/**', '.github/workflows/cka-lab-84.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create cluster
+        uses: helm/kind-action@v1
+        with:
+          config: cka/84/assets/kind-config.yaml
+          cluster_name: cka-lab-84
+
+      - name: Export kubeconfig
+        run: kind get kubeconfig --name cka-lab-84 > cka/84/assets/kubeconfig.yaml
+
+      - name: Seed workloads
+        run: |
+          kubectl apply -f cka/84/assets/workloads.yaml
+          kubectl rollout status deployment api-gateway -n api-gateway-staging --timeout=120s
+          kubectl rollout status deployment api-gateway -n api-gateway-prod --timeout=120s
+
+      - name: Apply solution
+        run: bash cka/84/assets/fix.sh
+
+      - name: Run checks
+        run: bash cka/84/assets/check.sh
+
+      - name: Tear down
+        if: always()
+        run: bash cka/84/assets/cleanup.sh
