@@ -2,12 +2,21 @@
 import os
 import subprocess
 import unittest
+import json
 
-KUBECONFIG = os.environ.get("KUBECONFIG") or os.path.join(os.path.dirname(__file__), "..", "lab", "kubeconfig.yaml")
+SCRIPT_DIR = os.path.dirname(__file__)
+KUBECONFIG_PATH = os.path.join(SCRIPT_DIR, "..", "lab", "kubeconfig.yaml")
+
+# Use local kubeconfig if it exists, otherwise rely on environment (CI)
+KUBECONFIG = KUBECONFIG_PATH if os.path.exists(KUBECONFIG_PATH) else os.environ.get("KUBECONFIG")
 
 def kubectl(*args):
+    cmd = ["kubectl"]
+    if KUBECONFIG:
+        cmd.extend(["--kubeconfig", KUBECONFIG])
+    cmd.extend(args)
     result = subprocess.run(
-        ["kubectl", "--kubeconfig", KUBECONFIG, *args],
+        cmd,
         capture_output=True, text=True,
     )
     return result
@@ -30,15 +39,19 @@ class TestLimitConsumer(unittest.TestCase):
     def test_network_policy_ingress_rule(self):
         # Allow ingress from producer
         res = kubectl("get", "netpol", "limit-consumer", "-o", "json")
-        import json
         policy = json.loads(res.stdout)
 
         ingress = policy.get("spec", {}).get("ingress", [])
         self.assertTrue(len(ingress) > 0, "No ingress rules found")
 
         from_list = ingress[0].get("from", [])
-        self.assertTrue(any(f.get("podSelector", {}).get("matchLabels", {}).get("run") == "producer" for f in from_list),
-                        "NetworkPolicy does not allow ingress from producer")
+        found_producer = False
+        for f in from_list:
+            if f.get("podSelector", {}).get("matchLabels", {}).get("run") == "producer":
+                found_producer = True
+                break
+
+        self.assertTrue(found_producer, "NetworkPolicy does not allow ingress from producer")
 
     def test_connectivity(self):
         # Producer to Consumer should succeed
