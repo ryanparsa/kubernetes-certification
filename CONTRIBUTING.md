@@ -12,7 +12,7 @@ kubernetes-certification/
 ├── cka/          # CKA labs
 ├── cks/          # CKS labs
 ├── ref/          # Shared reference sheets (all exams)
-└── prompts/      # Composable AI trainer prompts
+└── prompts/      # AI prompts
 ```
 
 ## Certification Types

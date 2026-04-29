@@ -1,3 +1,4 @@
+[BEGIN: CKA EXAM CONTEXT]
 # CKA Exam Practice Context
 
 The following provides the specific grading rubrics and parameters for the Kubernetes Certified Administrator (CKA) simulation. Combine this with the base Terminal Simulation Prompt.

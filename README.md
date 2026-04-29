@@ -12,7 +12,7 @@ Open-source practice labs and study materials for Kubernetes certification exams
 | [CKA](cka/) | Certified Kubernetes Administrator | `cka/` - 37 hands-on practice labs + exam definition |
 | [CKS](cks/) | Certified Kubernetes Security Specialist | `cks/` - exam definition |
 
-Each exam directory contains a `README.md` with the official exam overview, domain weights, and key topics. The [`prompts/`](prompts/) directory provides AI trainer prompts that reference these definitions.
+Each exam directory contains a `README.md` with the official exam overview, domain weights, and key topics. The [`prompts/`](prompts/) directory provides AI mentor prompts that reference these definitions.
 
 ## Repository Layout
 
@@ -37,7 +37,7 @@ Each exam directory contains a `README.md` with the official exam overview, doma
 │   └── README.md         # Exam overview, domain weights, topics, lab index
 ├── cks/
 │   └── README.md         # Exam overview, domain weights, topics
-├── prompts/              # AI trainer prompts (reference exam dirs for scope)
+├── prompts/              # AI mentor prompts (reference exam dirs for scope)
 │   ├── base.md           # Shared session rules
 │   ├── kcna.md / kcsa.md / ckad.md / cka.md / cks.md   # Exam scope (thin wrappers)
 │   └── ...               # Practice types: speed, yaml, mock, troubleshoot, docs

@@ -1,3 +1,4 @@
+[BEGIN: KCNA EXAM CONTEXT]
 # KCNA Exam Practice Context
 
 The following provides the specific grading rubrics and parameters for the Kubernetes and Cloud Native Associate (KCNA) simulation. Combine this with the base Terminal Simulation Prompt.

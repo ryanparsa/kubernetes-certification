@@ -1,3 +1,4 @@
+[BEGIN: KCSA EXAM CONTEXT]
 # KCSA Exam Practice Context
 
 The following provides the specific grading rubrics and parameters for the Kubernetes and Cloud Native Security Associate (KCSA) simulation. Combine this with the base Terminal Simulation Prompt.

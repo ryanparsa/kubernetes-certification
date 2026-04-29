@@ -1,3 +1,4 @@
+[BEGIN: CKS EXAM CONTEXT]
 # CKS Exam Practice Context
 
 The following provides the specific grading rubrics and parameters for the Certified Kubernetes Security Specialist (CKS) simulation. Combine this with the base Terminal Simulation Prompt.

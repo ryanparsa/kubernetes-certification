@@ -12,8 +12,8 @@ Pick a **mode** (how you study) + an **exam context** (what you study) and pipe 
 │ simulator.md │    +    │ cka.md   │
 │ quiz.md      │         │ ckad.md  │
 │ docs.md      │         │ cks.md   │
-└──────────────┘         │ kcna.md  │
-                         │ kcsa.md  │
+│ mentor.md   │         │ kcna.md  │
+└──────────────┘         │ kcsa.md  │
                          └──────────┘
 ```
 
@@ -118,6 +118,26 @@ cat docs.md kcna.md | claude
 KCSA
 ```bash
 cat docs.md kcsa.md | claude
+```
+
+---
+
+# Mentor
+
+[`mentor.md`](mentor.md) -- Inquiry-based "Hacker Mindset" mentor.
+
+![Mentor Trainer](_mentor.png)
+
+Designed for curiosity-driven, non-linear learning. Instead of a syllabus, it waits for your questions and explains concepts bottom-up (from the kernel/binary level up to the abstraction). Every explanation ends with a runnable action block (try, chaos experiment, or watch setup). After each topic it asks if you want to practice hands-on -- if you do, it creates a `mentor-ws` namespace as a throwaway workspace and offers cleanup when you're done. Complex scenarios that need broken cluster state are handed off to the simulator instead.
+
+CKA
+```bash
+cat mentor.md cka.md  | claude
+```
+
+CKAD
+```bash
+cat mentor.md ckad.md | claude
 ```
 
 ---
