@@ -29,7 +29,7 @@ kubectl get pod json-pod -n json-namespace -o jsonpath='{..hostIP}'
 kubectl explain pod.status | grep hostIP
 ```
 
-The field path is: `pod → .status → .hostIP`
+The field path is: `pod -> .status -> .hostIP`
 
 ## Checklist (Score: 0/2)
 

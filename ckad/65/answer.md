@@ -21,7 +21,7 @@ REVISION  CHANGE-CAUSE
 1         <none>
 2         <none>
 3         <none>
-4         <none>   ← broken (e.g. image: ngin:1.21.0)
+4         <none>   <- broken (e.g. image: ngin:1.21.0)
 ```
 
 ### Undo to the previous revision

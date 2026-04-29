@@ -153,7 +153,51 @@ scp master:/etc/kubernetes/admin.conf ~/.kube/config
 
 ---
 
-## 7. Certificate Renewal Reference
+## 7. Certificate Ownership, Signing, and Protection
+
+Kubernetes relies on two primary Certificate Authorities (CAs): the **Kubernetes CA** (for cluster components) and the **etcd CA** (isolated for the etcd datastore). 
+
+For every cryptographic pair:
+- **`.crt` / `.pub` (Certificates/Public Keys):** Are **Shared**. They contain the public identity and are distributed to other components to verify trust.
+- **`.key` (Private Keys):** Are **Protected**. They must be kept strictly secure and are only readable by the owning component.
+
+### Kubernetes Main CA (`/etc/kubernetes/pki/`)
+
+| Path / File | Owner | Signed By | Protected (Private) / Shared (Public) | Purpose |
+|---|---|---|---|---|
+| `ca.crt` | Kubernetes CA | Self-signed | **Shared** | Trust root for the cluster. Distributed to all components to verify the API server. |
+| `ca.key` | Kubernetes CA | N/A | **Protected** | Used by `kube-controller-manager` and `kubeadm` to sign other cluster certificates. |
+| `apiserver.crt` | API Server | Kubernetes CA | **Shared** | Presented by API Server to any incoming client (e.g., `kubectl`, kubelet). |
+| `apiserver.key` | API Server | N/A | **Protected** | Used by API Server to decrypt incoming TLS handshakes. |
+| `apiserver-kubelet-client.crt` | API Server | Kubernetes CA | **Shared** | Presented by API Server when acting as a client talking to a Kubelet (e.g., `kubectl exec`). |
+| `apiserver-kubelet-client.key` | API Server | N/A | **Protected** | API Server's private key for Kubelet communication. |
+| `front-proxy-ca.crt` | Front Proxy CA | Self-signed | **Shared** | Trust root for aggregated APIs. |
+| `front-proxy-ca.key` | Front Proxy CA | N/A | **Protected** | Signs the front-proxy client cert. |
+| `front-proxy-client.crt` | API Server | Front Proxy CA | **Shared** | Presented by API Server when proxying requests to extension API servers. |
+| `front-proxy-client.key` | API Server | N/A | **Protected** | API Server's private key for aggregated APIs. |
+| `sa.pub` | API Server | N/A (RSA Key) | **Shared** | Used by API Server to verify ServiceAccount JWT tokens. |
+| `sa.key` | Controller Manager | N/A (RSA Key) | **Protected** | Used by Controller Manager to sign ServiceAccount JWT tokens. |
+
+### etcd CA (`/etc/kubernetes/pki/etcd/`)
+
+| Path / File | Owner | Signed By | Protected (Private) / Shared (Public) | Purpose |
+|---|---|---|---|---|
+| `etcd/ca.crt` | etcd CA | Self-signed | **Shared** | Trust root for etcd. Distributed to API Server and etcd nodes. |
+| `etcd/ca.key` | etcd CA | N/A | **Protected** | Signs all other etcd certificates. |
+| `etcd/server.crt` | etcd Server | etcd CA | **Shared** | Presented by etcd to the API Server and to other etcd peer nodes. |
+| `etcd/server.key` | etcd Server | N/A | **Protected** | etcd server's private key. |
+| `etcd/peer.crt` | etcd Node | etcd CA | **Shared** | Presented by an etcd node to other etcd nodes for cluster replication (Raft). |
+| `etcd/peer.key` | etcd Node | N/A | **Protected** | etcd node's private key for peer communication. |
+| `etcd/healthcheck-client.crt` | etcd Probe | etcd CA | **Shared** | Presented by the liveness probe client to check etcd health. |
+| `etcd/healthcheck-client.key` | etcd Probe | N/A | **Protected** | Private key for the health check client. |
+| `apiserver-etcd-client.crt`* | API Server | etcd CA | **Shared** | Presented by API Server to authenticate to etcd. |
+| `apiserver-etcd-client.key`* | API Server | N/A | **Protected** | API Server's private key for connecting to etcd. |
+
+*\*Note: `apiserver-etcd-client` files live in `/etc/kubernetes/pki/` but are signed by the etcd CA.*
+
+---
+
+## 8. Certificate Renewal Reference
 
 ### `/etc/kubernetes/pki/` - Control Plane Certs
 
@@ -261,7 +305,7 @@ kubeadm certs renew apiserver
 
 ---
 
-## 8. Architecture Summary
+## 10. Architecture Summary
 
 1. **Node Identity (Kubelet):** Always unique per machine.
 2. **Role Identity (Scheduler/Controller):** Shared across Control Plane nodes.

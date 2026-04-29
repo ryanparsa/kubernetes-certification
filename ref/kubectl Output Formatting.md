@@ -296,6 +296,17 @@ kubectl get apiservice v1beta1.metrics.k8s.io -o yaml
 ## 8. Practical One-Liners
 
 ```bash
+# Context names - clean newline-separated list (no table headers)
+kubectl config get-contexts -o name > /opt/course/1/contexts
+
+# Context names via JSONPath - wildcard produces space-separated; tr converts to newlines
+kubectl config view -o jsonpath="{.contexts[*].name}" | tr " " "\n" > /opt/course/1/contexts
+
+# Extract a user's client cert from kubeconfig and decode it
+kubectl config view --raw \
+  -o jsonpath="{.users[?(@.name=='restricted@infra-prod')].user.client-certificate-data}" \
+  | base64 -d > /opt/course/1/cert
+
 # Write a script that lists all pods sorted by creationTimestamp
 echo 'kubectl get pod -A --sort-by=.metadata.creationTimestamp' > find_pods.sh
 

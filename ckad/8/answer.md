@@ -9,7 +9,7 @@ kubectl create secret generic db-secret --from-literal=username=admin --from-lit
 kubectl get secret db-secret
 ```
 
-### Pod secret-env — inject individual keys as env vars
+### Pod secret-env -- inject individual keys as env vars
 
 ```yaml
 # lab/secret-env.yaml
@@ -42,7 +42,7 @@ kubectl exec secret-env -- printenv DB_PASS
 
 Expected: `admin` and `s3cur3`
 
-### Pod secret-vol — mount entire secret as read-only volume
+### Pod secret-vol -- mount entire secret as read-only volume
 
 ```yaml
 # lab/secret-vol.yaml

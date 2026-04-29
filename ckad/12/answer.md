@@ -17,7 +17,7 @@ kubectl patch svc frontend-svc -p '{"spec":{"type":"NodePort"}}'
 kubectl get svc frontend-svc
 ```
 
-The service will now have a `NodePort` assigned (in the 30000–32767 range).
+The service will now have a `NodePort` assigned (in the 30000--32767 range).
 
 ### Create NetworkPolicy allow-labeled
 

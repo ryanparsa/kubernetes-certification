@@ -1,5 +1,7 @@
 # Contributing
 
+git config core.hooksPath .githooks
+
 ## Repository Layout
 
 ```

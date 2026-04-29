@@ -1,8 +1,5 @@
 # General .gitignore for Kubernetes Certification Project
 
-# Local dev scripts
-check_ascii.py
-
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -77,13 +74,6 @@ secrets/
 *.key
 *.pem
 
-# CKA lab output directories
-cka/[0-9]*/lab/
-
-# CKAD lab output directories
-ckad/[0-9]*/lab/
-
-
 # Documentation build artifacts
 _build/
 .doctrees/
@@ -113,5 +103,12 @@ personal/
 .cache/
 .npm/
 .yarn/
-cka/14/lab/
-cka/37/lab/
+
+
+
+# CKA lab output directories
+cka/[0-9]*/lab/
+
+# CKAD lab output directories
+ckad/[0-9]*/lab/
+

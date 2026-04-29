@@ -6,8 +6,8 @@ Node `cluster2-worker1` has been added to the cluster using `kubeadm` and TLS bo
 
 Find the **Issuer** and **Extended Key Usage** values of the `cluster2-worker1`:
 
-1. `kubelet` **client** certificate — the one used for outgoing connections to the `kube-apiserver`
-2. `kubelet` **server** certificate — the one used for incoming connections from the `kube-apiserver`
+1. `kubelet` **client** certificate -- the one used for outgoing connections to the `kube-apiserver`
+2. `kubelet` **server** certificate -- the one used for incoming connections from the `kube-apiserver`
 
 Write the information into `/opt/course/23/certificate-info.txt`.
 
