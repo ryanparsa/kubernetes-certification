@@ -5,17 +5,13 @@ import unittest
 import json
 
 SCRIPT_DIR = os.path.dirname(__file__)
-KUBECONFIG = os.environ.get("KUBECONFIG")
-if not KUBECONFIG or not os.path.exists(KUBECONFIG):
+if not os.environ.get("KUBECONFIG") or not os.path.exists(os.environ["KUBECONFIG"]):
     local_config = os.path.join(SCRIPT_DIR, "kubeconfig.yaml")
     if os.path.exists(local_config):
-        KUBECONFIG = local_config
+        os.environ["KUBECONFIG"] = local_config
 
 def kubectl(*args):
-    cmd = ["kubectl"]
-    if KUBECONFIG:
-        cmd += ["--kubeconfig", KUBECONFIG]
-    cmd += args
+    cmd = ["kubectl"] + list(args)
     result = subprocess.run(
         cmd,
         capture_output=True, text=True,
@@ -97,32 +93,17 @@ class TestNetworkPolicyLab(unittest.TestCase):
 
         # Use wget -q -T 2 -O - http://... as it's more likely to be in alpine than curl
         # Web to API should work (nginx on 80)
-        cmd = ["kubectl"]
-        if KUBECONFIG: cmd += ["--kubeconfig", KUBECONFIG]
-        cmd += ["exec", "-n", "network", web_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{api_ip}"]
-        res = subprocess.run(cmd, capture_output=True)
+        res = subprocess.run(["kubectl", "exec", "-n", "network", web_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{api_ip}"], capture_output=True)
         self.assertEqual(res.returncode, 0, f"Web should be able to connect to API. Error: {res.stderr.decode()}")
 
         # Web to DB should fail (postgres on 5432)
-        # We check that it's NOT a timeout (exit code 1 for wget if it can't connect, but let's be careful)
-        # Actually wget will exit with non-zero if it times out or connection refused.
-        # To distinguish between "tool missing" and "blocked", we'd need more logic.
-        # But let's assume wget is there.
-        cmd = ["kubectl"]
-        if KUBECONFIG: cmd += ["--kubeconfig", KUBECONFIG]
-        cmd += ["exec", "-n", "network", web_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{db_ip}:5432"]
-        res = subprocess.run(cmd, capture_output=True)
+        res = subprocess.run(["kubectl", "exec", "-n", "network", web_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{db_ip}:5432"], capture_output=True)
         # If it's blocked, it should exit with non-zero.
-        # If wget is missing, it will be 127.
         self.assertNotEqual(res.returncode, 0, "Web should NOT be able to connect to DB")
         self.assertNotEqual(res.returncode, 127, "wget missing in web pod")
 
         # API to DB should work (connection allowed, even if HTTP fails)
-        cmd = ["kubectl"]
-        if KUBECONFIG: cmd += ["--kubeconfig", KUBECONFIG]
-        cmd += ["exec", "-n", "network", api_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{db_ip}:5432"]
-        res = subprocess.run(cmd, capture_output=True)
-        # wget on postgres port will likely return 8 (Server error) or 1 (General failure) but NOT timeout if allowed.
+        res = subprocess.run(["kubectl", "exec", "-n", "network", api_pod, "--", "wget", "-q", "-T", "2", "-O", "-", f"http://{db_ip}:5432"], capture_output=True)
         # If it's a timeout, it's usually 4.
         self.assertNotEqual(res.returncode, 4, "API to DB connection timed out (likely blocked)")
         self.assertNotEqual(res.returncode, 127, "wget missing in api pod")
