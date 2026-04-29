@@ -14,17 +14,17 @@ done
 
 mkdir -p "$TASK_DIR/lab"
 
-# Only create cluster if KUBECONFIG is not already set
-if [[ -z "${KUBECONFIG:-}" ]]; then
+# Only create cluster if it doesn't exist
+if ! kind get clusters | grep -q "^${CLUSTER_NAME}$"; then
   kind create cluster --name "$CLUSTER_NAME" --config "$SCRIPT_DIR/kind-config.yaml" --kubeconfig "$KUBECONFIG_FILE"
   export KUBECONFIG="$KUBECONFIG_FILE"
 fi
 
-# Create ConfigMap
-kubectl create configmap web-server-conf --from-literal=custom.conf="server { listen 80; server_name localhost; location / { root /usr/share/nginx/html; index index.html; } }"
+# Create ConfigMap (idempotent)
+kubectl create configmap web-server-conf --from-literal=custom.conf="server { listen 80; server_name localhost; location / { root /usr/share/nginx/html; index index.html; } }" --dry-run=client -o yaml | kubectl apply -f -
 
-# Create Deployment without the volume mount
-kubectl create deployment web-server --image=nginx:1.25 --replicas=1
+# Create Deployment without the volume mount (idempotent)
+kubectl create deployment web-server --image=nginx:1.25 --replicas=1 --dry-run=client -o yaml | kubectl apply -f -
 
 echo ""
 echo "Lab ready!"
