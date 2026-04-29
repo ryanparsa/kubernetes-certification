@@ -2,14 +2,19 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Use KUBECONFIG if set, otherwise default to assets/kubeconfig.yaml
-export KUBECONFIG="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+
+# Use KUBECONFIG from environment if available, fallback to local file
+CONF="${KUBECONFIG:-$SCRIPT_DIR/kubeconfig.yaml}"
+
+k() {
+  kubectl --kubeconfig "$CONF" "$@"
+}
 
 # Create the namespace (idempotent)
-kubectl create namespace network --dry-run=client -o yaml | kubectl apply -f -
+k create namespace network --dry-run=client -o yaml | k apply -f -
 
 # Apply Deployments and NetworkPolicies
-cat <<EOF | kubectl apply -f -
+cat <<EOF | k apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -130,4 +135,4 @@ spec:
           app: api
 EOF
 
-kubectl wait deployment web api db -n network --for=condition=Available --timeout=60s
+k wait deployment web api db -n network --for=condition=Available --timeout=60s
