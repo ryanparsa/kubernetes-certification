@@ -1,4 +1,4 @@
-# CKA & CKAD Exam Checklist: 364 Items
+# CKA & CKAD Exam Checklist: 363 Items
 **Kubernetes v1.34 (CKA) / v1.35 (CKAD) · 2026 · Performance-based · 2 hours · 66% passing score**
 
 Domain weights — CKA: Troubleshooting 30% · Cluster Architecture 25% · Services & Networking 20% · Workloads & Scheduling 15% · Storage 10%
@@ -432,6 +432,77 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
+## Audit Logging
+
+- [ ] C-113. Explain the four audit log levels — `None` (suppress), `Metadata` (request metadata only), `Request` (metadata + request body), `RequestResponse` (metadata + request body + response body) — and the four stages — `RequestReceived`, `ResponseStarted`, `ResponseComplete`, `Panic`; audit policy rules are evaluated top-to-bottom and the first matching rule wins.
+- [ ] C-114. Write an `audit-policy.yaml` (`apiVersion: audit.k8s.io/v1, kind: Policy`) with targeted rules: `level: None` for health-check URLs (`/healthz`, `/readyz`, `/livez`), `level: Metadata` for GET/list/watch on Secrets and ConfigMaps, `level: RequestResponse` for write operations on Secrets, and a catch-all `level: Metadata` rule at the end.
+- [ ] C-115. Enable audit logging on the `kube-apiserver` static Pod by adding `--audit-policy-file=/etc/kubernetes/audit-policy.yaml`, `--audit-log-path=/var/log/kubernetes/audit.log`, `--audit-log-maxsize=100`, `--audit-log-maxbackup=5`, and `--audit-log-maxage=30` to the command arguments; mount the policy file and log directory as `hostPath` volumes in the manifest.
+- [ ] C-116. Query the audit log to trace a specific action: `tail -f /var/log/kubernetes/audit.log | jq 'select(.verb=="delete" and .objectRef.resource=="secrets") | {user:.user.username, ns:.objectRef.namespace, name:.objectRef.name}'`; use this pattern to identify which user performed a destructive operation.
+
+---
+
+## Encryption at Rest
+
+- [ ] C-117. Write an `EncryptionConfiguration` YAML (`apiVersion: apiserver.config.k8s.io/v1, kind: EncryptionConfiguration`) for Secrets: list `aescbc` (with a base64-encoded 32-byte key) as the first provider and `identity: {}` last; the first provider encrypts all new writes — placing `identity` last preserves read access to Secrets written before encryption was enabled.
+- [ ] C-118. Enable encryption at rest by adding `--encryption-provider-config=/etc/kubernetes/encryption-config.yaml` to the `kube-apiserver` static Pod manifest and creating a `hostPath` volume mount for the file; the API server must restart for the change to take effect.
+- [ ] C-119. Verify that a Secret is encrypted in etcd by running `ETCDCTL_API=3 etcdctl get /registry/secrets/<ns>/<name> --endpoints=... --cacert=... --cert=... --key=... | hexdump -C | head` and confirming the stored value begins with `k8s:enc:aescbc:v1:` — a readable plaintext value means encryption is not active.
+- [ ] C-120. Force-encrypt all pre-existing Secrets after enabling encryption at rest by running `kubectl get secrets -A -o json | kubectl replace -f -`; without this step, Secrets created before encryption was enabled remain stored as plaintext in etcd.
+
+---
+
+## TLS & PKI Management
+
+- [ ] C-121. Inspect a control-plane certificate with `openssl x509 -noout -text -in <cert>` to read the Subject CN (component identity), Issuer (signing CA), `Not After` (expiry date), Subject Alternative Names (IP/DNS names the cert is valid for), and Extended Key Usage — `TLS Web Client Authentication` identifies a client cert; `TLS Web Server Authentication` identifies a server cert.
+- [ ] C-122. Explain the role of `sa.key` / `sa.pub` in `/etc/kubernetes/pki/`: `kube-controller-manager` uses `sa.key` to sign ServiceAccount JWT tokens injected into Pods; `kube-apiserver` uses `sa.pub` to verify them; in HA clusters these files must be **identical** on all control-plane nodes — a mismatch causes tokens signed on one master to be rejected by the API server on another.
+- [ ] C-123. Explain the role of `front-proxy-ca.crt` / `front-proxy-client.crt` for the API aggregation layer: when `kubectl top` proxies through the main API server to `metrics-server` (an extension API server), the API server presents `front-proxy-client.crt`; expiry of these certs breaks all aggregated APIs including `kubectl top`.
+- [ ] C-124. Enable kubelet serving certificate auto-rotation by setting `serverTLSBootstrap: true` in `/var/lib/kubelet/config.yaml`; without this opt-in, `kubelet.crt` and `kubelet.key` (used by the API server when calling into the kubelet for `kubectl exec`/`logs`) are **not** auto-rotated and must be renewed manually.
+- [ ] C-125. Distinguish `admin.conf` from `super-admin.conf` (introduced in Kubernetes 1.29): `admin.conf` grants `system:masters` group membership and is subject to RBAC; `super-admin.conf` bypasses RBAC entirely and should remain on the control-plane node only as a break-glass emergency credential.
+- [ ] C-126. After running `kubeadm certs renew all`, restart all control-plane static Pods: move their manifests out of `/etc/kubernetes/manifests/`, wait for all containers to stop (`watch crictl ps`), move the manifests back, and re-copy `/etc/kubernetes/admin.conf` to `~/.kube/config` on every workstation — renewed certs are not picked up until the static Pods restart.
+- [ ] C-127. Renew a single expiring certificate without disrupting the others using `kubeadm certs renew <cert-name>` (e.g., `kubeadm certs renew apiserver`); use `kubeadm certs check-expiration` first to identify the correct cert name and its residual time.
+- [ ] C-128. Know the certificate distribution strategy in HA clusters: kubelet client/server certs are **unique per node** (CN = `system:node:<node-name>`); etcd peer/server certs are **unique per node** (SANs include the node IP); scheduler and controller-manager client certs are **shared** (role identity only); `sa.key`/`sa.pub` must be **identical** on all control-plane nodes.
+
+---
+
+## etcd Advanced Operations
+
+- [ ] C-129. Prefer `etcdutl snapshot restore <path> --data-dir=<new-dir>` over `etcdctl snapshot restore` for offline restores: `etcdutl` operates directly on the snapshot file without connecting to a running cluster and requires no `--endpoints` or TLS flags.
+- [ ] C-130. Before restoring an etcd snapshot, stop **all** control-plane static Pods by moving every manifest out of `/etc/kubernetes/manifests/` (not just `etcd.yaml`); wait with `watch crictl ps` until all containers have stopped to prevent mid-restore writes from `kube-apiserver` that would corrupt the restored data.
+- [ ] C-131. Compact old etcd revisions to reclaim space: capture the current revision with `rev=$(etcdctl endpoint status --write-out=json | jq '.[0].Status.header.revision')`, run `etcdctl compact $rev`, then run `etcdctl defrag` to release freed pages back to the filesystem; skipping defrag leaves the DB file at its maximum size even after compaction.
+- [ ] C-132. Diagnose etcd entering read-only mode ("mvcc: database space exceeded"): verify DB SIZE against the `--quota-backend-bytes` value using `etcdctl endpoint status --write-out=table`; resolve by compacting and defragmenting to shrink the database, or increase the quota in the `etcd.yaml` static Pod manifest if needed.
+
+---
+
+## RBAC Advanced
+
+- [ ] C-133. Restrict a `Role` or `ClusterRole` rule to specific named resource instances using `resourceNames: ["my-secret"]`; the allowed verbs apply only to the explicitly listed objects, not to all resources of that type — this is the primary mechanism for granting least-privilege access to individual Secrets or ConfigMaps.
+- [ ] C-134. Understand the special RBAC verbs `escalate` (grants the ability to create `RoleBinding`/`ClusterRoleBinding` objects that include permissions the subject does not itself hold) and `impersonate` (allows acting as another user, group, or ServiceAccount via `kubectl --as`); both require explicit grants and carry significant security risk.
+
+---
+
+## Manual Scheduling via Binding API
+
+- [ ] C-135. When `kube-scheduler` is not running and a Pod is stuck in `Pending`, manually assign it by creating a `Binding` object (`apiVersion: v1, kind: Binding`) with the Pod name in `metadata.name` and the target node in `target.apiVersion/kind/name`, or patch `spec.nodeName` directly on the pending Pod with `kubectl patch pod <name> -p '{"spec":{"nodeName":"<node>"}}'`.
+
+---
+
+## kube-proxy IPVS Inspection
+
+- [ ] C-136. When `kube-proxy` runs in IPVS mode, use `ipvsadm -Ln` on a node to list all IPVS virtual servers (Service ClusterIP:port) and their backend real servers (Pod IPs:port); use this to verify load-balancing targets at the kernel level, complementing `iptables-save | grep <svc-ip>` used in iptables mode.
+
+---
+
+## Service CIDR Change Procedure
+
+- [ ] C-137. Change the cluster Service CIDR after creation by: (1) updating `--service-cluster-ip-range` in both the `kube-apiserver` and `kube-controller-manager` static Pod manifests; (2) updating the CIDR in the `kube-proxy` ConfigMap; (3) deleting and re-creating the `kube-dns` Service with an explicit ClusterIP from the new range; (4) updating `clusterDNS` in `/var/lib/kubelet/config.yaml` on every node and restarting `kubelet`; existing Services retain their old ClusterIPs until individually deleted and re-created.
+
+---
+
+## NodeRestriction Admission Plugin
+
+- [ ] C-138. Explain the `NodeRestriction` admission plugin: it limits kubelets to modifying only their own Node object and the Pods bound to them, preventing a compromised node from reading Secrets or modifying objects belonging to other nodes; it depends on each kubelet presenting a unique client certificate with CN = `system:node:<node-name>` — sharing kubelet certs across nodes defeats this protection.
+
+---
+
 ---
 
 # ✅ CKAD — Specific Topics
@@ -678,6 +749,12 @@ Study tip: Shared topics are tested in both exams but from different angles — 
 
 ---
 
-*Total: 364 checkable items*
-*S-001 to S-111: Shared (CKA & CKAD) · C-001 to C-112: CKA-specific · D-001 to D-073: CKAD-specific · G-001 to G-040: kubectl & General*
+## kubectl — kubeconfig Management
+
+- [ ] G-041. Build a kubeconfig file from scratch with `kubectl config set-cluster <name> --server=<url> --certificate-authority=<ca.crt> --embed-certs=true`, then `kubectl config set-credentials <name> --client-certificate=<cert.crt> --client-key=<key.key> --embed-certs=true`, then `kubectl config set-context <name> --cluster=<cluster> --user=<user> --namespace=<ns>`; use this when creating access credentials for a new ServiceAccount or a newly signed user certificate.
+
+---
+
+*Total: 363 checkable items*
+*S-001 to S-111: Shared (CKA & CKAD) · C-001 to C-138: CKA-specific · D-001 to D-073: CKAD-specific · G-001 to G-041: kubectl & General*
 *Source: CNCF official curriculum (github.com/cncf/curriculum), Linux Foundation exam pages — April 2026*
